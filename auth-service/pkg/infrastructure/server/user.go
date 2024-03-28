@@ -25,21 +25,19 @@ func (u *AuthServer) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.Sig
 	UserDetails.Password = req.Password
 	UserDetails.UserName = req.UserName
 	UserDetails.Name = req.Name
-	UserDetails.ProfilePhoto = req.ProfilePhoto
+	// UserDetails.ProfilePhoto = req.ProfilePhoto
 
 	userReq, err := u.userUseCase.Signup(UserDetails)
 	if err != nil {
 		return nil, err
 	}
 
-	// fmt.Println("==", userReq)
-
 	return &pb.SignupResponse{
 		UserID:          userReq.ID,
 		UserName:        userReq.UserName,
 		Name:            userReq.Name,
 		Email:           userReq.Email,
-		ProfilePhotoUrl: userReq.ProfilePhotoUrl,
-		CoverPhotoUrl:   userReq.CoverPhotoUrl,
+		// ProfilePhotoUrl: userReq.ProfilePhotoUrl,
+		// CoverPhotoUrl:   userReq.CoverPhotoUrl,
 	}, nil
 }

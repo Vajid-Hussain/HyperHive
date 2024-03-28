@@ -14,12 +14,12 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "creation-storage" {
-  bucket        = "hiper-hive-data"
+  bucket        = "hyper-hive-data"
   force_destroy = true
-  acl    = "public-read" 
+  # acl    = "public-read" 
 
   tags = {
-    Name       = "HiperHive"
+    Name       = "HyperHive"
     enviroment = "development"
   }
 }
@@ -27,7 +27,6 @@ resource "aws_s3_bucket" "creation-storage" {
 resource "aws_s3_bucket_ownership_controls" "bucket-owner" {
   bucket = aws_s3_bucket.creation-storage.id
   rule {
-    # control_object_ownership = true
     object_ownership = "BucketOwnerPreferred"
   }
 }

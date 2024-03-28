@@ -5,6 +5,7 @@ option go_package ="./pkg/pb/";
 
 service AuthService{
     rpc Signup(SignupRequest) returns (SignupResponse) {};
+    rpc Verify (UserVerifyRequest) returns (UserVerifyResponse) {};
 }
 
 message SignupRequest{
@@ -26,3 +27,12 @@ message SignupResponse{
     string CoverPhotoUrl = 6;
 }
 
+message UserVerifyRequest{
+    string Token =1;
+    string Email =2;
+}
+
+message UserVerifyResponse{
+    string AccessToken =1;
+    string RefresToken =2; 
+}

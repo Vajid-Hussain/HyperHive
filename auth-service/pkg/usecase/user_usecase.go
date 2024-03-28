@@ -1,7 +1,6 @@
 package usecasel_auth_server
 
 import (
-	"fmt"
 	"regexp"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
@@ -13,13 +12,17 @@ import (
 )
 
 type UserUseCase struct {
-	userRepo interface_repo_auth_server.IUserRepository
-	s3       configl_auth_server.S3Bucket
+	userRepo       interface_repo_auth_server.IUserRepository
+	s3             configl_auth_server.S3Bucket
+	mailConstrains configl_auth_server.Mail
+	tokenSecret    configl_auth_server.Token
 }
 
-func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_auth_server.S3Bucket) interface_usecase_auth_server.IUserUseCase {
+func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_auth_server.S3Bucket, mailConstrains configl_auth_server.Mail, tokenSecret configl_auth_server.Token) interface_usecase_auth_server.IUserUseCase {
 	return &UserUseCase{userRepo: repo,
-		s3: s3}
+		s3:             s3,
+		mailConstrains: mailConstrains,
+		tokenSecret:    tokenSecret}
 }
 
 func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error) {
@@ -28,7 +31,8 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	hasDigit := regexp.MustCompile(`[0-9]`)
 	hasMinimumLength := regexp.MustCompile(`.{5,}`)
 	hasSymbol := regexp.MustCompile(`[!@#$%^&*]`)
-	var chanProfilePhoto = make(chan string)
+	// var chanProfilePhoto = make(chan string)
+
 	// var chanCoverPhoto = make(chan string)
 	// fmt.Println(userDetails.ConfirmPassword, userDetails.Name, userDetails.UserName)
 
@@ -44,22 +48,22 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 
 	userDetails.Password = utils_auth_server.HashPassword(userDetails.Password)
 
-	s3Session := utils_auth_server.CreateSession(d.s3)
+	// s3Session := utils_auth_server.CreateSession(d.s3)
 
-	if len(userDetails.ProfilePhoto) > 1 {
-		fmt.Println("profile proto is sending to s3")
-		go utils_auth_server.UploadImageToS3(userDetails.ProfilePhoto, s3Session, chanProfilePhoto)
-	}
+	// if len(userDetails.ProfilePhoto) > 1 {
+	// 	fmt.Println("profile proto is sending to s3")
+	// 	go utils_auth_server.UploadImageToS3(userDetails.ProfilePhoto, s3Session, chanProfilePhoto)
+	// }
 
 	// if len(userDetails.CoverPhoto) > 1 {
 	// 	fmt.Println("CoverPhoto is sending to s3")
 	// go	utils_auth_server.UploadImageToS3(userDetails.CoverPhoto, s3Session, chanCoverPhoto)
 	// }
 
-	if len(userDetails.ProfilePhoto) > 1 {
-		fmt.Println("profile  url fetch by chan to s3")
-		userDetails.ProfilePhotoUrl = <-chanProfilePhoto
-	}
+	// if len(userDetails.ProfilePhoto) > 1 {
+	// 	fmt.Println("profile  url fetch by chan to s3")
+	// 	userDetails.ProfilePhotoUrl = <-chanProfilePhoto
+	// }
 
 	// if len(userDetails.CoverPhoto) > 1 {
 	// 	fmt.Println("CoverPhoto url fetch by chan to s3")
@@ -70,6 +74,13 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	if err != nil {
 		return nil, err
 	}
+
+	verificationToken, err := utils_auth_server.TemperveryTokenForUserAuthenticaiton(d.tokenSecret.TemperveryKey, userRes.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	utils_auth_server.SendVerificationEmail(userRes.Email, verificationToken, d.mailConstrains)
 
 	return userRes, nil
 }

@@ -5,12 +5,12 @@ option go_package= "./pkg/auth-svc/pb";
 
 service AuthService{
     rpc Signup(SignupRequest) returns (SignupResponse) {};
+    rpc Verify (UserVerifyRequest) returns (UserVerifyResponse) {};
 }
 
 message SignupRequest{
     string UserName  =1;
     string Name = 2;
-    bytes ProfilePhoto =3;
     string Email =4;
     string Password = 5;
     string ConfirmPassword = 6;
@@ -22,5 +22,15 @@ message SignupResponse{
     string Name = 3;
     string Email = 4; 
     string ProfilePhotoUri = 5;
+    string CoverPhoto = 6;
 }
 
+message UserVerifyRequest{
+    string Token =1;
+    string Email =2;
+}
+
+message UserVerifyResponse{
+    string AccessToken =1;
+    string RefresToken =2; 
+}

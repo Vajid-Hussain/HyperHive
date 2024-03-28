@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"time"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -61,7 +63,7 @@ func UploadImageToS3(file []byte, sess *session.Session, ch chan string) {
 
 	uploader := s3manager.NewUploader(sess)
 	upload, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String("hiper-hive-data"),
+		Bucket: aws.String("hyper-hive-data"),
 		Key:    aws.String("profile images/" + fileName),
 		Body:   aws.ReadSeekCloser(bytes.NewReader(file)),
 		ACL:    aws.String("public-read"),
@@ -73,4 +75,106 @@ func UploadImageToS3(file []byte, sess *session.Session, ch chan string) {
 	// fmt.Println("----", upload.Location)
 	ch <- upload.Location
 	close(ch)
+}
+
+
+func TemperveryTokenForUserAuthenticaiton(securityKey string, email string) (string, error) {
+	key := []byte(securityKey)
+	claims := jwt.MapClaims{
+		"exp":   time.Now().Unix() + 3600,
+		"email": email,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(key)
+	if err != nil {
+		fmt.Println(err, "error at create token ")
+	}
+	return tokenString, err
+}
+
+func GenerateAcessToken(securityKey string, id string) (string, error) {
+	key := []byte(securityKey)
+	claims := jwt.MapClaims{
+		"exp": time.Now().Unix() + 300,
+		"id":  id,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(key)
+	if err != nil {
+		fmt.Println(err, "error at create token ")
+	}
+	return tokenString, err
+}
+
+func GenerateRefreshToken(securityKey string) (string, error) {
+	key := []byte(securityKey)
+	clamis := jwt.MapClaims{
+		"exp": time.Now().Unix() + 36000000,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, clamis)
+	signedToken, err := token.SignedString(key)
+	if err != nil {
+		return "", errors.New("making refresh token lead to error")
+	}
+
+	return signedToken, nil
+}
+
+func VerifyAcessToken(token string, secretkey string) (string, error) {
+	key := []byte(secretkey)
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+
+	if len(parsedToken.Header) == 0 {
+		return "", errors.New("token tamberd include header")
+	}
+
+	if parsedToken == nil {
+		return "", err
+	}
+
+	claims := parsedToken.Claims.(jwt.MapClaims)
+	id, ok := claims["id"].(string)
+
+	if !ok {
+		return "", errors.New("id is not in accessToken. access denied")
+	}
+	return id, err
+}
+
+func VerifyRefreshToken(token string, securityKey string) error {
+	key := []byte(securityKey)
+
+	_, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+	if err != nil {
+		return errors.New(" token tamperd or expired")
+	}
+
+	return nil
+}
+
+func FetchUserIDFromToken(tokenString string, secretkey string) (string, error) {
+
+	secret := []byte(secretkey)
+
+	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+	if err != nil || !parsedToken.Valid {
+		return "", errors.New("wrong token or expired")
+	}
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("could not parse claims")
+	}
+
+	emailClaim, ok := claims["email"].(string)
+	if !ok {
+		return "", errors.New("email claim not found or not a string")
+	}
+
+	return emailClaim, nil
 }

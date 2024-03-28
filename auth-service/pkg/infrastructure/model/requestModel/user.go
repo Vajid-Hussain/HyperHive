@@ -11,3 +11,5 @@ type UserSignup struct {
 	ProfilePhotoUrl string
 	CoverPhotoUrl string
 }
+
+type VerifyUser

@@ -19,5 +19,5 @@ type Users struct {
 	CoverPhotoUrl   string
 	Password        string
 	CreatedAt       time.Time `gorm:"autoCreateTime"`
-	Status          Status    `gorm:"default:active"`
+	Status          Status    `gorm:"default:pending"`
 }

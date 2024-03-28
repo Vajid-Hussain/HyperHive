@@ -7,4 +7,5 @@ import (
 
 func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder) {
 	engin.POST("/signup", userHandler.Signup)
+	engin.GET("/verify", userHandler.MailVerificationCallback)
 }

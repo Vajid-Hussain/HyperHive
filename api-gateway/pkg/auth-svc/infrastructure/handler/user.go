@@ -32,7 +32,7 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 
 	err := ctx.Bind(&UserDetails)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err))
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 
 	validateError := helper_api_gateway.Validator(UserDetails)
@@ -40,28 +40,28 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
 	}
 
-	file, err := ctx.FormFile("ProfilePhoto")
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err))
-	}
+	// file, err := ctx.FormFile("ProfilePhoto")
+	// if err != nil {
+	// 	// return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "kindly attach your profile photo", "", err.Error()))
+	// }
 
-	if file.Size/(1024) > 1024 {
-		return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", "image size more than one 1MB, keep try with less than a MB"))
-	}
+	// if file.Size/(1024) > 1024 {
+	// 	return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", "image size more than one 1MB, keep try with less than a MB"))
+	// }
 
-	if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", "Image type not supported, only JPG, PNG, and GIF formats are allowed."))
-	}
+	// if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
+	// 	return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", "Image type not supported, only JPG, PNG, and GIF formats are allowed."))
+	// }
 
-	image, err := file.Open()
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err))
-	}
+	// image, err := file.Open()
+	// if err != nil {
+	// 	return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	// }
 
-	buffer := make([]byte, 1024*1024)
-	image.Read(buffer)
+	// buffer := make([]byte, file.Size)
+	// image.Read(buffer)
 
-	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	result, err := c.clind.Signup(context, &pb.SignupRequest{
@@ -70,7 +70,7 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 		Email:           UserDetails.Email,
 		Password:        UserDetails.Password,
 		ConfirmPassword: UserDetails.ConfirmPassword,
-		ProfilePhoto:    buffer,
+		// ProfilePhoto:    buffer,
 	})
 
 	fmt.Println("--", result)
@@ -79,4 +79,11 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (c AuthHanlder) MailVerificationCallback(ctx echo.Context) error {
+	mail := ctx.QueryParam("email")
+	token := ctx.QueryParam("token")
+	fmt.Println("--", mail, token)
+	return nil
 }

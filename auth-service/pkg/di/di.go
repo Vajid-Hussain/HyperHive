@@ -15,6 +15,6 @@ func InitAuthServer(config *configl_auth_server.Config) (*server_auth_server.Aut
 	}
 
 	userRepository := repositoryl_auth_server.NewUserRepository(DB)
-	userUseCase := usecase_auth_server.NewUserUseCase(userRepository, config.S3)
+	userUseCase := usecase_auth_server.NewUserUseCase(userRepository, config.S3, config.Mail, config.Token)
 	return server_auth_server.NewAuthServer(userUseCase), nil
 }

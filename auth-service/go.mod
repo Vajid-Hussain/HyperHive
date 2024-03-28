@@ -4,12 +4,14 @@ go 1.22.0
 
 require (
 	github.com/aws/aws-sdk-go v1.51.8
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.18.2
+	github.com/wneessen/go-mail v0.4.1
 	golang.org/x/crypto v0.16.0
 	google.golang.org/grpc v1.59.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.8
 )
