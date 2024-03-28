@@ -1,0 +1,28 @@
+syntax ="proto3";
+
+package auth;
+option go_package ="./pkg/pb/";
+
+service AuthService{
+    rpc Signup(SignupRequest) returns (SignupResponse) {};
+}
+
+message SignupRequest{
+    string UserName  =1;
+    string Name = 2;
+    bytes ProfilePhoto =3;
+    string Email =4;
+    string Password = 5;
+    string ConfirmPassword = 6;
+    bytes CoverPhotoUrl = 7;
+}
+
+message SignupResponse{
+    string UserID = 1;
+    string UserName = 2;
+    string Name = 3;
+    string Email = 4; 
+    string ProfilePhotoUrl = 5;
+    string CoverPhotoUrl = 6;
+}
+
