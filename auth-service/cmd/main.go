@@ -6,13 +6,13 @@ import (
 	"net"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
-	dil_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/di"
+	di_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/di"
 	"github.com/Vajid-Hussain/HiperHive/auth-service/pkg/pb"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	defer handlepanic() 
+	defer handlepanic()
 	config, err := configl_auth_server.InitServer()
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +21,7 @@ func main() {
 	lis, err := net.Listen("tcp", config.DB.Port)
 	grpcServer := grpc.NewServer()
 
-	server, err := dil_auth_server.InitAuthServer(config)
+	server, err := di_auth_server.InitAuthServer(config)
 	if err != nil {
 		log.Fatal(err)
 	}

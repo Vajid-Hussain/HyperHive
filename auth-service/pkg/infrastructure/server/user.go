@@ -11,11 +11,13 @@ import (
 
 type AuthServer struct {
 	pb.UnimplementedAuthServiceServer
-	userUseCase interface_usecase_auth_server.IUserUseCase
+	userUseCase  interface_usecase_auth_server.IUserUseCase
+	adminUseCase interface_usecase_auth_server.IAdminUseCase
 }
 
-func NewAuthServer(userUseCase interface_usecase_auth_server.IUserUseCase) *AuthServer {
-	return &AuthServer{userUseCase: userUseCase}
+func NewAuthServer(userUseCase interface_usecase_auth_server.IUserUseCase, adminUseCase interface_usecase_auth_server.IAdminUseCase) *AuthServer {
+	return &AuthServer{userUseCase: userUseCase,
+		adminUseCase: adminUseCase}
 }
 
 func (u *AuthServer) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.SignupResponse, error) {
@@ -33,10 +35,11 @@ func (u *AuthServer) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.Sig
 	}
 
 	return &pb.SignupResponse{
-		UserID:   userReq.ID,
-		UserName: userReq.UserName,
-		Name:     userReq.Name,
-		Email:    userReq.Email,
+		UserID:          userReq.ID,
+		UserName:        userReq.UserName,
+		Name:            userReq.Name,
+		Email:           userReq.Email,
+		TemperveryToken: userReq.TemperveryToken,
 	}, nil
 }
 
@@ -58,5 +61,30 @@ func (u *AuthServer) ConfirmSignup(ctx context.Context, req *pb.ConfirmSignupReq
 	return &pb.ConfirmSignupResponse{
 		AccessToken: result.AccesToken,
 		RefresToken: result.RefreshToken,
+	}, nil
+}
+
+func (u *AuthServer) UserLogin(ctx context.Context, req *pb.UserLoginRequest) (*pb.UserLoginResponse, error) {
+	result, err := u.userUseCase.UserLogin(req.Email, req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UserLoginResponse{
+		AccessToken: result.AccesToken,
+		RefresToken: result.RefreshToken,
+	}, nil
+}
+
+//Admin
+
+func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb.AdminLoginResponse, error) {
+	token, err := u.adminUseCase.AdminLogin(req.Email, req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AdminLoginResponse{
+		AdminToken: token,
 	}, nil
 }

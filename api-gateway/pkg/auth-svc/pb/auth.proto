@@ -8,6 +8,10 @@ service AuthService{
     rpc Signup(SignupRequest) returns (SignupResponse) {};
     rpc VerifyUser (UserVerifyRequest) returns (google.protobuf.Empty) {};
     rpc ConfirmSignup (ConfirmSignupRequest) returns (confirmSignupResponse){};
+    rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) {};
+
+    // admin
+    rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
 }
 
 message SignupRequest{
@@ -40,4 +44,25 @@ message ConfirmSignupRequest{
 message confirmSignupResponse{
     string AccessToken =1;
     string RefresToken =2; 
+}
+
+message UserLoginRequest{
+    string Email =1;
+    string Password =2;
+}
+
+message UserLoginResponse{
+    string AccessToken =1;
+    string RefresToken =2; 
+}
+
+
+//admin
+message AdminLoginRequest{
+    string Email =1;
+    string Password =2;
+}
+
+message AdminLoginResponse{
+    string AdminToken =1;
 }

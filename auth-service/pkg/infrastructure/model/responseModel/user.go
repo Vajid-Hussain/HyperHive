@@ -24,7 +24,7 @@ type UserSignup struct {
 	TemperveryToken string
 }
 
-type UserVerifyResponse struct{
+type AuthenticationResponse struct{
 	AccesToken string 
 	RefreshToken string
 }

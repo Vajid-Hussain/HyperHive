@@ -6,6 +6,7 @@ import (
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
 	domainl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/domain"
+	utils_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/utils"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -42,30 +43,30 @@ func InitDB(config *configl_auth_server.DataBase) (*gorm.DB, error) {
 	}
 
 	err = DB.AutoMigrate(domainl_auth_server.Users{},
-		domainl_auth_server.Admin{},
+		domainl_auth_server.Admins{},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	// CheckAndCreateAdmin(DB)
+	CheckAndCreateAdmin(DB)
 
 	return DB, nil
 }
 
-// func CheckAndCreateAdmin(DB *gorm.DB) {
-// 	var count int
-// 	var (
-// 		Name     = "mobileMart"
-// 		Email    = "mobilemart@gmail.com"
-// 		Password = "buyMobiles"
-// 	)
-// 	HashedPassword := helper_auth_svc.HashPassword(Password)/
+func CheckAndCreateAdmin(DB *gorm.DB) {
+	var count int
+	var (
+		Name     = "HyperHive"
+		Email    = "hyperhive@gmail.com"
+		Password = "TopSecret@878"
+	)
+	HashedPassword := utils_auth_server.HashPassword(Password)
 
-// 	query := "SELECT COUNT(*) FROM admins"
-// 	DB.Raw(query).Row().Scan(&count)
-// 	if count <= 0 {
-// 		query = "INSERT INTO admins(name, email, password) VALUES(?, ?, ?)"
-// 		DB.Exec(query, Name, Email, HashedPassword).Row().Err()
-// 	}
-// }
+	query := "SELECT COUNT(*) FROM admins"
+	DB.Raw(query).Row().Scan(&count)
+	if count <= 0 {
+		query = "INSERT INTO admins(name, email, password) VALUES(?, ?, ?)"
+		DB.Exec(query, Name, Email, HashedPassword).Row().Err()
+	}
+}

@@ -1,7 +1,8 @@
 package domainl_auth_server
 
-type Admin struct{
-	ID int `gorm:"primarykey"`
-	Emain string 
+type Admins struct {
+	ID       int `gorm:"primarykey"`
+	Name     string
+	Email    string
 	Password string
 }

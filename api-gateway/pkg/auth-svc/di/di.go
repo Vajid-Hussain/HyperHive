@@ -18,8 +18,10 @@ func InitAuthClind(engin *echo.Echo, config *config.Config) error {
 	engin.Use(middleware.Logger())
 
 	UserHandler := handler_auth_svc.NewAuthHandler(clind)
+	AdminHandler:= handler_auth_svc.NewAdminAuthHandler(clind)
 
 	router_auth_svc.UserRoutes(engin.Group("user"), UserHandler)
+	router_auth_svc.AdminRoutes(engin.Group("admin"), AdminHandler)
 
 	return nil
 }

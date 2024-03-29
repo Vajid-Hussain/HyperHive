@@ -114,3 +114,26 @@ func (c *AuthHanlder) ConfirmSignup(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "", result, nil))
 }
 
+func (c *AuthHanlder) UserLogin(ctx echo.Context) error {
+	var loginReq requestmodel_auth_svc.UserLogin
+
+	ctx.Bind(&loginReq)
+	validateError := helper_api_gateway.Validator(loginReq)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := c.clind.UserLogin(context, &pb.UserLoginRequest{
+		Email:    loginReq.Email,
+		Password: loginReq.Password,
+	})
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}

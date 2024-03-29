@@ -76,7 +76,8 @@ func (d *UserRepository) VerifyUserSignup(userID, email string) error {
 }
 
 func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
-	query := "SELECT count(*) FROM users WHERE id= $1"
+
+	query := " SELECT count(*) FROM users WHERE id=? AND status ='active' "
 	result := d.DB.Raw(query, userID).Scan(&count)
 	if result.Error != nil {
 		return 0, responsemodel_auth_server.ErrInternalServer
@@ -85,5 +86,35 @@ func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
 	if result.RowsAffected == 0 {
 		return 0, responsemodel_auth_server.ErrNotFound
 	}
+
 	return count, nil
+}
+
+func (d *UserRepository) GetUserPasswordUsingEmail(email string) (password string, err error) {
+	query := "SELECT password FROM users WHERE email =$1"
+	result := d.DB.Raw(query, email).Scan(&password)
+	if result.Error != nil {
+		return "", responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return "", responsemodel_auth_server.ErrNotFound
+	}
+
+	return password, nil
+}
+
+func (d *UserRepository) FetchUserIDUsingMail(email string) (userID string, err error) {
+	query := "SELECT id FROM users WHERE email = $1"
+	result := d.DB.Raw(query, email).Scan(&userID)
+
+	if result.Error != nil {
+		return "", responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return "", responsemodel_auth_server.ErrNotFound
+	}
+
+	return userID, nil
 }

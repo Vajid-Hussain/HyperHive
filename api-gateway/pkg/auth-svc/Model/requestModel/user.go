@@ -10,3 +10,8 @@ type UserSignup struct {
 	ConfirmPassword string `form:"ConfirmPassword" validate:"eqfield=Password,required"`
 	ProfilePhoto    *multipart.FileHeader
 }
+
+type UserLogin struct {
+	Email    string `json:"Email" validate:"required,email"`
+	Password string `json:"Password" validate:"required,min=5"`
+}

@@ -99,7 +99,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 		return nil, err
 	}
 
-	 utils_auth_server.SendVerificationEmail(userRes.Email, verificationToken, d.mailConstrains)
+	utils_auth_server.SendVerificationEmail(userRes.Email, verificationToken, d.mailConstrains)
 
 	userRes.TemperveryToken = verificationToken
 	return userRes, nil
@@ -111,6 +111,7 @@ func (d *UserUseCase) VerifyUserSignup(email, token string) error {
 	if err != nil {
 		return err
 	}
+
 	err = d.userRepo.VerifyUserSignup(userID, email)
 	if err != nil {
 		return err
@@ -119,8 +120,8 @@ func (d *UserUseCase) VerifyUserSignup(email, token string) error {
 	return nil
 }
 
-func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.UserVerifyResponse, error) {
-	var verifyRes responsemodel_auth_server.UserVerifyResponse
+func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.AuthenticationResponse, error) {
+	var verifyRes responsemodel_auth_server.AuthenticationResponse
 
 	userID, err := utils_auth_server.FetchUserIDFromToken(token, d.tokenSecret.TemperveryKey)
 	if err != nil {
@@ -133,7 +134,7 @@ func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.Us
 	}
 
 	if exist == 0 {
-		return nil, responsemodel_auth_server.ErrNotFound
+		return nil, errors.New("confirm email first then next")
 	}
 
 	verifyRes.AccesToken, err = utils_auth_server.GenerateAcessToken(d.tokenSecret.UserSecurityKey, userID)
@@ -147,4 +148,35 @@ func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.Us
 	}
 
 	return &verifyRes, nil
+}
+
+func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_server.AuthenticationResponse, error) {
+	var loginRes responsemodel_auth_server.AuthenticationResponse
+
+	storedPassword, err := d.userRepo.GetUserPasswordUsingEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = utils_auth_server.CompairPassword(storedPassword, password)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := d.userRepo.FetchUserIDUsingMail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	loginRes.AccesToken, err = utils_auth_server.GenerateAcessToken(d.tokenSecret.UserSecurityKey, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	loginRes.RefreshToken, err = utils_auth_server.GenerateRefreshToken(d.tokenSecret.UserSecurityKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &loginRes, nil
 }
