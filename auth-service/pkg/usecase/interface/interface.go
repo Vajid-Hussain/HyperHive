@@ -7,4 +7,6 @@ import (
 
 type IUserUseCase interface{
 	Signup(userDetails requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error) 
+	VerifyUserSignup (string, string) ( error)
+	ConfirmSignup( string) (*responsemodel_auth_server.UserVerifyResponse, error)
 }

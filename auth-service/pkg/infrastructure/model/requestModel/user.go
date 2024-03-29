@@ -12,4 +12,7 @@ type UserSignup struct {
 	CoverPhotoUrl string
 }
 
-type VerifyUser
+type VerifyUser struct{
+	Token string
+	Email string
+}

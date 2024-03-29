@@ -1,0 +1,13 @@
+package responsemodel_auth_server
+
+import "errors"
+
+var (
+	ErrUnauthorizedAccess = errors.New("unauthorized access. Please log in to continue")
+	ErrNotFound           = errors.New("the requested resource was not found")
+	ErrInternalServer     = errors.New("an unexpected error occurred. Please try again later")
+	ErrInvalidInput       = errors.New("invalid input. Please check your data and try again")
+
+	ErrDatabaseQuery = errors.New("an error occurred while processing your request")
+	ErrTimeout       = errors.New("ahe request timed out. Please try again later")
+)

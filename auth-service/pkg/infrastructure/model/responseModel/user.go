@@ -21,4 +21,10 @@ type UserSignup struct {
 	CoverPhotoUrl   string
 	CreatedAt        time.Time `gorm:"column:created_at"`
 	Status          string
+	TemperveryToken string
+}
+
+type UserVerifyResponse struct{
+	AccesToken string 
+	RefreshToken string
 }

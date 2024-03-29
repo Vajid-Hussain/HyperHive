@@ -7,4 +7,8 @@ import (
 
 type IUserRepository interface {
 	Signup(requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error)
+	VerifyUserSignup(string, string) error
+	ConfirmSignup( string) ( int,  error) 
+	EmailIsExist( string) ( int, error)
+	UserNameIsExist( string) ( int, error)
 }

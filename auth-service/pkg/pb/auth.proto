@@ -2,10 +2,12 @@ syntax ="proto3";
 
 package auth;
 option go_package ="./pkg/pb/";
+import "google/protobuf/empty.proto";
 
 service AuthService{
     rpc Signup(SignupRequest) returns (SignupResponse) {};
-    rpc Verify (UserVerifyRequest) returns (UserVerifyResponse) {};
+    rpc VerifyUser (UserVerifyRequest) returns (google.protobuf.Empty) {};
+    rpc ConfirmSignup (ConfirmSignupRequest) returns (confirmSignupResponse){};
 }
 
 message SignupRequest{
@@ -25,6 +27,7 @@ message SignupResponse{
     string Email = 4; 
     string ProfilePhotoUrl = 5;
     string CoverPhotoUrl = 6;
+    string TemperveryToken =7;
 }
 
 message UserVerifyRequest{
@@ -32,7 +35,11 @@ message UserVerifyRequest{
     string Email =2;
 }
 
-message UserVerifyResponse{
+message ConfirmSignupRequest{
+    string TemperveryToken =1;
+}
+
+message confirmSignupResponse{
     string AccessToken =1;
     string RefresToken =2; 
 }

@@ -1,6 +1,7 @@
 package usecasel_auth_server
 
 import (
+	"errors"
 	"regexp"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
@@ -70,17 +71,80 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	// 	userDetails.CoverPhotoUrl = <-chanProfilePhoto
 	// }
 
+	count, err := d.userRepo.EmailIsExist(userDetails.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if count > 0 {
+		return nil, errors.New("we're sorry, but the email address you provided is already associated with an existing account. Please try using a different email address or consider logging in if you already have an account with us")
+	}
+
+	count, err = d.userRepo.UserNameIsExist(userDetails.UserName)
+	if err != nil {
+		return nil, err
+	}
+
+	if count > 0 {
+		return nil, errors.New("we apologize for the inconvenience, but the username you've chosen is already taken. Please select a different username to continue with the registration process")
+	}
+
 	userRes, err := d.userRepo.Signup(userDetails)
 	if err != nil {
 		return nil, err
 	}
 
-	verificationToken, err := utils_auth_server.TemperveryTokenForUserAuthenticaiton(d.tokenSecret.TemperveryKey, userRes.Email)
+	verificationToken, err := utils_auth_server.TemperveryTokenForUserAuthenticaiton(d.tokenSecret.TemperveryKey, userRes.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	utils_auth_server.SendVerificationEmail(userRes.Email, verificationToken, d.mailConstrains)
+	 utils_auth_server.SendVerificationEmail(userRes.Email, verificationToken, d.mailConstrains)
 
+	userRes.TemperveryToken = verificationToken
 	return userRes, nil
+}
+
+func (d *UserUseCase) VerifyUserSignup(email, token string) error {
+
+	userID, err := utils_auth_server.FetchUserIDFromToken(token, d.tokenSecret.TemperveryKey)
+	if err != nil {
+		return err
+	}
+	err = d.userRepo.VerifyUserSignup(userID, email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.UserVerifyResponse, error) {
+	var verifyRes responsemodel_auth_server.UserVerifyResponse
+
+	userID, err := utils_auth_server.FetchUserIDFromToken(token, d.tokenSecret.TemperveryKey)
+	if err != nil {
+		return nil, err
+	}
+
+	exist, err := d.userRepo.ConfirmSignup(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if exist == 0 {
+		return nil, responsemodel_auth_server.ErrNotFound
+	}
+
+	verifyRes.AccesToken, err = utils_auth_server.GenerateAcessToken(d.tokenSecret.UserSecurityKey, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	verifyRes.RefreshToken, err = utils_auth_server.GenerateRefreshToken(d.tokenSecret.UserSecurityKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &verifyRes, nil
 }
