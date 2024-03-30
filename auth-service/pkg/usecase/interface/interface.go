@@ -10,8 +10,14 @@ type IUserUseCase interface {
 	VerifyUserSignup(string, string) error
 	ConfirmSignup(string) (*responsemodel_auth_server.AuthenticationResponse, error)
 	UserLogin(email, password string) (*responsemodel_auth_server.AuthenticationResponse, error)
+	VerifyUserToken(string, string) (string, error) 
+	
+	//profile
+	UpdateProfilePhoto( string,  []byte) ( string,  error) 
+	UpdateCoverPhoto (string,  []byte) ( string,  error) 
 }
 
 type IAdminUseCase interface {
 	AdminLogin(string, string) (string, error)
+	VerifyAdminToken( string) error 
 }

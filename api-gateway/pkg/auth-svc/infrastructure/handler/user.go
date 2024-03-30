@@ -24,11 +24,7 @@ func NewAuthHandler(clind pb.AuthServiceClient) *AuthHanlder {
 func (c AuthHanlder) Signup(ctx echo.Context) error {
 	var (
 		UserDetails requestmodel_auth_svc.UserSignup
-		// validImageExtention = map[string]struct{}{}
 	)
-	// validImageExtention["image/jpb"] = struct{}{}
-	// validImageExtention["image/png"] = struct{}{}
-	// validImageExtention["image/gif"] = struct{}{}
 
 	err := ctx.Bind(&UserDetails)
 	if err != nil {
@@ -39,27 +35,6 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 	if len(validateError) > 0 {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
 	}
-
-	// file, err := ctx.FormFile("ProfilePhoto")
-	// if err != nil {
-	// 	// return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "kindly attach your profile photo", "", err.Error()))
-	// }
-
-	// if file.Size/(1024) > 1024 {
-	// 	return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", "image size more than one 1MB, keep try with less than a MB"))
-	// }
-
-	// if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
-	// 	return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", "Image type not supported, only JPG, PNG, and GIF formats are allowed."))
-	// }
-
-	// image, err := file.Open()
-	// if err != nil {
-	// 	return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
-	// }
-
-	// buffer := make([]byte, file.Size)
-	// image.Read(buffer)
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -136,4 +111,88 @@ func (c *AuthHanlder) UserLogin(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (c *AuthHanlder) UpdateProfilePhoto(ctx echo.Context) error {
+	var validImageExtention = map[string]struct{}{}
+
+	validImageExtention["image/jpb"] = struct{}{}
+	validImageExtention["image/png"] = struct{}{}
+	validImageExtention["image/gif"] = struct{}{}
+
+	file, err := ctx.FormFile("ProfilePhoto")
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, response_auth_svc.ErrNoImageInRequest.Error(), "", err.Error()))
+	}
+
+	if file.Size/(1024) > 1024 {
+		return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", response_auth_svc.ErrImageOverSize.Error()))
+	}
+
+	if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", response_auth_svc.ErrUnsupportImageType.Error()))
+	}
+
+	image, err := file.Open()
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	buffer := make([]byte, file.Size)
+	image.Read(buffer)
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := c.clind.UpdateProfilePhoto(context, &pb.UpdateprofilePhotoRequest{
+		Image:  buffer,
+		UserID: ctx.Get("userID").(string),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
+	var validImageExtention = map[string]struct{}{}
+
+	validImageExtention["image/jpb"] = struct{}{}
+	validImageExtention["image/png"] = struct{}{}
+	validImageExtention["image/gif"] = struct{}{}
+
+	file, err := ctx.FormFile("CoverPhoto")
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, response_auth_svc.ErrNoImageInRequest.Error(), "", err.Error()))
+	}
+
+	if file.Size/(1024) > 1024 {
+		return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", response_auth_svc.ErrImageOverSize.Error()))
+	}
+
+	if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", response_auth_svc.ErrUnsupportImageType.Error()))
+	}
+
+	image, err := file.Open()
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	buffer := make([]byte, file.Size)
+	image.Read(buffer)
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := c.clind.UpdateCoverPhoto(context, &pb.UpdateCoverPhotoRequest{
+		CoverPhoto: buffer,
+		UserID:     ctx.Get("userID").(string),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }

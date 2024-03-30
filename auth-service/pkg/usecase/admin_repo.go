@@ -1,6 +1,8 @@
 package usecasel_auth_server
 
 import (
+	"fmt"
+
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
 	interface_repo_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/repository/interface"
 	interface_usecase_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/usecase/interface"
@@ -33,4 +35,13 @@ func (d *AdminUseCase) AdminLogin(email, password string) (token string, err err
 	}
 
 	return token, nil
+}
+
+func (u *AdminUseCase) VerifyAdminToken(token string) error {
+	fmt.Println("admin middlewire auth", token)
+	err := utils_auth_server.VerifyRefreshToken(token, u.token.AdminSecurityKey)
+	if err != nil {
+		return err
+	}
+	return nil
 }

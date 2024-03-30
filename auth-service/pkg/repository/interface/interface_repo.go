@@ -13,6 +13,10 @@ type IUserRepository interface {
 	UserNameIsExist(string) (int, error)
 	GetUserPasswordUsingEmail(string) (string, error)
 	FetchUserIDUsingMail(string) (string, error)
+
+	//profile
+	UpdateUserProfilePhoto(string, string) error
+	UpdateCoverPhoto(string,  string) error 
 }
 
 type IAdminRepository interface {

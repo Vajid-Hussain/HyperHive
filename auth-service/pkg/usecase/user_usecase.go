@@ -2,6 +2,7 @@ package usecasel_auth_server
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
@@ -32,7 +33,6 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	hasDigit := regexp.MustCompile(`[0-9]`)
 	hasMinimumLength := regexp.MustCompile(`.{5,}`)
 	hasSymbol := regexp.MustCompile(`[!@#$%^&*]`)
-	// var chanProfilePhoto = make(chan string)
 
 	// var chanCoverPhoto = make(chan string)
 	// fmt.Println(userDetails.ConfirmPassword, userDetails.Name, userDetails.UserName)
@@ -68,7 +68,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 
 	// if len(userDetails.CoverPhoto) > 1 {
 	// 	fmt.Println("CoverPhoto url fetch by chan to s3")
-	// 	userDetails.CoverPhotoUrl = <-chanProfilePhoto
+	// 	userDetails.CoverPhotoUrl = <-chanCoverPhoto
 	// }
 
 	count, err := d.userRepo.EmailIsExist(userDetails.Email)
@@ -77,7 +77,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	}
 
 	if count > 0 {
-		return nil, errors.New("we're sorry, but the email address you provided is already associated with an existing account. Please try using a different email address or consider logging in if you already have an account with us")
+		return nil, responsemodel_auth_server.ErrEmailExists
 	}
 
 	count, err = d.userRepo.UserNameIsExist(userDetails.UserName)
@@ -86,7 +86,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	}
 
 	if count > 0 {
-		return nil, errors.New("we apologize for the inconvenience, but the username you've chosen is already taken. Please select a different username to continue with the registration process")
+		return nil, responsemodel_auth_server.ErrUsernameTaken
 	}
 
 	userRes, err := d.userRepo.Signup(userDetails)
@@ -158,6 +158,10 @@ func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_ser
 		return nil, err
 	}
 
+	if storedPassword == "" {
+		return nil, responsemodel_auth_server.ErrLoginNoActiveUser
+	}
+
 	err = utils_auth_server.CompairPassword(storedPassword, password)
 	if err != nil {
 		return nil, err
@@ -179,4 +183,60 @@ func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_ser
 	}
 
 	return &loginRes, nil
+}
+
+func (u *UserUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
+	fmt.Println("user middlewiere")
+	id, err := utils_auth_server.VerifyAcessToken(accessToken, u.tokenSecret.UserSecurityKey)
+	if err != nil {
+		fmt.Println("error at accestoken", err)
+	}
+
+	err = utils_auth_server.VerifyRefreshToken(refreshToken, u.tokenSecret.UserSecurityKey)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func (u *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url string, err error) {
+	var chanProfilePhoto = make(chan string)
+	s3Session := utils_auth_server.CreateSession(u.s3)
+
+	if len(image) > 1 {
+		fmt.Println("profile proto is sending to s3")
+		go utils_auth_server.UploadImageToS3(image, s3Session, chanProfilePhoto)
+	}
+
+	if len(image) > 1 {
+		fmt.Println("profile  url fetch by chan to s3")
+		url = <-chanProfilePhoto
+	}
+
+	err = u.userRepo.UpdateUserProfilePhoto(userID, url)
+	if err != nil {
+		return "", err
+	}
+
+	return url, nil
+}
+
+func (u *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string, err error) {
+	var chanCoverPhoto = make(chan string)
+	s3Session := utils_auth_server.CreateSession(u.s3)
+
+	if len(image) > 1 {
+		go utils_auth_server.UploadImageToS3(image, s3Session, chanCoverPhoto)
+	}
+
+	if len(image) > 1 {
+		url = <-chanCoverPhoto
+	}
+
+	err = u.userRepo.UpdateCoverPhoto(userID, url)
+	if err != nil {
+		return "", err
+	}
+
+	return url, nil
 }

@@ -91,7 +91,7 @@ func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
 }
 
 func (d *UserRepository) GetUserPasswordUsingEmail(email string) (password string, err error) {
-	query := "SELECT password FROM users WHERE email =$1"
+	query := "SELECT password FROM users WHERE email =$1 AND status= 'active'"
 	result := d.DB.Raw(query, email).Scan(&password)
 	if result.Error != nil {
 		return "", responsemodel_auth_server.ErrInternalServer
@@ -117,4 +117,30 @@ func (d *UserRepository) FetchUserIDUsingMail(email string) (userID string, err 
 	}
 
 	return userID, nil
+}
+
+func (d *UserRepository) UpdateUserProfilePhoto(userID, photoUrl string) error {
+	query := "UPDATE  users SET profile_photo_url= $1 WHERE id = $2"
+	result := d.DB.Exec(query, photoUrl, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
+
+func (d *UserRepository) UpdateCoverPhoto(userID, photoUrl string) error {
+	query := "UPDATE  users SET cover_photo_url= $1 WHERE id = $2"
+	result := d.DB.Exec(query, photoUrl, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
 }

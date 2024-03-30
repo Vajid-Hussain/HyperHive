@@ -76,6 +76,28 @@ func (u *AuthServer) UserLogin(ctx context.Context, req *pb.UserLoginRequest) (*
 	}, nil
 }
 
+func (u *AuthServer) UpdateProfilePhoto(ctx context.Context, req *pb.UpdateprofilePhotoRequest) (*pb.UpdateProfilePhotoResponse, error) {
+	url, err := u.userUseCase.UpdateProfilePhoto(req.UserID, req.Image)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateProfilePhotoResponse{
+		Url: url,
+	}, nil
+}
+
+func (u *AuthServer) UpdateCoverPhoto(ctx context.Context, req *pb.UpdateCoverPhotoRequest) (*pb.UpdateCoverPhotoResponse, error) {
+	url, err := u.userUseCase.UpdateCoverPhoto(req.UserID, req.CoverPhoto)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateCoverPhotoResponse{
+		Url: url,
+	}, nil
+}
+
 //Admin
 
 func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb.AdminLoginResponse, error) {
@@ -87,4 +109,25 @@ func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) 
 	return &pb.AdminLoginResponse{
 		AdminToken: token,
 	}, nil
+}
+
+// Auth Middlewire
+
+func (u *AuthServer) ValidateUserToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
+
+	accessToken := req.AccessToken
+	refreshToken := req.RefreshToken
+	id, err := u.userUseCase.VerifyUserToken(accessToken, refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ValidateTokenResponse{
+		UserID: id,
+	}, nil
+}
+
+func (u *AuthServer) ValidateAdminToken(ctx context.Context, req *pb.ValidateAdminTokenRequest) (*emptypb.Empty, error) {
+	err := u.adminUseCase.VerifyAdminToken(req.Token)
+	return nil, err
 }

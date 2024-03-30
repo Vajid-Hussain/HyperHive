@@ -27,8 +27,12 @@ type AuthServiceClient interface {
 	VerifyUser(ctx context.Context, in *UserVerifyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ConfirmSignup(ctx context.Context, in *ConfirmSignupRequest, opts ...grpc.CallOption) (*ConfirmSignupResponse, error)
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+	UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error)
+	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
+	ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 	// admin
 	AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
+	ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authServiceClient struct {
@@ -75,9 +79,45 @@ func (c *authServiceClient) UserLogin(ctx context.Context, in *UserLoginRequest,
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error) {
+	out := new(UpdateProfilePhotoResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateProfilePhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error) {
+	out := new(UpdateCoverPhotoResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateCoverPhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error) {
+	out := new(ValidateTokenResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/ValidateUserToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error) {
 	out := new(AdminLoginResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/AdminLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/ValidateAdminToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +132,12 @@ type AuthServiceServer interface {
 	VerifyUser(context.Context, *UserVerifyRequest) (*emptypb.Empty, error)
 	ConfirmSignup(context.Context, *ConfirmSignupRequest) (*ConfirmSignupResponse, error)
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
+	UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error)
+	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
+	ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
 	// admin
 	AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
+	ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -113,8 +157,20 @@ func (UnimplementedAuthServiceServer) ConfirmSignup(context.Context, *ConfirmSig
 func (UnimplementedAuthServiceServer) UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLogin not implemented")
 }
+func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCoverPhoto not implemented")
+}
+func (UnimplementedAuthServiceServer) ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateUserToken not implemented")
+}
 func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
+}
+func (UnimplementedAuthServiceServer) ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateAdminToken not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -201,6 +257,60 @@ func _AuthService_UserLogin_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateprofilePhotoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateProfilePhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateProfilePhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateProfilePhoto(ctx, req.(*UpdateprofilePhotoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdateCoverPhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCoverPhotoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateCoverPhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateCoverPhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateCoverPhoto(ctx, req.(*UpdateCoverPhotoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ValidateUserToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ValidateUserToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/ValidateUserToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ValidateUserToken(ctx, req.(*ValidateTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdminLoginRequest)
 	if err := dec(in); err != nil {
@@ -215,6 +325,24 @@ func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).AdminLogin(ctx, req.(*AdminLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ValidateAdminToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateAdminTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ValidateAdminToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/ValidateAdminToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ValidateAdminToken(ctx, req.(*ValidateAdminTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -243,8 +371,24 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_UserLogin_Handler,
 		},
 		{
+			MethodName: "UpdateProfilePhoto",
+			Handler:    _AuthService_UpdateProfilePhoto_Handler,
+		},
+		{
+			MethodName: "UpdateCoverPhoto",
+			Handler:    _AuthService_UpdateCoverPhoto_Handler,
+		},
+		{
+			MethodName: "ValidateUserToken",
+			Handler:    _AuthService_ValidateUserToken_Handler,
+		},
+		{
 			MethodName: "AdminLogin",
 			Handler:    _AuthService_AdminLogin_Handler,
+		},
+		{
+			MethodName: "ValidateAdminToken",
+			Handler:    _AuthService_ValidateAdminToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
