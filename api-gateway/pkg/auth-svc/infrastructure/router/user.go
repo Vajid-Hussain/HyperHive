@@ -16,12 +16,17 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 	{
 		profile := engin.Group("/profile")
 		{
+			profile.GET("/", userHandler.GetUserProfile)
+
 			profile.POST("/profilephoto", userHandler.UpdateProfilePhoto)
 			profile.POST("/coverphoto", userHandler.UpdateCoverPhoto)
 			profile.PATCH("/profilephoto", userHandler.UpdateProfilePhoto)
 			profile.PATCH("/coverphoto", userHandler.UpdateCoverPhoto)
+
 			profile.POST("/status", userHandler.UpdateProfileStatus)
 			profile.POST("/description", userHandler.UpdateProfileDescription)
+			profile.PATCH("/status", userHandler.UpdateProfileStatus)
+			profile.PATCH("/description", userHandler.UpdateProfileDescription)
 		}
 
 	}

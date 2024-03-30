@@ -1,14 +1,12 @@
 package requestmodel_auth_svc
 
-import "mime/multipart"
-
 type UserSignup struct {
-	UserName        string `form:"UserName"  validate:"required"`
-	Name            string `form:"Name" validate:"min=1"`
-	Email           string `form:"Email" validate:"required,email"`
-	Password        string `form:"Password" validate:"min=5"`
-	ConfirmPassword string `form:"ConfirmPassword" validate:"eqfield=Password,required"`
-	ProfilePhoto    *multipart.FileHeader
+	UserName        string `josn:"UserName"  validate:"required"`
+	Name            string `josn:"Name" validate:"min=1"`
+	Email           string `josn:"Email" validate:"required,email"`
+	Password        string `josn:"Password" validate:"min=5"`
+	ConfirmPassword string `josn:"ConfirmPassword" validate:"eqfield=Password,required"`
+	// ProfilePhoto    *multipart.FileHeader
 }
 
 type UserLogin struct {
@@ -16,13 +14,13 @@ type UserLogin struct {
 	Password string `json:"Password" validate:"required,min=5"`
 }
 
-type UserProfileStatus struct{
-	UserID string `json:"-"`
-	Status string `json:"Status" validate:"required"`
+type UserProfileStatus struct {
+	UserID   string  `json:"-"`
+	Status   string  `json:"Status" validate:"required"`
 	Duration float32 `json:"Duration" validate:"required"`
 }
 
-type UserProfileDescription struct{
-	UserID string `json:"-"`
+type UserProfileDescription struct {
+	UserID      string `json:"-"`
 	Description string `json:"Description" validate:"required"`
 }

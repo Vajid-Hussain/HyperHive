@@ -22,7 +22,7 @@ func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (us
 	d.DB.Begin()
 
 	query := "INSERT INTO users (name, user_name, email, password, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *"
-	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, time.Now()).Scan(&userRes)
+	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, time.Now().Format("2006-01-02 15:04:05")).Scan(&userRes)
 	if result.Error != nil {
 		d.DB.Rollback()
 		return nil, responsemodel_auth_server.ErrInternalServer
@@ -146,7 +146,7 @@ func (d *UserRepository) UpdateCoverPhoto(userID, photoUrl string) error {
 	return nil
 }
 
-// user Profile status
+// user Profile
 
 func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_server.UserProfileStatus) error {
 
@@ -175,3 +175,30 @@ func (d *UserRepository) UpdateOrCreateUserDescription(userID, description strin
 	}
 	return nil
 }
+
+func (d *UserRepository) GetUserProfile(userID string) (userProfile *responsemodel_auth_server.UserProfile, err error) {
+	query := "SELECT * FROM users LEFT JOIN user_profile_statuses ON users.id = user_profile_statuses.status_id WHERE users.status= 'active' AND users.id= $1"
+	result := d.DB.Raw(query, userID).Scan(&userProfile)
+	if result.Error != nil {
+		return nil, responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, responsemodel_auth_server.ErrUserBlockedOrNoUser
+	}
+	return
+}
+
+func (d *UserRepository) DeleteUserAcoount(userID string) error{
+	query:= "UPDATE users SET status = 'delete' "
+	result:= d.DB.Raw(query, userID) 
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
+

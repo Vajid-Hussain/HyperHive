@@ -33,6 +33,7 @@ type AuthServiceClient interface {
 	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
 	UpdateUserProfileStatus(ctx context.Context, in *UpdateUserProfileStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateUserProfileDescription(ctx context.Context, in *UpdateUserProfileDescriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UserProfile(ctx context.Context, in *UserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error)
 	// admin
 	AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
 	ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -127,6 +128,15 @@ func (c *authServiceClient) UpdateUserProfileDescription(ctx context.Context, in
 	return out, nil
 }
 
+func (c *authServiceClient) UserProfile(ctx context.Context, in *UserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error) {
+	out := new(UserProfileResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UserProfile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error) {
 	out := new(AdminLoginResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/AdminLogin", in, out, opts...)
@@ -159,6 +169,7 @@ type AuthServiceServer interface {
 	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
 	UpdateUserProfileStatus(context.Context, *UpdateUserProfileStatusRequest) (*emptypb.Empty, error)
 	UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error)
+	UserProfile(context.Context, *UserProfileRequest) (*UserProfileResponse, error)
 	// admin
 	AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
 	ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error)
@@ -195,6 +206,9 @@ func (UnimplementedAuthServiceServer) UpdateUserProfileStatus(context.Context, *
 }
 func (UnimplementedAuthServiceServer) UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserProfileDescription not implemented")
+}
+func (UnimplementedAuthServiceServer) UserProfile(context.Context, *UserProfileRequest) (*UserProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserProfile not implemented")
 }
 func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
@@ -377,6 +391,24 @@ func _AuthService_UpdateUserProfileDescription_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UserProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UserProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UserProfile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UserProfile(ctx, req.(*UserProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdminLoginRequest)
 	if err := dec(in); err != nil {
@@ -455,6 +487,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUserProfileDescription",
 			Handler:    _AuthService_UpdateUserProfileDescription_Handler,
+		},
+		{
+			MethodName: "UserProfile",
+			Handler:    _AuthService_UserProfile_Handler,
 		},
 		{
 			MethodName: "AdminLogin",

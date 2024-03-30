@@ -263,6 +263,19 @@ func (u *UserUseCase) UpdateDescriptionOfUser(userID, description string) error 
 	if err != nil {
 		return nil
 	}
-	
+
 	return nil
+}
+
+func (u *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.UserProfile, error) {
+	profile, err := u.userRepo.GetUserProfile(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if profile.StatusExpireTime.Before(time.Now()) {
+		profile.Status = ""
+	}
+
+	return profile, nil
 }

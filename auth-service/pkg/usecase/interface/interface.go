@@ -17,6 +17,7 @@ type IUserUseCase interface {
 	UpdateCoverPhoto(string,  []byte) ( string,  error) 
 	UpdateStatusOfUser(requestmodel_auth_server.UserProfileStatus,  float32) error 
 	UpdateDescriptionOfUser(userID, description string) error
+	GetUserProfile( string) (*responsemodel_auth_server.UserProfile, error) 
 }
 
 type IAdminUseCase interface {

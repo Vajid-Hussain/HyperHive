@@ -30,7 +30,8 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-
+	fmt.Println("--", UserDetails)
+	
 	validateError := helper_api_gateway.Validator(UserDetails)
 	if len(validateError) > 0 {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
@@ -244,4 +245,18 @@ func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", "description succesfully updated", nil))
+}
+
+func (c *AuthHanlder) GetUserProfile(ctx echo.Context) error {
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	result, err := c.clind.UserProfile(context, &pb.UserProfileRequest{
+		UserID: ctx.Get("userID").(string),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }

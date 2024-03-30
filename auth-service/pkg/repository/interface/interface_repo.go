@@ -19,6 +19,7 @@ type IUserRepository interface {
 	UpdateCoverPhoto(string,  string) error 
 	UpdateOrCreateUserStatus( requestmodel_auth_server.UserProfileStatus) error 
 	UpdateOrCreateUserDescription(string, string) error
+	GetUserProfile( string) ( *responsemodel_auth_server.UserProfile,  error) 
 }
 
 type IAdminRepository interface {

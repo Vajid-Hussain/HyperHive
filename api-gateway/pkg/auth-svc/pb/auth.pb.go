@@ -509,6 +509,164 @@ func (x *ValidateTokenResponse) GetUserID() string {
 	return ""
 }
 
+type UserProfileRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserID string `protobuf:"bytes,1,opt,name=UserID,proto3" json:"UserID,omitempty"`
+}
+
+func (x *UserProfileRequest) Reset() {
+	*x = UserProfileRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserProfileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserProfileRequest) ProtoMessage() {}
+
+func (x *UserProfileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserProfileRequest.ProtoReflect.Descriptor instead.
+func (*UserProfileRequest) Descriptor() ([]byte, []int) {
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *UserProfileRequest) GetUserID() string {
+	if x != nil {
+		return x.UserID
+	}
+	return ""
+}
+
+type UserProfileResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserID       string `protobuf:"bytes,1,opt,name=UserID,proto3" json:"UserID,omitempty"`
+	UserName     string `protobuf:"bytes,2,opt,name=UserName,proto3" json:"UserName,omitempty"`
+	Name         string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	Email        string `protobuf:"bytes,4,opt,name=Email,proto3" json:"Email,omitempty"`
+	ProfilePhoto string `protobuf:"bytes,5,opt,name=ProfilePhoto,proto3" json:"ProfilePhoto,omitempty"`
+	CoverPhoto   string `protobuf:"bytes,6,opt,name=CoverPhoto,proto3" json:"CoverPhoto,omitempty"`
+	Description  string `protobuf:"bytes,7,opt,name=Description,proto3" json:"Description,omitempty"`
+	Status       string `protobuf:"bytes,8,opt,name=Status,proto3" json:"Status,omitempty"`
+	UserSince    string `protobuf:"bytes,9,opt,name=UserSince,proto3" json:"UserSince,omitempty"`
+}
+
+func (x *UserProfileResponse) Reset() {
+	*x = UserProfileResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UserProfileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserProfileResponse) ProtoMessage() {}
+
+func (x *UserProfileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserProfileResponse.ProtoReflect.Descriptor instead.
+func (*UserProfileResponse) Descriptor() ([]byte, []int) {
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UserProfileResponse) GetUserID() string {
+	if x != nil {
+		return x.UserID
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetUserName() string {
+	if x != nil {
+		return x.UserName
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetProfilePhoto() string {
+	if x != nil {
+		return x.ProfilePhoto
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetCoverPhoto() string {
+	if x != nil {
+		return x.CoverPhoto
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *UserProfileResponse) GetUserSince() string {
+	if x != nil {
+		return x.UserSince
+	}
+	return ""
+}
+
 type UpdateprofilePhotoRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -521,7 +679,7 @@ type UpdateprofilePhotoRequest struct {
 func (x *UpdateprofilePhotoRequest) Reset() {
 	*x = UpdateprofilePhotoRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[8]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -534,7 +692,7 @@ func (x *UpdateprofilePhotoRequest) String() string {
 func (*UpdateprofilePhotoRequest) ProtoMessage() {}
 
 func (x *UpdateprofilePhotoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[8]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +705,7 @@ func (x *UpdateprofilePhotoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateprofilePhotoRequest.ProtoReflect.Descriptor instead.
 func (*UpdateprofilePhotoRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{8}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateprofilePhotoRequest) GetImage() []byte {
@@ -575,7 +733,7 @@ type UpdateProfilePhotoResponse struct {
 func (x *UpdateProfilePhotoResponse) Reset() {
 	*x = UpdateProfilePhotoResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[9]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -588,7 +746,7 @@ func (x *UpdateProfilePhotoResponse) String() string {
 func (*UpdateProfilePhotoResponse) ProtoMessage() {}
 
 func (x *UpdateProfilePhotoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[9]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -601,7 +759,7 @@ func (x *UpdateProfilePhotoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProfilePhotoResponse.ProtoReflect.Descriptor instead.
 func (*UpdateProfilePhotoResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{9}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateProfilePhotoResponse) GetUrl() string {
@@ -623,7 +781,7 @@ type UpdateCoverPhotoRequest struct {
 func (x *UpdateCoverPhotoRequest) Reset() {
 	*x = UpdateCoverPhotoRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[10]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -636,7 +794,7 @@ func (x *UpdateCoverPhotoRequest) String() string {
 func (*UpdateCoverPhotoRequest) ProtoMessage() {}
 
 func (x *UpdateCoverPhotoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[10]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -649,7 +807,7 @@ func (x *UpdateCoverPhotoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCoverPhotoRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCoverPhotoRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{10}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UpdateCoverPhotoRequest) GetCoverPhoto() []byte {
@@ -677,7 +835,7 @@ type UpdateCoverPhotoResponse struct {
 func (x *UpdateCoverPhotoResponse) Reset() {
 	*x = UpdateCoverPhotoResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[11]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -690,7 +848,7 @@ func (x *UpdateCoverPhotoResponse) String() string {
 func (*UpdateCoverPhotoResponse) ProtoMessage() {}
 
 func (x *UpdateCoverPhotoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[11]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -703,7 +861,7 @@ func (x *UpdateCoverPhotoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCoverPhotoResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCoverPhotoResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{11}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpdateCoverPhotoResponse) GetUrl() string {
@@ -725,7 +883,7 @@ type ValidateTokenRequest struct {
 func (x *ValidateTokenRequest) Reset() {
 	*x = ValidateTokenRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[12]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -738,7 +896,7 @@ func (x *ValidateTokenRequest) String() string {
 func (*ValidateTokenRequest) ProtoMessage() {}
 
 func (x *ValidateTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[12]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -751,7 +909,7 @@ func (x *ValidateTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateTokenRequest.ProtoReflect.Descriptor instead.
 func (*ValidateTokenRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{12}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ValidateTokenRequest) GetAccessToken() string {
@@ -781,7 +939,7 @@ type UpdateUserProfileStatusRequest struct {
 func (x *UpdateUserProfileStatusRequest) Reset() {
 	*x = UpdateUserProfileStatusRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[13]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -794,7 +952,7 @@ func (x *UpdateUserProfileStatusRequest) String() string {
 func (*UpdateUserProfileStatusRequest) ProtoMessage() {}
 
 func (x *UpdateUserProfileStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[13]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -807,7 +965,7 @@ func (x *UpdateUserProfileStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserProfileStatusRequest.ProtoReflect.Descriptor instead.
 func (*UpdateUserProfileStatusRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{13}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdateUserProfileStatusRequest) GetUserID() string {
@@ -843,7 +1001,7 @@ type UpdateUserProfileDescriptionRequest struct {
 func (x *UpdateUserProfileDescriptionRequest) Reset() {
 	*x = UpdateUserProfileDescriptionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[14]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -856,7 +1014,7 @@ func (x *UpdateUserProfileDescriptionRequest) String() string {
 func (*UpdateUserProfileDescriptionRequest) ProtoMessage() {}
 
 func (x *UpdateUserProfileDescriptionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[14]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -869,7 +1027,7 @@ func (x *UpdateUserProfileDescriptionRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use UpdateUserProfileDescriptionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateUserProfileDescriptionRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{14}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdateUserProfileDescriptionRequest) GetUserID() string {
@@ -899,7 +1057,7 @@ type AdminLoginRequest struct {
 func (x *AdminLoginRequest) Reset() {
 	*x = AdminLoginRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[15]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -912,7 +1070,7 @@ func (x *AdminLoginRequest) String() string {
 func (*AdminLoginRequest) ProtoMessage() {}
 
 func (x *AdminLoginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[15]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -925,7 +1083,7 @@ func (x *AdminLoginRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdminLoginRequest.ProtoReflect.Descriptor instead.
 func (*AdminLoginRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{15}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AdminLoginRequest) GetEmail() string {
@@ -953,7 +1111,7 @@ type AdminLoginResponse struct {
 func (x *AdminLoginResponse) Reset() {
 	*x = AdminLoginResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[16]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -966,7 +1124,7 @@ func (x *AdminLoginResponse) String() string {
 func (*AdminLoginResponse) ProtoMessage() {}
 
 func (x *AdminLoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[16]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +1137,7 @@ func (x *AdminLoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdminLoginResponse.ProtoReflect.Descriptor instead.
 func (*AdminLoginResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{16}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AdminLoginResponse) GetAdminToken() string {
@@ -1000,7 +1158,7 @@ type ValidateAdminTokenRequest struct {
 func (x *ValidateAdminTokenRequest) Reset() {
 	*x = ValidateAdminTokenRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[17]
+		mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1013,7 +1171,7 @@ func (x *ValidateAdminTokenRequest) String() string {
 func (*ValidateAdminTokenRequest) ProtoMessage() {}
 
 func (x *ValidateAdminTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[17]
+	mi := &file_pkg_auth_svc_pb_auth_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1026,7 +1184,7 @@ func (x *ValidateAdminTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateAdminTokenRequest.ProtoReflect.Descriptor instead.
 func (*ValidateAdminTokenRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{17}
+	return file_pkg_auth_svc_pb_auth_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ValidateAdminTokenRequest) GetToken() string {
@@ -1094,7 +1252,27 @@ var file_pkg_auth_svc_pb_auth_proto_rawDesc = []byte{
 	0x6e, 0x22, 0x2f, 0x0a, 0x15, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x54, 0x6f, 0x6b,
 	0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x73,
 	0x65, 0x72, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72,
-	0x49, 0x44, 0x22, 0x49, 0x0a, 0x19, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x70, 0x72, 0x6f, 0x66,
+	0x49, 0x44, 0x22, 0x2c, 0x0a, 0x12, 0x55, 0x73, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72,
+	0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x44,
+	0x22, 0x8f, 0x02, 0x0a, 0x13, 0x55, 0x73, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72,
+	0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x44,
+	0x12, 0x1a, 0x0a, 0x08, 0x55, 0x73, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x08, 0x55, 0x73, 0x65, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04,
+	0x4e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65,
+	0x12, 0x14, 0x0a, 0x05, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x22, 0x0a, 0x0c, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c,
+	0x65, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x50, 0x72,
+	0x6f, 0x66, 0x69, 0x6c, 0x65, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x12, 0x1e, 0x0a, 0x0a, 0x43, 0x6f,
+	0x76, 0x65, 0x72, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
+	0x43, 0x6f, 0x76, 0x65, 0x72, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x12, 0x20, 0x0a, 0x0b, 0x44, 0x65,
+	0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0b, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06,
+	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x55, 0x73, 0x65, 0x72, 0x53, 0x69, 0x6e, 0x63,
+	0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x55, 0x73, 0x65, 0x72, 0x53, 0x69, 0x6e,
+	0x63, 0x65, 0x22, 0x49, 0x0a, 0x19, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x70, 0x72, 0x6f, 0x66,
 	0x69, 0x6c, 0x65, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
 	0x14, 0x0a, 0x05, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05,
 	0x49, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x44, 0x18,
@@ -1139,7 +1317,7 @@ var file_pkg_auth_svc_pb_auth_proto_rawDesc = []byte{
 	0x6d, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x31, 0x0a, 0x19, 0x56, 0x61, 0x6c, 0x69,
 	0x64, 0x61, 0x74, 0x65, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x32, 0xe5, 0x06, 0x0a, 0x0b,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x32, 0xab, 0x07, 0x0a, 0x0b,
 	0x41, 0x75, 0x74, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x53,
 	0x69, 0x67, 0x6e, 0x75, 0x70, 0x12, 0x13, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x53, 0x69, 0x67,
 	0x6e, 0x75, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x61, 0x75, 0x74,
@@ -1185,17 +1363,22 @@ var file_pkg_auth_svc_pb_auth_proto_rawDesc = []byte{
 	0x69, 0x6c, 0x65, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12,
-	0x41, 0x0a, 0x0a, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x17, 0x2e,
-	0x61, 0x75, 0x74, 0x68, 0x2e, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x41, 0x64,
-	0x6d, 0x69, 0x6e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x12, 0x4f, 0x0a, 0x12, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x41, 0x64,
-	0x6d, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1f, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e,
-	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x54, 0x6f, 0x6b,
-	0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74,
-	0x79, 0x22, 0x00, 0x42, 0x13, 0x5a, 0x11, 0x2e, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2d, 0x73, 0x76, 0x63, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x44, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c, 0x65, 0x12, 0x18,
+	0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e,
+	0x55, 0x73, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x41, 0x0a, 0x0a, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x4c, 0x6f,
+	0x67, 0x69, 0x6e, 0x12, 0x17, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x41, 0x64, 0x6d, 0x69, 0x6e,
+	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x61,
+	0x75, 0x74, 0x68, 0x2e, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x4f, 0x0a, 0x12, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x65, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1f,
+	0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x41, 0x64,
+	0x6d, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x42, 0x13, 0x5a, 0x11, 0x2e, 0x2f, 0x70,
+	0x6b, 0x67, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2d, 0x73, 0x76, 0x63, 0x2f, 0x70, 0x62, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1210,7 +1393,7 @@ func file_pkg_auth_svc_pb_auth_proto_rawDescGZIP() []byte {
 	return file_pkg_auth_svc_pb_auth_proto_rawDescData
 }
 
-var file_pkg_auth_svc_pb_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_pkg_auth_svc_pb_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_pkg_auth_svc_pb_auth_proto_goTypes = []interface{}{
 	(*SignupRequest)(nil),                       // 0: auth.SignupRequest
 	(*SignupResponse)(nil),                      // 1: auth.SignupResponse
@@ -1220,43 +1403,47 @@ var file_pkg_auth_svc_pb_auth_proto_goTypes = []interface{}{
 	(*UserLoginRequest)(nil),                    // 5: auth.UserLoginRequest
 	(*UserLoginResponse)(nil),                   // 6: auth.UserLoginResponse
 	(*ValidateTokenResponse)(nil),               // 7: auth.ValidateTokenResponse
-	(*UpdateprofilePhotoRequest)(nil),           // 8: auth.UpdateprofilePhotoRequest
-	(*UpdateProfilePhotoResponse)(nil),          // 9: auth.UpdateProfilePhotoResponse
-	(*UpdateCoverPhotoRequest)(nil),             // 10: auth.UpdateCoverPhotoRequest
-	(*UpdateCoverPhotoResponse)(nil),            // 11: auth.UpdateCoverPhotoResponse
-	(*ValidateTokenRequest)(nil),                // 12: auth.ValidateTokenRequest
-	(*UpdateUserProfileStatusRequest)(nil),      // 13: auth.UpdateUserProfileStatusRequest
-	(*UpdateUserProfileDescriptionRequest)(nil), // 14: auth.UpdateUserProfileDescriptionRequest
-	(*AdminLoginRequest)(nil),                   // 15: auth.AdminLoginRequest
-	(*AdminLoginResponse)(nil),                  // 16: auth.AdminLoginResponse
-	(*ValidateAdminTokenRequest)(nil),           // 17: auth.ValidateAdminTokenRequest
-	(*emptypb.Empty)(nil),                       // 18: google.protobuf.Empty
+	(*UserProfileRequest)(nil),                  // 8: auth.UserProfileRequest
+	(*UserProfileResponse)(nil),                 // 9: auth.UserProfileResponse
+	(*UpdateprofilePhotoRequest)(nil),           // 10: auth.UpdateprofilePhotoRequest
+	(*UpdateProfilePhotoResponse)(nil),          // 11: auth.UpdateProfilePhotoResponse
+	(*UpdateCoverPhotoRequest)(nil),             // 12: auth.UpdateCoverPhotoRequest
+	(*UpdateCoverPhotoResponse)(nil),            // 13: auth.UpdateCoverPhotoResponse
+	(*ValidateTokenRequest)(nil),                // 14: auth.ValidateTokenRequest
+	(*UpdateUserProfileStatusRequest)(nil),      // 15: auth.UpdateUserProfileStatusRequest
+	(*UpdateUserProfileDescriptionRequest)(nil), // 16: auth.UpdateUserProfileDescriptionRequest
+	(*AdminLoginRequest)(nil),                   // 17: auth.AdminLoginRequest
+	(*AdminLoginResponse)(nil),                  // 18: auth.AdminLoginResponse
+	(*ValidateAdminTokenRequest)(nil),           // 19: auth.ValidateAdminTokenRequest
+	(*emptypb.Empty)(nil),                       // 20: google.protobuf.Empty
 }
 var file_pkg_auth_svc_pb_auth_proto_depIdxs = []int32{
 	0,  // 0: auth.AuthService.Signup:input_type -> auth.SignupRequest
 	2,  // 1: auth.AuthService.VerifyUser:input_type -> auth.UserVerifyRequest
 	3,  // 2: auth.AuthService.ConfirmSignup:input_type -> auth.ConfirmSignupRequest
 	5,  // 3: auth.AuthService.UserLogin:input_type -> auth.UserLoginRequest
-	12, // 4: auth.AuthService.ValidateUserToken:input_type -> auth.ValidateTokenRequest
-	8,  // 5: auth.AuthService.UpdateProfilePhoto:input_type -> auth.UpdateprofilePhotoRequest
-	10, // 6: auth.AuthService.UpdateCoverPhoto:input_type -> auth.UpdateCoverPhotoRequest
-	13, // 7: auth.AuthService.UpdateUserProfileStatus:input_type -> auth.UpdateUserProfileStatusRequest
-	14, // 8: auth.AuthService.UpdateUserProfileDescription:input_type -> auth.UpdateUserProfileDescriptionRequest
-	15, // 9: auth.AuthService.AdminLogin:input_type -> auth.AdminLoginRequest
-	17, // 10: auth.AuthService.ValidateAdminToken:input_type -> auth.ValidateAdminTokenRequest
-	1,  // 11: auth.AuthService.Signup:output_type -> auth.SignupResponse
-	18, // 12: auth.AuthService.VerifyUser:output_type -> google.protobuf.Empty
-	4,  // 13: auth.AuthService.ConfirmSignup:output_type -> auth.confirmSignupResponse
-	6,  // 14: auth.AuthService.UserLogin:output_type -> auth.UserLoginResponse
-	7,  // 15: auth.AuthService.ValidateUserToken:output_type -> auth.ValidateTokenResponse
-	9,  // 16: auth.AuthService.UpdateProfilePhoto:output_type -> auth.UpdateProfilePhotoResponse
-	11, // 17: auth.AuthService.UpdateCoverPhoto:output_type -> auth.UpdateCoverPhotoResponse
-	18, // 18: auth.AuthService.UpdateUserProfileStatus:output_type -> google.protobuf.Empty
-	18, // 19: auth.AuthService.UpdateUserProfileDescription:output_type -> google.protobuf.Empty
-	16, // 20: auth.AuthService.AdminLogin:output_type -> auth.AdminLoginResponse
-	18, // 21: auth.AuthService.ValidateAdminToken:output_type -> google.protobuf.Empty
-	11, // [11:22] is the sub-list for method output_type
-	0,  // [0:11] is the sub-list for method input_type
+	14, // 4: auth.AuthService.ValidateUserToken:input_type -> auth.ValidateTokenRequest
+	10, // 5: auth.AuthService.UpdateProfilePhoto:input_type -> auth.UpdateprofilePhotoRequest
+	12, // 6: auth.AuthService.UpdateCoverPhoto:input_type -> auth.UpdateCoverPhotoRequest
+	15, // 7: auth.AuthService.UpdateUserProfileStatus:input_type -> auth.UpdateUserProfileStatusRequest
+	16, // 8: auth.AuthService.UpdateUserProfileDescription:input_type -> auth.UpdateUserProfileDescriptionRequest
+	8,  // 9: auth.AuthService.UserProfile:input_type -> auth.UserProfileRequest
+	17, // 10: auth.AuthService.AdminLogin:input_type -> auth.AdminLoginRequest
+	19, // 11: auth.AuthService.ValidateAdminToken:input_type -> auth.ValidateAdminTokenRequest
+	1,  // 12: auth.AuthService.Signup:output_type -> auth.SignupResponse
+	20, // 13: auth.AuthService.VerifyUser:output_type -> google.protobuf.Empty
+	4,  // 14: auth.AuthService.ConfirmSignup:output_type -> auth.confirmSignupResponse
+	6,  // 15: auth.AuthService.UserLogin:output_type -> auth.UserLoginResponse
+	7,  // 16: auth.AuthService.ValidateUserToken:output_type -> auth.ValidateTokenResponse
+	11, // 17: auth.AuthService.UpdateProfilePhoto:output_type -> auth.UpdateProfilePhotoResponse
+	13, // 18: auth.AuthService.UpdateCoverPhoto:output_type -> auth.UpdateCoverPhotoResponse
+	20, // 19: auth.AuthService.UpdateUserProfileStatus:output_type -> google.protobuf.Empty
+	20, // 20: auth.AuthService.UpdateUserProfileDescription:output_type -> google.protobuf.Empty
+	9,  // 21: auth.AuthService.UserProfile:output_type -> auth.UserProfileResponse
+	18, // 22: auth.AuthService.AdminLogin:output_type -> auth.AdminLoginResponse
+	20, // 23: auth.AuthService.ValidateAdminToken:output_type -> google.protobuf.Empty
+	12, // [12:24] is the sub-list for method output_type
+	0,  // [0:12] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -1365,7 +1552,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateprofilePhotoRequest); i {
+			switch v := v.(*UserProfileRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1377,7 +1564,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateProfilePhotoResponse); i {
+			switch v := v.(*UserProfileResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1389,7 +1576,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateCoverPhotoRequest); i {
+			switch v := v.(*UpdateprofilePhotoRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1401,7 +1588,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateCoverPhotoResponse); i {
+			switch v := v.(*UpdateProfilePhotoResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1413,7 +1600,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ValidateTokenRequest); i {
+			switch v := v.(*UpdateCoverPhotoRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1425,7 +1612,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateUserProfileStatusRequest); i {
+			switch v := v.(*UpdateCoverPhotoResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1437,7 +1624,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateUserProfileDescriptionRequest); i {
+			switch v := v.(*ValidateTokenRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1449,7 +1636,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AdminLoginRequest); i {
+			switch v := v.(*UpdateUserProfileStatusRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1461,7 +1648,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AdminLoginResponse); i {
+			switch v := v.(*UpdateUserProfileDescriptionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1473,6 +1660,30 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			}
 		}
 		file_pkg_auth_svc_pb_auth_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AdminLoginRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_auth_svc_pb_auth_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AdminLoginResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_auth_svc_pb_auth_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ValidateAdminTokenRequest); i {
 			case 0:
 				return &v.state
@@ -1491,7 +1702,7 @@ func file_pkg_auth_svc_pb_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pkg_auth_svc_pb_auth_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

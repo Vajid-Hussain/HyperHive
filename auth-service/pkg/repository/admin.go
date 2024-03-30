@@ -27,3 +27,29 @@ func (d *AdminRepository) FetchPaswordUsingEmail(email string) (password string,
 
 	return password, nil
 }
+
+func (d *AdminRepository) BlockUserAccount(userID string) error {
+	query := "UPDATE users SET status = 'block' WHERE status !='delete' "
+	result := d.DB.Raw(query, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
+
+func (d *AdminRepository) UnBlockUserAccount(userID string) error {
+	query := "UPDATE users SET status = 'active' WHERE status = 'block' "
+	result := d.DB.Raw(query, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}

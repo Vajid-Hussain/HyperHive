@@ -2,6 +2,7 @@ package server_auth_server
 
 import (
 	"context"
+	"fmt"
 
 	requestmodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
 	requestmodell_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
@@ -132,6 +133,26 @@ func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) 
 
 	return &pb.AdminLoginResponse{
 		AdminToken: token,
+	}, nil
+}
+
+func (u *AuthServer) UserProfile(ctx context.Context, req *pb.UserProfileRequest) (*pb.UserProfileResponse, error) {
+	result, err := u.userUseCase.GetUserProfile(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("--", result)
+
+	return &pb.UserProfileResponse{
+		UserID:       req.UserID,
+		UserName:     result.UserName,
+		Name:         result.Name,
+		Email:        result.Email,
+		ProfilePhoto: result.ProfilePhoto,
+		CoverPhoto:   result.CoverPhoto,
+		Description:  result.Description,
+		Status:       result.Status,
+		UserSince:    result.UserSince.String(),
 	}, nil
 }
 
