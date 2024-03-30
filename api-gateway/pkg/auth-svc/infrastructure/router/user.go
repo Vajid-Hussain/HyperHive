@@ -11,9 +11,16 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 	engin.GET("/verify", userHandler.MailVerificationCallback)
 	engin.POST("/confirm", userHandler.ConfirmSignup)
 	engin.POST("/login", userHandler.UserLogin)
+	engin.POST("/verifyemailresend", userHandler.ReSendVerificationEmail)
 
 	engin.Use(middlewire.UserAuthMiddlewire)
 	{
+
+		account := engin.Group("/account")
+		{
+			account.DELETE("/", userHandler.DeleteUserAcoount)
+		}
+
 		profile := engin.Group("/profile")
 		{
 			profile.GET("/", userHandler.GetUserProfile)

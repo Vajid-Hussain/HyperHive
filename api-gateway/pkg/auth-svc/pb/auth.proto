@@ -10,6 +10,7 @@ service AuthService{
     rpc ConfirmSignup (ConfirmSignupRequest) returns (confirmSignupResponse){};
     rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) {};
     rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
+    rpc ReSendVerificationEmail (ReSendVerificationEmailRequest) returns (ReSendVerificationEmailResponse) {};
 
     // User Profile
     rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) {};
@@ -17,10 +18,13 @@ service AuthService{
     rpc UpdateUserProfileStatus (UpdateUserProfileStatusRequest) returns (google.protobuf.Empty) {};
     rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) {};
     rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) {};
+    rpc DeleteAccount (DeleteAccountRequest) returns (google.protobuf.Empty){};
 
     //admin
     rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
     rpc ValidateAdminToken (ValidateAdminTokenRequest) returns (google.protobuf.Empty){}
+    rpc BlockUse (BlockUseRequest) returns (BlockUseResponse) {};
+    rpc UnBlockUser (UnBlockUserRequest) returns (UnBlockUserResponse) {};
 }
 
 message SignupRequest{
@@ -121,7 +125,17 @@ message UpdateUserProfileDescriptionRequest{
     string Description =2;
 }
 
+message DeleteAccountRequest {
+    string UserID=1;
+}
 
+message ReSendVerificationEmailRequest {
+    string Token =1;
+}
+
+message ReSendVerificationEmailResponse {
+    string Token =1;
+}
 
 //admin
 message AdminLoginRequest{
@@ -135,4 +149,24 @@ message AdminLoginResponse{
 
 message ValidateAdminTokenRequest{
     string token =1;
+}
+
+message BlockUseRequest {
+    string UserID =1; 
+}
+
+message BlockUseResponse {
+    string UserID =1;
+    string Name =2;
+    string UserName =3;
+}
+
+message UnBlockUserRequest {
+    string UserID=1;
+}
+
+message UnBlockUserResponse {
+    string UserID =1;
+    string Name =2;
+    string UserName =3;
 }

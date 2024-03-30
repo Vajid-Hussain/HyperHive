@@ -46,7 +46,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 
 func (m *Middlewire) AdminAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		token := c.Request().Header.Get("authorization")
+		token := c.Request().Header.Get("Token")
 		// fmt.Println("==========")
 		_, err := m.Clind.ValidateAdminToken(context.Background(), &pb.ValidateAdminTokenRequest{
 			Token: token,

@@ -15,7 +15,7 @@ func NewAdminRepository(db *gorm.DB) interface_repo_auth_server.IAdminRepository
 }
 
 func (d *AdminRepository) FetchPaswordUsingEmail(email string) (password string, err error) {
-	query := "SELECT password FROM admins WHERE email = $1"
+	query := "SELECT password FROM admins WHERE email = $1 RETURNING *"
 	result := d.DB.Raw(query, email).Scan(&password)
 	if result.Error != nil {
 		return "", responsemodel_auth_server.ErrInternalServer
@@ -28,28 +28,31 @@ func (d *AdminRepository) FetchPaswordUsingEmail(email string) (password string,
 	return password, nil
 }
 
-func (d *AdminRepository) BlockUserAccount(userID string) error {
-	query := "UPDATE users SET status = 'block' WHERE status !='delete' "
-	result := d.DB.Raw(query, userID)
+func (d *AdminRepository) BlockUserAccount(userID string) (*responsemodel_auth_server.AbstractUserDetails, error) {
+	var user responsemodel_auth_server.AbstractUserDetails
+
+	query := "UPDATE users SET status = 'block' WHERE status !='delete' AND id= $1 RETURNING *"
+	result := d.DB.Raw(query, userID).Scan(&user)
 	if result.Error != nil {
-		return responsemodel_auth_server.ErrInternalServer
+		return nil, responsemodel_auth_server.ErrInternalServer
 	}
 
 	if result.RowsAffected == 0 {
-		return responsemodel_auth_server.ErrNotFound
+		return nil, responsemodel_auth_server.ErrNotFound
 	}
-	return nil
+	return &user, nil
 }
 
-func (d *AdminRepository) UnBlockUserAccount(userID string) error {
-	query := "UPDATE users SET status = 'active' WHERE status = 'block' "
-	result := d.DB.Raw(query, userID)
+func (d *AdminRepository) UnBlockUserAccount(userID string) (*responsemodel_auth_server.AbstractUserDetails, error) {
+	var user responsemodel_auth_server.AbstractUserDetails
+	query := "UPDATE users SET status = 'active' WHERE status = 'block' AND id= $1 RETURNING *"
+	result := d.DB.Raw(query, userID).Scan(&user)
 	if result.Error != nil {
-		return responsemodel_auth_server.ErrInternalServer
+		return nil, responsemodel_auth_server.ErrInternalServer
 	}
 
 	if result.RowsAffected == 0 {
-		return responsemodel_auth_server.ErrNotFound
+		return nil, responsemodel_auth_server.ErrNotFound
 	}
-	return nil
+	return &user, nil
 }

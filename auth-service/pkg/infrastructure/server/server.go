@@ -54,6 +54,17 @@ func (u *AuthServer) VerifyUser(ctx context.Context, req *pb.UserVerifyRequest) 
 	return nil, nil
 }
 
+func (u *AuthServer) ReSendVerificationEmail(ctx context.Context, req *pb.ReSendVerificationEmailRequest) (*pb.ReSendVerificationEmailResponse, error) {
+	token, err := u.userUseCase.ReSendVerificationMail(req.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ReSendVerificationEmailResponse{
+		Token: token,
+	}, nil
+}
+
 func (u *AuthServer) ConfirmSignup(ctx context.Context, req *pb.ConfirmSignupRequest) (*pb.ConfirmSignupResponse, error) {
 	result, err := u.userUseCase.ConfirmSignup(req.TemperveryToken)
 	if err != nil {
@@ -123,6 +134,15 @@ func (u *AuthServer) UpdateUserProfileDescription(ctx context.Context, req *pb.U
 	return nil, nil
 }
 
+func (u *AuthServer) DeleteAccount(ctx context.Context, req *pb.DeleteAccountRequest) (*emptypb.Empty, error) {
+	err := u.userUseCase.DeleteAccount(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 //Admin
 
 func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb.AdminLoginResponse, error) {
@@ -153,6 +173,32 @@ func (u *AuthServer) UserProfile(ctx context.Context, req *pb.UserProfileRequest
 		Description:  result.Description,
 		Status:       result.Status,
 		UserSince:    result.UserSince.String(),
+	}, nil
+}
+
+func (u *AuthServer) BlockUse(ctx context.Context, req *pb.BlockUseRequest) (*pb.BlockUseResponse, error) {
+	result, err := u.adminUseCase.BlockUserAccount(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.BlockUseResponse{
+		UserID:   req.UserID,
+		Name:     result.Name,
+		UserName: result.UserName,
+	}, nil
+}
+
+func (u *AuthServer) UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.UnBlockUserResponse, error) {
+	result, err := u.adminUseCase.UnBlockUserAccount(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UnBlockUserResponse{
+		UserID:   req.UserID,
+		Name:     result.Name,
+		UserName: result.UserName,
 	}, nil
 }
 

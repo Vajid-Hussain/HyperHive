@@ -8,6 +8,7 @@ import (
 type IUserUseCase interface {
 	Signup(userDetails requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error)
 	VerifyUserSignup(string, string) error
+	ReSendVerificationMail( string) (string, error) 
 	ConfirmSignup(string) (*responsemodel_auth_server.AuthenticationResponse, error)
 	UserLogin(email, password string) (*responsemodel_auth_server.AuthenticationResponse, error)
 	VerifyUserToken(string, string) (string, error) 
@@ -18,9 +19,12 @@ type IUserUseCase interface {
 	UpdateStatusOfUser(requestmodel_auth_server.UserProfileStatus,  float32) error 
 	UpdateDescriptionOfUser(userID, description string) error
 	GetUserProfile( string) (*responsemodel_auth_server.UserProfile, error) 
+	DeleteAccount( string) error 
 }
 
 type IAdminUseCase interface {
 	AdminLogin(string, string) (string, error)
 	VerifyAdminToken( string) error 
+	UnBlockUserAccount( string) (*responsemodel_auth_server.AbstractUserDetails, error) 
+	BlockUserAccount( string) (*responsemodel_auth_server.AbstractUserDetails, error)
 }

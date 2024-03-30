@@ -45,3 +45,33 @@ func (c *AdminAuthHanlder) AdminLogin(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+func (c *AdminAuthHanlder) BlockUserAccount(ctx echo.Context) error {
+	var blockRequest requestmodel_auth_svc.UserIDReq
+	ctx.Bind(&blockRequest)
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	result, err := c.clind.BlockUse(context, &pb.BlockUseRequest{
+		UserID:  blockRequest.UserID,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "Succesfully blocked", result, nil))
+}
+
+func (c *AdminAuthHanlder) UnBlockUserAccount(ctx echo.Context) error {
+	var unblockRequest requestmodel_auth_svc.UserIDReq
+	ctx.Bind(&unblockRequest)
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	result, err := c.clind.UnBlockUser(context, &pb.UnBlockUserRequest{
+		UserID: unblockRequest.UserID,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "Succesfully UnBlocked", result, nil))
+}

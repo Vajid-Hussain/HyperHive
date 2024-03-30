@@ -2,8 +2,11 @@ package utils_auth_server
 
 import (
 	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
@@ -176,4 +179,52 @@ func FetchUserIDFromToken(tokenString string, secretkey string) (string, error) 
 	}
 
 	return emailClaim, nil
+}
+
+func FetchUserIDFromTokenNoWorryOnExpire(tokenString string, secretkey string) (string, error) {
+
+	secret := []byte(secretkey)
+
+	parsedToken, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+	// if err != nil || !parsedToken.Valid {
+	// 	return "", errors.New("wrong token or expired")
+	// }
+	fmt.Println(parsedToken)
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("could not parse claims")
+	}
+
+	emailClaim, ok := claims["email"].(string)
+	if !ok {
+		return "", errors.New("email claim not found or not a string")
+	}
+
+	return emailClaim, nil
+}
+
+type Claims struct {
+	Email string `json:"email"`
+}
+
+func ExtractEmailFromToken(tokenString string) (string, error) {
+	parts := strings.Split(tokenString, ".")
+	if len(parts) != 3 {
+		return "", fmt.Errorf("invalid JWT token format")
+	}
+
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", fmt.Errorf("error decoding token payload: %v", err)
+	}
+
+	var claims Claims
+	err = json.Unmarshal(payload, &claims)
+	if err != nil {
+		return "", fmt.Errorf("error decoding claims: %v", err)
+	}
+
+	return claims.Email, nil
 }

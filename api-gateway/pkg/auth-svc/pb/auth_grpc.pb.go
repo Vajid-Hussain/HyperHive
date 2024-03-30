@@ -28,15 +28,19 @@ type AuthServiceClient interface {
 	ConfirmSignup(ctx context.Context, in *ConfirmSignupRequest, opts ...grpc.CallOption) (*ConfirmSignupResponse, error)
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
+	ReSendVerificationEmail(ctx context.Context, in *ReSendVerificationEmailRequest, opts ...grpc.CallOption) (*ReSendVerificationEmailResponse, error)
 	// User Profile
 	UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
 	UpdateUserProfileStatus(ctx context.Context, in *UpdateUserProfileStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateUserProfileDescription(ctx context.Context, in *UpdateUserProfileDescriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UserProfile(ctx context.Context, in *UserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error)
+	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// admin
 	AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
 	ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	BlockUse(ctx context.Context, in *BlockUseRequest, opts ...grpc.CallOption) (*BlockUseResponse, error)
+	UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*UnBlockUserResponse, error)
 }
 
 type authServiceClient struct {
@@ -92,6 +96,15 @@ func (c *authServiceClient) ValidateUserToken(ctx context.Context, in *ValidateT
 	return out, nil
 }
 
+func (c *authServiceClient) ReSendVerificationEmail(ctx context.Context, in *ReSendVerificationEmailRequest, opts ...grpc.CallOption) (*ReSendVerificationEmailResponse, error) {
+	out := new(ReSendVerificationEmailResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/ReSendVerificationEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error) {
 	out := new(UpdateProfilePhotoResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateProfilePhoto", in, out, opts...)
@@ -137,6 +150,15 @@ func (c *authServiceClient) UserProfile(ctx context.Context, in *UserProfileRequ
 	return out, nil
 }
 
+func (c *authServiceClient) DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/DeleteAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error) {
 	out := new(AdminLoginResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/AdminLogin", in, out, opts...)
@@ -155,6 +177,24 @@ func (c *authServiceClient) ValidateAdminToken(ctx context.Context, in *Validate
 	return out, nil
 }
 
+func (c *authServiceClient) BlockUse(ctx context.Context, in *BlockUseRequest, opts ...grpc.CallOption) (*BlockUseResponse, error) {
+	out := new(BlockUseResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/BlockUse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*UnBlockUserResponse, error) {
+	out := new(UnBlockUserResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UnBlockUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -164,15 +204,19 @@ type AuthServiceServer interface {
 	ConfirmSignup(context.Context, *ConfirmSignupRequest) (*ConfirmSignupResponse, error)
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
+	ReSendVerificationEmail(context.Context, *ReSendVerificationEmailRequest) (*ReSendVerificationEmailResponse, error)
 	// User Profile
 	UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
 	UpdateUserProfileStatus(context.Context, *UpdateUserProfileStatusRequest) (*emptypb.Empty, error)
 	UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error)
 	UserProfile(context.Context, *UserProfileRequest) (*UserProfileResponse, error)
+	DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error)
 	// admin
 	AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
 	ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error)
+	BlockUse(context.Context, *BlockUseRequest) (*BlockUseResponse, error)
+	UnBlockUser(context.Context, *UnBlockUserRequest) (*UnBlockUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -195,6 +239,9 @@ func (UnimplementedAuthServiceServer) UserLogin(context.Context, *UserLoginReque
 func (UnimplementedAuthServiceServer) ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateUserToken not implemented")
 }
+func (UnimplementedAuthServiceServer) ReSendVerificationEmail(context.Context, *ReSendVerificationEmailRequest) (*ReSendVerificationEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReSendVerificationEmail not implemented")
+}
 func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
 }
@@ -210,11 +257,20 @@ func (UnimplementedAuthServiceServer) UpdateUserProfileDescription(context.Conte
 func (UnimplementedAuthServiceServer) UserProfile(context.Context, *UserProfileRequest) (*UserProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserProfile not implemented")
 }
+func (UnimplementedAuthServiceServer) DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
+}
 func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
 }
 func (UnimplementedAuthServiceServer) ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateAdminToken not implemented")
+}
+func (UnimplementedAuthServiceServer) BlockUse(context.Context, *BlockUseRequest) (*BlockUseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUse not implemented")
+}
+func (UnimplementedAuthServiceServer) UnBlockUser(context.Context, *UnBlockUserRequest) (*UnBlockUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnBlockUser not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -319,6 +375,24 @@ func _AuthService_ValidateUserToken_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ReSendVerificationEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReSendVerificationEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ReSendVerificationEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/ReSendVerificationEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ReSendVerificationEmail(ctx, req.(*ReSendVerificationEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_UpdateProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateprofilePhotoRequest)
 	if err := dec(in); err != nil {
@@ -409,6 +483,24 @@ func _AuthService_UserProfile_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).DeleteAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/DeleteAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).DeleteAccount(ctx, req.(*DeleteAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdminLoginRequest)
 	if err := dec(in); err != nil {
@@ -445,6 +537,42 @@ func _AuthService_ValidateAdminToken_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_BlockUse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockUseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).BlockUse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/BlockUse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).BlockUse(ctx, req.(*BlockUseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UnBlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnBlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UnBlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UnBlockUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UnBlockUser(ctx, req.(*UnBlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -473,6 +601,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_ValidateUserToken_Handler,
 		},
 		{
+			MethodName: "ReSendVerificationEmail",
+			Handler:    _AuthService_ReSendVerificationEmail_Handler,
+		},
+		{
 			MethodName: "UpdateProfilePhoto",
 			Handler:    _AuthService_UpdateProfilePhoto_Handler,
 		},
@@ -493,12 +625,24 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_UserProfile_Handler,
 		},
 		{
+			MethodName: "DeleteAccount",
+			Handler:    _AuthService_DeleteAccount_Handler,
+		},
+		{
 			MethodName: "AdminLogin",
 			Handler:    _AuthService_AdminLogin_Handler,
 		},
 		{
 			MethodName: "ValidateAdminToken",
 			Handler:    _AuthService_ValidateAdminToken_Handler,
+		},
+		{
+			MethodName: "BlockUse",
+			Handler:    _AuthService_BlockUse_Handler,
+		},
+		{
+			MethodName: "UnBlockUser",
+			Handler:    _AuthService_UnBlockUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -30,7 +30,7 @@ type AuthenticationResponse struct {
 }
 
 type UserProfile struct {
-	UserID           string    `gorm:"column:status_id"`
+	UserID           string    `gorm:"column:id"`
 	UserName         string    `gorm:"column:user_name"`
 	Name             string    `gorm:"column:name"`
 	Email            string    `gorm:"column:email"`
@@ -40,4 +40,10 @@ type UserProfile struct {
 	Status           string    `gorm:"column:status"`
 	StatusExpireTime time.Time `gorm:"column:status_till"`
 	UserSince        time.Time `gorm:"column:created_at"`
+}
+
+type AbstractUserDetails struct{
+	UserID string 
+	UserName string
+	Name string
 }

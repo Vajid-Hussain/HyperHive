@@ -1,9 +1,8 @@
 package usecasel_auth_server
 
 import (
-	"fmt"
-
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
+	responsemodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/responseModel"
 	interface_repo_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/repository/interface"
 	interface_usecase_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/usecase/interface"
 	utils_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/utils"
@@ -38,10 +37,18 @@ func (d *AdminUseCase) AdminLogin(email, password string) (token string, err err
 }
 
 func (u *AdminUseCase) VerifyAdminToken(token string) error {
-	fmt.Println("admin middlewire auth", token)
+	// fmt.Println("admin middlewire auth", token)
 	err := utils_auth_server.VerifyRefreshToken(token, u.token.AdminSecurityKey)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (u *AdminUseCase) BlockUserAccount(userID string) (*responsemodel_auth_server.AbstractUserDetails, error) {
+	return u.AdminRepo.BlockUserAccount(userID)
+}
+
+func (u *AdminUseCase) UnBlockUserAccount(userID string) (*responsemodel_auth_server.AbstractUserDetails, error) {
+	return u.AdminRepo.UnBlockUserAccount(userID)
 }

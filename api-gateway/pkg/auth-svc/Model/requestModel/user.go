@@ -24,3 +24,7 @@ type UserProfileDescription struct {
 	UserID      string `json:"-"`
 	Description string `json:"Description" validate:"required"`
 }
+
+type UserIDReq struct {
+	UserID string `json:"UserID"`
+}

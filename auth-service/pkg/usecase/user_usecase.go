@@ -35,42 +35,11 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 	hasMinimumLength := regexp.MustCompile(`.{5,}`)
 	hasSymbol := regexp.MustCompile(`[!@#$%^&*]`)
 
-	// var chanCoverPhoto = make(chan string)
-	// fmt.Println(userDetails.ConfirmPassword, userDetails.Name, userDetails.UserName)
-
-	// r, _ := regexp.Compile("p([a-zA-Z0-9!@#$%^&*]+)ch")
-	// r := regexp.MustCompile(`^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{5,})`)
-	// if !r.MatchString(userDetails.Password) {
-	// 	return nil, responsemodel_auth_server.ErrRegexNotMatch
-	// }
-
 	if !hasLowercase.MatchString(userDetails.Password) || !hasUppercase.MatchString(userDetails.Password) || !hasDigit.MatchString(userDetails.Password) || !hasMinimumLength.MatchString(userDetails.Password) || !hasSymbol.MatchString(userDetails.Password) {
 		return nil, responsemodel_auth_server.ErrRegexNotMatch
 	}
 
 	userDetails.Password = utils_auth_server.HashPassword(userDetails.Password)
-
-	// s3Session := utils_auth_server.CreateSession(d.s3)
-
-	// if len(userDetails.ProfilePhoto) > 1 {
-	// 	fmt.Println("profile proto is sending to s3")
-	// 	go utils_auth_server.UploadImageToS3(userDetails.ProfilePhoto, s3Session, chanProfilePhoto)
-	// }
-
-	// if len(userDetails.CoverPhoto) > 1 {
-	// 	fmt.Println("CoverPhoto is sending to s3")
-	// go	utils_auth_server.UploadImageToS3(userDetails.CoverPhoto, s3Session, chanCoverPhoto)
-	// }
-
-	// if len(userDetails.ProfilePhoto) > 1 {
-	// 	fmt.Println("profile  url fetch by chan to s3")
-	// 	userDetails.ProfilePhotoUrl = <-chanProfilePhoto
-	// }
-
-	// if len(userDetails.CoverPhoto) > 1 {
-	// 	fmt.Println("CoverPhoto url fetch by chan to s3")
-	// 	userDetails.CoverPhotoUrl = <-chanCoverPhoto
-	// }
 
 	count, err := d.userRepo.EmailIsExist(userDetails.Email)
 	if err != nil {
@@ -107,6 +76,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 }
 
 func (d *UserUseCase) VerifyUserSignup(email, token string) error {
+	// fmt.Println("--", email, token)
 
 	userID, err := utils_auth_server.FetchUserIDFromToken(token, d.tokenSecret.TemperveryKey)
 	if err != nil {
@@ -119,6 +89,35 @@ func (d *UserUseCase) VerifyUserSignup(email, token string) error {
 	}
 
 	return nil
+}
+
+func (d *UserUseCase) ReSendVerificationMail(token string) (string, error) {
+	var verificationToken string
+	userID, err := utils_auth_server.FetchUserIDFromTokenNoWorryOnExpire(token, d.tokenSecret.TemperveryKey)
+	if err != nil {
+		return "", err
+	}
+
+	count, err := d.userRepo.IsUserIDExist(userID)
+	if err != nil {
+		return "", err
+	}
+
+	if count == 1 {
+		verificationToken, err = utils_auth_server.TemperveryTokenForUserAuthenticaiton(d.tokenSecret.TemperveryKey, userID)
+		if err != nil {
+			return "", err
+		}
+
+		email, err := d.userRepo.FetchMailUsingUserID(userID)
+		if err != nil {
+			return "", err
+		}
+
+		utils_auth_server.SendVerificationEmail(email, verificationToken, d.mailConstrains)
+	}
+
+	return verificationToken, nil
 }
 
 func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.AuthenticationResponse, error) {
@@ -278,4 +277,8 @@ func (u *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.
 	}
 
 	return profile, nil
+}
+
+func (u *UserUseCase) DeleteAccount(userID string) error {
+	return u.userRepo.DeleteUserAcoount(userID)
 }

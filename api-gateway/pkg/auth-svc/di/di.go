@@ -23,7 +23,7 @@ func InitAuthClind(engin *echo.Echo, config *config.Config) error {
 	AdminHandler := handler_auth_svc.NewAdminAuthHandler(clind)
 
 	router_auth_svc.UserRoutes(engin.Group("user"), UserHandler, middleWire)
-	router_auth_svc.AdminRoutes(engin.Group("admin"), AdminHandler)
+	router_auth_svc.AdminRoutes(engin.Group("admin"), AdminHandler, middleWire)
 
 	return nil
 }

@@ -38,7 +38,7 @@ func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (us
 }
 
 func (d *UserRepository) UserNameIsExist(userName string) (count int, err error) {
-	query := "SELECT count(*) FROM users WHERE user_name = $1"
+	query := "SELECT count(*) FROM users WHERE user_name = $1  AND status != 'delete'"
 	result := d.DB.Raw(query, userName).Scan(&count)
 	if result.Error != nil {
 		return 0, responsemodel_auth_server.ErrInternalServer
@@ -51,8 +51,34 @@ func (d *UserRepository) UserNameIsExist(userName string) (count int, err error)
 }
 
 func (d *UserRepository) EmailIsExist(email string) (count int, err error) {
-	query := "SELECT count(*) FROM users WHERE email = $1"
+	query := "SELECT count(*) FROM users WHERE email = $1 AND status != 'delete'"
 	result := d.DB.Raw(query, email).Scan(&count)
+	if result.Error != nil {
+		return 0, responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return 0, responsemodel_auth_server.ErrDBNoRowAffected
+	}
+	return count, nil
+}
+
+func (d *UserRepository) FetchMailUsingUserID(userID string) (email string, err error) {
+	query := "SELECT email FROM users where id = $1"
+	result := d.DB.Raw(query, userID).Scan(&email)
+	if result.Error != nil {
+		return "", responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return "", responsemodel_auth_server.ErrUserBlockedOrNoUser
+	}
+	return
+}
+
+func (d *UserRepository) IsUserIDExist(userID string) (count int, err error) {
+	query := "SELECT COUNT(*) FROM users WHERE id= $1"
+	result := d.DB.Raw(query, userID).Scan(&count)
 	if result.Error != nil {
 		return 0, responsemodel_auth_server.ErrInternalServer
 	}
@@ -189,9 +215,9 @@ func (d *UserRepository) GetUserProfile(userID string) (userProfile *responsemod
 	return
 }
 
-func (d *UserRepository) DeleteUserAcoount(userID string) error{
-	query:= "UPDATE users SET status = 'delete' "
-	result:= d.DB.Raw(query, userID) 
+func (d *UserRepository) DeleteUserAcoount(userID string) error {
+	query := "UPDATE users SET status = 'delete' WHERE id= $1"
+	result := d.DB.Exec(query, userID)
 	if result.Error != nil {
 		return responsemodel_auth_server.ErrInternalServer
 	}
@@ -201,4 +227,3 @@ func (d *UserRepository) DeleteUserAcoount(userID string) error{
 	}
 	return nil
 }
-
