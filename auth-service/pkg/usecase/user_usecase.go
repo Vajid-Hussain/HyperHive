@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
 	requestmodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
@@ -189,7 +190,7 @@ func (u *UserUseCase) VerifyUserToken(accessToken, refreshToken string) (string,
 	fmt.Println("user middlewiere")
 	id, err := utils_auth_server.VerifyAcessToken(accessToken, u.tokenSecret.UserSecurityKey)
 	if err != nil {
-		fmt.Println("error at accestoken", err)
+		return "", err
 	}
 
 	err = utils_auth_server.VerifyRefreshToken(refreshToken, u.tokenSecret.UserSecurityKey)
@@ -239,4 +240,29 @@ func (u *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string,
 	}
 
 	return url, nil
+}
+
+func (u *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserProfileStatus, expire float32) error {
+	status.Expire = time.Now().Add(time.Hour * time.Duration(expire)).Format("2006-01-02 15:04:05")
+	fmt.Println("-----", time.Now(), status.Expire)
+
+	if expire > 6 {
+		return responsemodel_auth_server.ErrStatuTimeLongExpireTime
+	}
+
+	err := u.userRepo.UpdateOrCreateUserStatus(status)
+	if err != nil {
+		return nil
+	}
+
+	return nil
+}
+
+func (u *UserUseCase) UpdateDescriptionOfUser(userID, description string) error {
+	err := u.userRepo.UpdateOrCreateUserDescription(userID, description)
+	if err != nil {
+		return nil
+	}
+	
+	return nil
 }

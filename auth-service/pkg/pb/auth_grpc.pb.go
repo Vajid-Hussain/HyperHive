@@ -27,9 +27,12 @@ type AuthServiceClient interface {
 	VerifyUser(ctx context.Context, in *UserVerifyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ConfirmSignup(ctx context.Context, in *ConfirmSignupRequest, opts ...grpc.CallOption) (*ConfirmSignupResponse, error)
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+	ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
+	// User Profile
 	UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
-	ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
+	UpdateUserProfileStatus(ctx context.Context, in *UpdateUserProfileStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateUserProfileDescription(ctx context.Context, in *UpdateUserProfileDescriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// admin
 	AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
 	ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -79,6 +82,15 @@ func (c *authServiceClient) UserLogin(ctx context.Context, in *UserLoginRequest,
 	return out, nil
 }
 
+func (c *authServiceClient) ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error) {
+	out := new(ValidateTokenResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/ValidateUserToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error) {
 	out := new(UpdateProfilePhotoResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateProfilePhoto", in, out, opts...)
@@ -97,9 +109,18 @@ func (c *authServiceClient) UpdateCoverPhoto(ctx context.Context, in *UpdateCove
 	return out, nil
 }
 
-func (c *authServiceClient) ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error) {
-	out := new(ValidateTokenResponse)
-	err := c.cc.Invoke(ctx, "/auth.AuthService/ValidateUserToken", in, out, opts...)
+func (c *authServiceClient) UpdateUserProfileStatus(ctx context.Context, in *UpdateUserProfileStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateUserProfileStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdateUserProfileDescription(ctx context.Context, in *UpdateUserProfileDescriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateUserProfileDescription", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -132,9 +153,12 @@ type AuthServiceServer interface {
 	VerifyUser(context.Context, *UserVerifyRequest) (*emptypb.Empty, error)
 	ConfirmSignup(context.Context, *ConfirmSignupRequest) (*ConfirmSignupResponse, error)
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
+	ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
+	// User Profile
 	UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
-	ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
+	UpdateUserProfileStatus(context.Context, *UpdateUserProfileStatusRequest) (*emptypb.Empty, error)
+	UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error)
 	// admin
 	AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
 	ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error)
@@ -157,14 +181,20 @@ func (UnimplementedAuthServiceServer) ConfirmSignup(context.Context, *ConfirmSig
 func (UnimplementedAuthServiceServer) UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLogin not implemented")
 }
+func (UnimplementedAuthServiceServer) ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateUserToken not implemented")
+}
 func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCoverPhoto not implemented")
 }
-func (UnimplementedAuthServiceServer) ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateUserToken not implemented")
+func (UnimplementedAuthServiceServer) UpdateUserProfileStatus(context.Context, *UpdateUserProfileStatusRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserProfileStatus not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserProfileDescription not implemented")
 }
 func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
@@ -257,6 +287,24 @@ func _AuthService_UserLogin_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ValidateUserToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ValidateUserToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/ValidateUserToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ValidateUserToken(ctx, req.(*ValidateTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_UpdateProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateprofilePhotoRequest)
 	if err := dec(in); err != nil {
@@ -293,20 +341,38 @@ func _AuthService_UpdateCoverPhoto_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_ValidateUserToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ValidateTokenRequest)
+func _AuthService_UpdateUserProfileStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserProfileStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).ValidateUserToken(ctx, in)
+		return srv.(AuthServiceServer).UpdateUserProfileStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/auth.AuthService/ValidateUserToken",
+		FullMethod: "/auth.AuthService/UpdateUserProfileStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).ValidateUserToken(ctx, req.(*ValidateTokenRequest))
+		return srv.(AuthServiceServer).UpdateUserProfileStatus(ctx, req.(*UpdateUserProfileStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdateUserProfileDescription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserProfileDescriptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateUserProfileDescription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/UpdateUserProfileDescription",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateUserProfileDescription(ctx, req.(*UpdateUserProfileDescriptionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -371,6 +437,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_UserLogin_Handler,
 		},
 		{
+			MethodName: "ValidateUserToken",
+			Handler:    _AuthService_ValidateUserToken_Handler,
+		},
+		{
 			MethodName: "UpdateProfilePhoto",
 			Handler:    _AuthService_UpdateProfilePhoto_Handler,
 		},
@@ -379,8 +449,12 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_UpdateCoverPhoto_Handler,
 		},
 		{
-			MethodName: "ValidateUserToken",
-			Handler:    _AuthService_ValidateUserToken_Handler,
+			MethodName: "UpdateUserProfileStatus",
+			Handler:    _AuthService_UpdateUserProfileStatus_Handler,
+		},
+		{
+			MethodName: "UpdateUserProfileDescription",
+			Handler:    _AuthService_UpdateUserProfileDescription_Handler,
 		},
 		{
 			MethodName: "AdminLogin",

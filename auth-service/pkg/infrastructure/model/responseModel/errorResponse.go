@@ -19,4 +19,7 @@ var (
 	ErrUsernameTaken                = errors.New("username already taken, please choose another")
 	ErrEmailExists                  = errors.New("email already exists, please use a different one or log in")
 	ErrEnterWithoutEmailConfimation = errors.New("please confirm your email before proceeding")
+
+	// User Profile
+	ErrStatuTimeLongExpireTime = errors.New("duration must under 6 hours")
 )

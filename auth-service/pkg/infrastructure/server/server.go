@@ -3,6 +3,7 @@ package server_auth_server
 import (
 	"context"
 
+	requestmodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
 	requestmodell_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
 	"github.com/Vajid-Hussain/HiperHive/auth-service/pkg/pb"
 	interface_usecase_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/usecase/interface"
@@ -96,6 +97,29 @@ func (u *AuthServer) UpdateCoverPhoto(ctx context.Context, req *pb.UpdateCoverPh
 	return &pb.UpdateCoverPhotoResponse{
 		Url: url,
 	}, nil
+}
+
+func (u *AuthServer) UpdateUserProfileStatus(ctx context.Context, req *pb.UpdateUserProfileStatusRequest) (*emptypb.Empty, error) {
+	var statusReq requestmodel_auth_server.UserProfileStatus
+	statusReq.UserID = req.UserID
+	statusReq.Status = req.Status
+
+	err := u.userUseCase.UpdateStatusOfUser(statusReq, req.Duration)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (u *AuthServer) UpdateUserProfileDescription(ctx context.Context, req *pb.UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error) {
+
+	err := u.userUseCase.UpdateDescriptionOfUser(req.UserID, req.Description)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
 }
 
 //Admin

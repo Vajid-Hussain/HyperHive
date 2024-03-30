@@ -15,3 +15,14 @@ type UserLogin struct {
 	Email    string `json:"Email" validate:"required,email"`
 	Password string `json:"Password" validate:"required,min=5"`
 }
+
+type UserProfileStatus struct{
+	UserID string `json:"-"`
+	Status string `json:"Status" validate:"required"`
+	Duration float32 `json:"Duration" validate:"required"`
+}
+
+type UserProfileDescription struct{
+	UserID string `json:"-"`
+	Description string `json:"Description" validate:"required"`
+}

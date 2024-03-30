@@ -1,6 +1,7 @@
 package repository_auth_server
 
 import (
+	"fmt"
 	"time"
 
 	requestmodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
@@ -135,6 +136,36 @@ func (d *UserRepository) UpdateUserProfilePhoto(userID, photoUrl string) error {
 func (d *UserRepository) UpdateCoverPhoto(userID, photoUrl string) error {
 	query := "UPDATE  users SET cover_photo_url= $1 WHERE id = $2"
 	result := d.DB.Exec(query, photoUrl, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
+
+// user Profile status
+
+func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_server.UserProfileStatus) error {
+
+	query := "INSERT INTO user_profile_statuses (status_id, status, status_till) VALUES ($1, $2, $3) ON CONFLICT (status_id) DO UPDATE SET status = $2, status_till = $3"
+	result := d.DB.Exec(query, status.UserID, status.Status, status.Expire)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
+
+func (d *UserRepository) UpdateOrCreateUserDescription(userID, description string) error {
+	fmt.Println("--", userID, description)
+	query := "INSERT INTO user_profile_statuses (status_id, description) VALUES ($1, $2) ON CONFLICT (status_id) DO UPDATE SET description = $2 "
+	result := d.DB.Exec(query, userID, description)
 	if result.Error != nil {
 		return responsemodel_auth_server.ErrInternalServer
 	}

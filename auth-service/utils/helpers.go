@@ -77,7 +77,6 @@ func UploadImageToS3(file []byte, sess *session.Session, ch chan string) {
 	close(ch)
 }
 
-
 func TemperveryTokenForUserAuthenticaiton(securityKey string, email string) (string, error) {
 	key := []byte(securityKey)
 	claims := jwt.MapClaims{
@@ -140,7 +139,7 @@ func VerifyAcessToken(token string, secretkey string) (string, error) {
 	if !ok {
 		return "", errors.New("id is not in accessToken. access denied")
 	}
-	return id, err
+	return id, nil
 }
 
 func VerifyRefreshToken(token string, securityKey string) error {

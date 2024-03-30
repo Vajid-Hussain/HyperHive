@@ -9,9 +9,14 @@ service AuthService{
     rpc VerifyUser (UserVerifyRequest) returns (google.protobuf.Empty) {};
     rpc ConfirmSignup (ConfirmSignupRequest) returns (confirmSignupResponse){};
     rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) {};
+    rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
+
+    // User Profile
     rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) {};
     rpc UpdateCoverPhoto ( UpdateCoverPhotoRequest) returns (UpdateCoverPhotoResponse) {};
-    rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
+    rpc UpdateUserProfileStatus (UpdateUserProfileStatusRequest) returns (google.protobuf.Empty) {};
+    rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) {};
+
 
     //admin
     rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
@@ -60,6 +65,12 @@ message UserLoginResponse{
     string RefresToken =2; 
 }
 
+message ValidateTokenResponse{
+    string userID =1;
+}
+
+// User Profile
+
 message UpdateprofilePhotoRequest{
     bytes Image =1;
     string UserID =2;
@@ -83,9 +94,18 @@ message ValidateTokenRequest{
     string refreshToken =2;
 }
 
-message ValidateTokenResponse{
-    string userID =1;
+message  UpdateUserProfileStatusRequest{
+    string UserID =1;
+    string Status =2;
+    float Duration =3;
 }
+
+message UpdateUserProfileDescriptionRequest{
+    string UserID =1;
+    string Description =2;
+}
+
+
 
 //admin
 message AdminLoginRequest{

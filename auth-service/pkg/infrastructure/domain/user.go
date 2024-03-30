@@ -21,3 +21,11 @@ type Users struct {
 	CreatedAt       time.Time `gorm:"autoCreateTime"`
 	Status          Status    `gorm:"default:pending"`
 }
+
+type UserProfileStatus struct {
+	StatusID    int `gorm:"unique"`
+	Frkey       Users `gorm:"foreignkey:StatusID;referances:ID"`
+	Status      string
+	StatusTill  time.Time
+	Description string
+}

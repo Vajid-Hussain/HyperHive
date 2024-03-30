@@ -14,9 +14,15 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 
 	engin.Use(middlewire.UserAuthMiddlewire)
 	{
-		engin.POST("/profilephoto", userHandler.UpdateProfilePhoto)
-		engin.POST("/coverphoto", userHandler.UpdateCoverPhoto)
-		engin.PATCH("/profilephoto", userHandler.UpdateProfilePhoto)
-		engin.PATCH("/coverphoto", userHandler.UpdateCoverPhoto)
+		profile := engin.Group("/profile")
+		{
+			profile.POST("/profilephoto", userHandler.UpdateProfilePhoto)
+			profile.POST("/coverphoto", userHandler.UpdateCoverPhoto)
+			profile.PATCH("/profilephoto", userHandler.UpdateProfilePhoto)
+			profile.PATCH("/coverphoto", userHandler.UpdateCoverPhoto)
+			profile.POST("/status", userHandler.UpdateProfileStatus)
+			profile.POST("/description", userHandler.UpdateProfileDescription)
+		}
+
 	}
 }

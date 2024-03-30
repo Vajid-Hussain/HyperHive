@@ -44,6 +44,7 @@ func InitDB(config *configl_auth_server.DataBase) (*gorm.DB, error) {
 
 	err = DB.AutoMigrate(domainl_auth_server.Users{},
 		domainl_auth_server.Admins{},
+		domainl_auth_server.UserProfileStatus{},
 	)
 	if err != nil {
 		return nil, err

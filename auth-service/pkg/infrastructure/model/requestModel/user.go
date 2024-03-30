@@ -7,12 +7,18 @@ type UserSignup struct {
 	Password        string
 	ConfirmPassword string
 	ProfilePhoto    []byte
-	CoverPhoto []byte
+	CoverPhoto      []byte
 	ProfilePhotoUrl string
-	CoverPhotoUrl string
+	CoverPhotoUrl   string
 }
 
-type VerifyUser struct{
+type VerifyUser struct {
 	Token string
 	Email string
+}
+
+type UserProfileStatus struct {
+	UserID string
+	Status string
+	Expire string
 }

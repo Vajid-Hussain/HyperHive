@@ -14,7 +14,9 @@ type IUserUseCase interface {
 	
 	//profile
 	UpdateProfilePhoto( string,  []byte) ( string,  error) 
-	UpdateCoverPhoto (string,  []byte) ( string,  error) 
+	UpdateCoverPhoto(string,  []byte) ( string,  error) 
+	UpdateStatusOfUser(requestmodel_auth_server.UserProfileStatus,  float32) error 
+	UpdateDescriptionOfUser(userID, description string) error
 }
 
 type IAdminUseCase interface {

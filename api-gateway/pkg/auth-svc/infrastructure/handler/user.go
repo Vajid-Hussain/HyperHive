@@ -196,3 +196,52 @@ func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
+	var statusReq requestmodel_auth_svc.UserProfileStatus
+	ctx.Bind(&statusReq)
+	statusReq.UserID = ctx.Get("userID").(string)
+
+	fmt.Println("--", statusReq)
+	validateError := helper_api_gateway.Validator(statusReq)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_, err := c.clind.UpdateUserProfileStatus(context, &pb.UpdateUserProfileStatusRequest{
+		UserID:   statusReq.UserID,
+		Status:   statusReq.Status,
+		Duration: statusReq.Duration,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", "status succesfully updated", nil))
+}
+
+func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
+	var descriptionReq requestmodel_auth_svc.UserProfileDescription
+	ctx.Bind(&descriptionReq)
+	descriptionReq.UserID = ctx.Get("userID").(string)
+
+	fmt.Println("--", descriptionReq)
+	validateError := helper_api_gateway.Validator(descriptionReq)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_, err := c.clind.UpdateUserProfileDescription(context, &pb.UpdateUserProfileDescriptionRequest{
+		UserID:      descriptionReq.UserID,
+		Description: descriptionReq.Description,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", "description succesfully updated", nil))
+}
