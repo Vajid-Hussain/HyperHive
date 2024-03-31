@@ -65,8 +65,60 @@ func (c *AuthHanlder) ReSendVerificationEmail(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-fmt.Println("--",token)
+
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, response_auth_svc.EmailSendSuccessfully, token, nil))
+}
+
+func (c *AuthHanlder) SendOtp(ctx echo.Context) error {
+	var req requestmodel_auth_svc.EmailReq
+
+	err := ctx.Bind(&req)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	token, err := c.clind.SendOtp(context, &pb.SendOtpRequest{
+		Emain: req.Email,
+	})
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, response_auth_svc.EmailSendSuccessfully, token, nil))
+}
+
+func (c *AuthHanlder) ForgotPassword(ctx echo.Context) error {
+	var req requestmodel_auth_svc.ForgotPassword
+	err := ctx.Bind(&req)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_, err = c.clind.ForgotPassword(context, &pb.ForgotPasswordRequest{
+		Otp:      req.Otp,
+		Password: req.Password,
+		Token:    ctx.Request().Header.Get("ConfirmToken"),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "password succesfully changed", "", nil))
 }
 
 func (c *AuthHanlder) MailVerificationCallback(ctx echo.Context) error {

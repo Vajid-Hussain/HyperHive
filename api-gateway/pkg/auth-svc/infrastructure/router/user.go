@@ -12,6 +12,8 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 	engin.POST("/confirm", userHandler.ConfirmSignup)
 	engin.POST("/login", userHandler.UserLogin)
 	engin.POST("/verifyemailresend", userHandler.ReSendVerificationEmail)
+	engin.POST("/sendotp", userHandler.SendOtp)
+	engin.POST("/forgotpassword", userHandler.ForgotPassword)
 
 	engin.Use(middlewire.UserAuthMiddlewire)
 	{

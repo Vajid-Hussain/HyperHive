@@ -11,6 +11,8 @@ service AuthService{
     rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) {};
     rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
     rpc ReSendVerificationEmail (ReSendVerificationEmailRequest) returns (ReSendVerificationEmailResponse) {};
+    rpc SendOtp (SendOtpRequest) returns (SendOtpResponse) {};
+    rpc ForgotPassword (ForgotPasswordRequest) returns (google.protobuf.Empty) {};
 
     // User Profile
     rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) {};
@@ -62,6 +64,7 @@ message confirmSignupResponse{
 message UserLoginRequest{
     string Email =1;
     string Password =2;
+    string Token=3;
 }
 
 message UserLoginResponse{
@@ -69,8 +72,22 @@ message UserLoginResponse{
     string RefresToken =2; 
 }
 
+message ForgotPasswordRequest {
+    string Otp =1;
+    string Password =2;
+    string Token =3;
+}
+
 message ValidateTokenResponse{
     string userID =1;
+}
+
+message SendOtpRequest {
+    string Emain =1;
+}
+
+message SendOtpResponse {
+    string Token =1;
 }
 
 // User Profile

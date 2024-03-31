@@ -29,6 +29,8 @@ type AuthServiceClient interface {
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	ValidateUserToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 	ReSendVerificationEmail(ctx context.Context, in *ReSendVerificationEmailRequest, opts ...grpc.CallOption) (*ReSendVerificationEmailResponse, error)
+	SendOtp(ctx context.Context, in *SendOtpRequest, opts ...grpc.CallOption) (*SendOtpResponse, error)
+	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// User Profile
 	UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
@@ -99,6 +101,24 @@ func (c *authServiceClient) ValidateUserToken(ctx context.Context, in *ValidateT
 func (c *authServiceClient) ReSendVerificationEmail(ctx context.Context, in *ReSendVerificationEmailRequest, opts ...grpc.CallOption) (*ReSendVerificationEmailResponse, error) {
 	out := new(ReSendVerificationEmailResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/ReSendVerificationEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) SendOtp(ctx context.Context, in *SendOtpRequest, opts ...grpc.CallOption) (*SendOtpResponse, error) {
+	out := new(SendOtpResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/SendOtp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/ForgotPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -205,6 +225,8 @@ type AuthServiceServer interface {
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	ValidateUserToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
 	ReSendVerificationEmail(context.Context, *ReSendVerificationEmailRequest) (*ReSendVerificationEmailResponse, error)
+	SendOtp(context.Context, *SendOtpRequest) (*SendOtpResponse, error)
+	ForgotPassword(context.Context, *ForgotPasswordRequest) (*emptypb.Empty, error)
 	// User Profile
 	UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
@@ -241,6 +263,12 @@ func (UnimplementedAuthServiceServer) ValidateUserToken(context.Context, *Valida
 }
 func (UnimplementedAuthServiceServer) ReSendVerificationEmail(context.Context, *ReSendVerificationEmailRequest) (*ReSendVerificationEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReSendVerificationEmail not implemented")
+}
+func (UnimplementedAuthServiceServer) SendOtp(context.Context, *SendOtpRequest) (*SendOtpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendOtp not implemented")
+}
+func (UnimplementedAuthServiceServer) ForgotPassword(context.Context, *ForgotPasswordRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForgotPassword not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
@@ -389,6 +417,42 @@ func _AuthService_ReSendVerificationEmail_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).ReSendVerificationEmail(ctx, req.(*ReSendVerificationEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_SendOtp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendOtpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SendOtp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/SendOtp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SendOtp(ctx, req.(*SendOtpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_ForgotPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForgotPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ForgotPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/ForgotPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ForgotPassword(ctx, req.(*ForgotPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -603,6 +667,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReSendVerificationEmail",
 			Handler:    _AuthService_ReSendVerificationEmail_Handler,
+		},
+		{
+			MethodName: "SendOtp",
+			Handler:    _AuthService_SendOtp_Handler,
+		},
+		{
+			MethodName: "ForgotPassword",
+			Handler:    _AuthService_ForgotPassword_Handler,
 		},
 		{
 			MethodName: "UpdateProfilePhoto",
