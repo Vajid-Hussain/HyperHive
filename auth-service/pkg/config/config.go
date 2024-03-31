@@ -14,9 +14,9 @@ type DataBase struct {
 }
 
 type Token struct {
-	AdminSecurityKey  string `mapstructure:"ADMIN_TOKENKEY"`
-	UserSecurityKey   string `mapstructure:"USER_TOKENKEY"`
-	TemperveryKey     string `mapstructure:"TEMPERVERY_TOKENKEY"`
+	AdminSecurityKey string `mapstructure:"ADMIN_TOKENKEY"`
+	UserSecurityKey  string `mapstructure:"USER_TOKENKEY"`
+	TemperveryKey    string `mapstructure:"TEMPERVERY_TOKENKEY"`
 }
 
 type S3Bucket struct {
@@ -26,19 +26,20 @@ type S3Bucket struct {
 	BucketName      string `mapstructure:"BucketName"`
 }
 
-type Mail struct{
+type Mail struct {
 	SecretKey string `mapstructure:"SECRETKEY"`
-	From string `mapstructure:"FROM"`
+	From      string `mapstructure:"FROM"`
 }
 
 type Config struct {
 	DB    DataBase
 	S3    S3Bucket
 	Token Token
-	Mail Mail
+	Mail  Mail
 }
 
 func InitServer() (*Config, error) {
+
 	var config = Config{}
 
 	viper.AddConfigPath("./")

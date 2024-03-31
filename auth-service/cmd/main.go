@@ -13,6 +13,7 @@ import (
 
 func main() {
 	defer handlepanic()
+
 	config, err := configl_auth_server.InitServer()
 	if err != nil {
 		log.Fatal(err)

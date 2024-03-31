@@ -1,5 +1,7 @@
 package requestmodel_auth_server
 
+import "time"
+
 type UserSignup struct {
 	UserName        string
 	Name            string
@@ -10,6 +12,7 @@ type UserSignup struct {
 	CoverPhoto      []byte
 	ProfilePhotoUrl string
 	CoverPhotoUrl   string
+	CreatedAt       time.Time
 }
 
 type VerifyUser struct {
@@ -21,4 +24,10 @@ type UserProfileStatus struct {
 	UserID string
 	Status string
 	Expire string
+}
+
+type ForgotPassword struct {
+	Password string
+	Token    string
+	Otp      string
 }

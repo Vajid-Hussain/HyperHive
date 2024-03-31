@@ -54,6 +54,28 @@ func (u *AuthServer) VerifyUser(ctx context.Context, req *pb.UserVerifyRequest) 
 	return nil, nil
 }
 
+func (u *AuthServer) SendOtp(ctx context.Context, req *pb.SendOtpRequest) (*pb.SendOtpResponse, error) {
+	token, err := u.userUseCase.SendOtp(req.Emain)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.SendOtpResponse{Token: token}, nil
+}
+
+func (u *AuthServer) ForgotPassword(ctx context.Context, req *pb.ForgotPasswordRequest) (*emptypb.Empty, error) {
+	var forgotPasswordReq requestmodel_auth_server.ForgotPassword
+	forgotPasswordReq.Password = req.Password
+	forgotPasswordReq.Token = req.Token
+	forgotPasswordReq.Otp = req.Otp
+
+	err := u.userUseCase.ForgotPassword(forgotPasswordReq)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 func (u *AuthServer) ReSendVerificationEmail(ctx context.Context, req *pb.ReSendVerificationEmailRequest) (*pb.ReSendVerificationEmailResponse, error) {
 	token, err := u.userUseCase.ReSendVerificationMail(req.Token)
 	if err != nil {

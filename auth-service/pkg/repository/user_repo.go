@@ -22,7 +22,8 @@ func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (us
 	d.DB.Begin()
 
 	query := "INSERT INTO users (name, user_name, email, password, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *"
-	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, time.Now().Format("2006-01-02 15:04:05")).Scan(&userRes)
+
+	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, userReq.CreatedAt).Scan(&userRes)
 	if result.Error != nil {
 		d.DB.Rollback()
 		return nil, responsemodel_auth_server.ErrInternalServer
@@ -115,6 +116,51 @@ func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
 	}
 
 	return count, nil
+}
+
+// OTP
+
+func (d *UserRepository) CreateOtp(otp, email string, expire time.Time) error {
+	fmt.Println("--", otp, email)
+	qyery := "INSERT INTO otps (emails, otp, expire) VALUES ($1, $2, $3) ON CONFLICT (emails) DO UPDATE SET otp = $2, expire = $3"
+
+	result := d.DB.Exec(qyery, email, otp, expire)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+
+	return nil
+}
+
+func (d *UserRepository) FetchOtp(email string, now time.Time) (otp string, err error) {
+	query := "SELECT otp FROM otps WHERE emails = $1 AND expire >= $2"
+	result := d.DB.Raw(query, email, now).Scan(&otp)
+	if result.Error != nil {
+		return "", responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return "", responsemodel_auth_server.ErrOtpIsExpire
+	}
+
+	return otp, nil
+}
+
+func (d *UserRepository) ForgotPassword(email, password string) error {
+	query := "UPDATE users SET password = $1 WHERE email= $2"
+	result := d.DB.Exec(query, password, email)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
 }
 
 func (d *UserRepository) GetUserPasswordUsingEmail(email string) (password string, err error) {

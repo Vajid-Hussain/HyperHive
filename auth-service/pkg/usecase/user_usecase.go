@@ -1,8 +1,9 @@
 package usecasel_auth_server
 
 import (
-	"errors"
+	"crypto/rand"
 	"fmt"
+	"io"
 	"regexp"
 	"time"
 
@@ -19,13 +20,16 @@ type UserUseCase struct {
 	s3             configl_auth_server.S3Bucket
 	mailConstrains configl_auth_server.Mail
 	tokenSecret    configl_auth_server.Token
+	Location       *time.Location
 }
 
 func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_auth_server.S3Bucket, mailConstrains configl_auth_server.Mail, tokenSecret configl_auth_server.Token) interface_usecase_auth_server.IUserUseCase {
+	location, _ := time.LoadLocation("Asia/Kolkata")
 	return &UserUseCase{userRepo: repo,
 		s3:             s3,
 		mailConstrains: mailConstrains,
-		tokenSecret:    tokenSecret}
+		tokenSecret:    tokenSecret,
+		Location:       location}
 }
 
 func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error) {
@@ -59,6 +63,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 		return nil, responsemodel_auth_server.ErrUsernameTaken
 	}
 
+	userDetails.CreatedAt = time.Now().In(d.Location)
 	userRes, err := d.userRepo.Signup(userDetails)
 	if err != nil {
 		return nil, err
@@ -134,7 +139,7 @@ func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.Au
 	}
 
 	if exist == 0 {
-		return nil, errors.New("confirm email first then next")
+		return nil, responsemodel_auth_server.ErrEmailNotVerified
 	}
 
 	verifyRes.AccesToken, err = utils_auth_server.GenerateAcessToken(d.tokenSecret.UserSecurityKey, userID)
@@ -148,6 +153,81 @@ func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.Au
 	}
 
 	return &verifyRes, nil
+}
+
+func (d *UserUseCase) SendOtp(email string) (string, error) {
+	count, err := d.userRepo.EmailIsExist(email)
+	if err != nil {
+		return "", err
+	}
+	if count == 0 {
+		return "", responsemodel_auth_server.ErrNoUserExist
+	}
+
+	var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
+	b := make([]byte, 4)
+	n, err := io.ReadAtLeast(rand.Reader, b, 4)
+	if n != 4 {
+		panic(err)
+	}
+
+	for i := 0; i < len(b); i++ {
+		b[i] = table[int(b[i])%len(table)]
+	}
+	otp := string(b)
+
+	err = d.userRepo.CreateOtp(otp, email, time.Now().In(d.Location).Add(time.Minute*10))
+	if err != nil {
+		return "", err
+	}
+
+	verificationToken, err := utils_auth_server.TemperveryTokenForUserAuthenticaiton(d.tokenSecret.TemperveryKey, email)
+	if err != nil {
+		return "", err
+	}
+
+	err = utils_auth_server.SendOtp(email, otp, verificationToken, d.mailConstrains)
+	if err != nil {
+		return "", err
+	}
+
+	return verificationToken, nil
+}
+
+func (d *UserUseCase) ForgotPassword(req requestmodel_auth_server.ForgotPassword) error {
+
+	email, err := utils_auth_server.FetchUserIDFromTokenNoWorryOnExpire(req.Token, d.tokenSecret.TemperveryKey)
+	if err != nil {
+		return err
+	}
+
+	otp, err := d.userRepo.FetchOtp(email, time.Now().In(d.Location))
+	if err != nil {
+		return err
+	}
+
+	if otp != req.Otp {
+		return responsemodel_auth_server.ErrOtpNotMatch
+	}
+
+	hasLowercase := regexp.MustCompile(`[a-z]`)
+	hasUppercase := regexp.MustCompile(`[A-Z]`)
+	hasDigit := regexp.MustCompile(`[0-9]`)
+	hasMinimumLength := regexp.MustCompile(`.{5,}`)
+	hasSymbol := regexp.MustCompile(`[!@#$%^&*]`)
+
+	if !hasLowercase.MatchString(req.Password) || !hasUppercase.MatchString(req.Password) || !hasDigit.MatchString(req.Password) || !hasMinimumLength.MatchString(req.Password) || !hasSymbol.MatchString(req.Password) {
+		return responsemodel_auth_server.ErrRegexNotMatch
+	}
+
+	req.Password = utils_auth_server.HashPassword(req.Password)
+
+	err = d.userRepo.ForgotPassword(email, req.Password)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_server.AuthenticationResponse, error) {
@@ -185,23 +265,23 @@ func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_ser
 	return &loginRes, nil
 }
 
-func (u *UserUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
-	fmt.Println("user middlewiere")
-	id, err := utils_auth_server.VerifyAcessToken(accessToken, u.tokenSecret.UserSecurityKey)
+func (d *UserUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
+	// fmt.Println("user middlewiere")
+	id, err := utils_auth_server.VerifyAcessToken(accessToken, d.tokenSecret.UserSecurityKey)
 	if err != nil {
 		return "", err
 	}
 
-	err = utils_auth_server.VerifyRefreshToken(refreshToken, u.tokenSecret.UserSecurityKey)
+	err = utils_auth_server.VerifyRefreshToken(refreshToken, d.tokenSecret.UserSecurityKey)
 	if err != nil {
 		return "", err
 	}
 	return id, nil
 }
 
-func (u *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url string, err error) {
+func (d *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url string, err error) {
 	var chanProfilePhoto = make(chan string)
-	s3Session := utils_auth_server.CreateSession(u.s3)
+	s3Session := utils_auth_server.CreateSession(d.s3)
 
 	if len(image) > 1 {
 		fmt.Println("profile proto is sending to s3")
@@ -213,7 +293,7 @@ func (u *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url strin
 		url = <-chanProfilePhoto
 	}
 
-	err = u.userRepo.UpdateUserProfilePhoto(userID, url)
+	err = d.userRepo.UpdateUserProfilePhoto(userID, url)
 	if err != nil {
 		return "", err
 	}
@@ -221,9 +301,9 @@ func (u *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url strin
 	return url, nil
 }
 
-func (u *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string, err error) {
+func (d *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string, err error) {
 	var chanCoverPhoto = make(chan string)
-	s3Session := utils_auth_server.CreateSession(u.s3)
+	s3Session := utils_auth_server.CreateSession(d.s3)
 
 	if len(image) > 1 {
 		go utils_auth_server.UploadImageToS3(image, s3Session, chanCoverPhoto)
@@ -233,7 +313,7 @@ func (u *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string,
 		url = <-chanCoverPhoto
 	}
 
-	err = u.userRepo.UpdateCoverPhoto(userID, url)
+	err = d.userRepo.UpdateCoverPhoto(userID, url)
 	if err != nil {
 		return "", err
 	}
@@ -241,15 +321,15 @@ func (u *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string,
 	return url, nil
 }
 
-func (u *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserProfileStatus, expire float32) error {
-	status.Expire = time.Now().Add(time.Hour * time.Duration(expire)).Format("2006-01-02 15:04:05")
+func (d *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserProfileStatus, expire float32) error {
+	status.Expire = time.Now().In(d.Location).Add(time.Hour * time.Duration(expire)).Format("2006-01-02 15:04:05")
 	fmt.Println("-----", time.Now(), status.Expire)
 
 	if expire > 6 {
 		return responsemodel_auth_server.ErrStatuTimeLongExpireTime
 	}
 
-	err := u.userRepo.UpdateOrCreateUserStatus(status)
+	err := d.userRepo.UpdateOrCreateUserStatus(status)
 	if err != nil {
 		return nil
 	}
@@ -257,8 +337,8 @@ func (u *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserPro
 	return nil
 }
 
-func (u *UserUseCase) UpdateDescriptionOfUser(userID, description string) error {
-	err := u.userRepo.UpdateOrCreateUserDescription(userID, description)
+func (d *UserUseCase) UpdateDescriptionOfUser(userID, description string) error {
+	err := d.userRepo.UpdateOrCreateUserDescription(userID, description)
 	if err != nil {
 		return nil
 	}
@@ -266,8 +346,8 @@ func (u *UserUseCase) UpdateDescriptionOfUser(userID, description string) error 
 	return nil
 }
 
-func (u *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.UserProfile, error) {
-	profile, err := u.userRepo.GetUserProfile(userID)
+func (d *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.UserProfile, error) {
+	profile, err := d.userRepo.GetUserProfile(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -279,6 +359,6 @@ func (u *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.
 	return profile, nil
 }
 
-func (u *UserUseCase) DeleteAccount(userID string) error {
-	return u.userRepo.DeleteUserAcoount(userID)
+func (d *UserUseCase) DeleteAccount(userID string) error {
+	return d.userRepo.DeleteUserAcoount(userID)
 }

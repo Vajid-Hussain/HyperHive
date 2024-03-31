@@ -12,6 +12,8 @@ type IUserUseCase interface {
 	ConfirmSignup(string) (*responsemodel_auth_server.AuthenticationResponse, error)
 	UserLogin(email, password string) (*responsemodel_auth_server.AuthenticationResponse, error)
 	VerifyUserToken(string, string) (string, error) 
+	SendOtp( string) (string, error)
+	ForgotPassword( requestmodel_auth_server.ForgotPassword) error
 	
 	//profile
 	UpdateProfilePhoto( string,  []byte) ( string,  error) 

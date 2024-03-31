@@ -12,9 +12,9 @@ const (
 
 type Users struct {
 	ID              int    `gorm:"primarykey; autoIncrement"`
-	UserName        string `gorm:"not null, unique"`
+	UserName        string `gorm:"not null,unique"`
 	Name            string
-	Email           string `gorm:"not null, unique"`
+	Email           string `gorm:"not null;unique;index"`
 	ProfilePhotoUrl string
 	CoverPhotoUrl   string
 	Password        string
@@ -23,9 +23,16 @@ type Users struct {
 }
 
 type UserProfileStatus struct {
-	StatusID    int `gorm:"unique"`
+	StatusID    int   `gorm:"unique"`
 	Frkey       Users `gorm:"foreignkey:StatusID;referances:ID"`
 	Status      string
 	StatusTill  time.Time
 	Description string
+}
+
+type Otp struct {
+	Expire time.Time
+	Otp    string
+	Emails string `gorm:"primarykey"`
+	// User   Users  `gorm:"foreignKey:Emails; references:Email"`
 }

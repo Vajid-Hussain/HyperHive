@@ -12,6 +12,7 @@ require (
 	golang.org/x/crypto v0.16.0
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.33.0
+	gopkg.in/mail.v2 v2.3.1
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.8
 )
@@ -43,6 +44,7 @@ require (
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -1,6 +1,8 @@
 package interface_repo_auth_server
 
 import (
+	"time"
+
 	requestmodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
 	responsemodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/responseModel"
 )
@@ -15,6 +17,9 @@ type IUserRepository interface {
 	UserNameIsExist(string) (int, error)
 	GetUserPasswordUsingEmail(string) (string, error)
 	FetchUserIDUsingMail(string) (string, error)
+	CreateOtp(string, string, time.Time) error
+	FetchOtp(string,time.Time) (string, error)
+	ForgotPassword(string, string) error
 
 	//profile
 	UpdateUserProfilePhoto(string, string) error
