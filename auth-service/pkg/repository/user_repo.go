@@ -38,6 +38,14 @@ func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (us
 	return userRes, nil
 }
 
+func (d *UserRepository) DeleteUnverifiedUsers() {
+	query := "DELETE FORM users WHERE status= 'pending' AND DATEDIFF('day', created_at, NOW())>=2"
+	err := d.DB.Raw(query).Error
+	if err != nil {
+		fmt.Println("--error at delete pending users happen with 2 days", err)
+	}
+}
+
 func (d *UserRepository) UserNameIsExist(userName string) (count int, err error) {
 	query := "SELECT count(*) FROM users WHERE user_name = $1  AND status != 'delete'"
 	result := d.DB.Raw(query, userName).Scan(&count)
@@ -254,6 +262,11 @@ func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_serve
 		return responsemodel_auth_server.ErrNotFound
 	}
 	return nil
+}
+
+func (d *UserRepository) DeleteExpiredStatus(now time.Time) {
+	query := "DELETE FROM users WHERE expire < $1"
+	d.DB.Exec(query, now)
 }
 
 func (d *UserRepository) UpdateOrCreateUserDescription(userID, description string) error {

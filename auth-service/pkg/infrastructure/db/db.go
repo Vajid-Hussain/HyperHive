@@ -13,7 +13,7 @@ import (
 )
 
 func InitDB(config *configl_auth_server.DataBase) (*gorm.DB, error) {
-	connectionString := "user=postgres password=8086 host=localhost"
+	connectionString := fmt.Sprintf("user= %s password= %s host= %s sslmode=disable", config.User, config.UserPassword, config.Host)
 	// connectionString := "user=postgres password=8086 host=postgresDB sslmode=disable"
 	sql, err := sql.Open("postgres", connectionString)
 	if err != nil {

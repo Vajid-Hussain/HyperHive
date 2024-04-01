@@ -336,7 +336,7 @@ func (d *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserPro
 
 	err := d.userRepo.UpdateOrCreateUserStatus(status)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil

@@ -288,6 +288,7 @@ func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 		Duration: statusReq.Duration,
 	})
 	if err != nil {
+		fmt.Println(err,"--error in status update in profile with nill return from grpc")
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 
