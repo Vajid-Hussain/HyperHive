@@ -7,6 +7,7 @@ import (
 type DataBase struct {
 	Port               string `mapstructure:"PORT_AUTH_SVC"`
 	DBConeectionString string `mapstructure:"DBCONNECTION"`
+	// DBConeectionString string `mapstructure:"DEPLOYDBCONNECTION"`
 	DBName             string `mapstructure:"DATABASENAME"`
 	User               string `mapstructure:"USER"`
 	UserPassword       string `mapstructure:"USERPASSWORD"`

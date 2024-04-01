@@ -1,0 +1,12 @@
+FROM golang:1.22-alpine AS FirstBuild
+WORKDIR /auth-service/
+COPY ./ ./
+RUN go mod download
+RUN go build -o ./cmd/build ./cmd/main.go
+
+FROM scratch
+COPY --from=FirstBuild /auth-service/cmd/build /
+COPY --from=FirstBuild /auth-service/template/ /template/
+COPY --from=FirstBuild /auth-service/dev.env /
+EXPOSE 8081
+CMD [ "/build" ]

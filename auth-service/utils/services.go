@@ -41,11 +41,13 @@ func SendVerificationEmail(recipientEmail, verificationToken string, credentials
 
 	c, err := mail.NewClient("smtp.gmail.com", mail.WithPort(587), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername(credentials.From), mail.WithPassword(credentials.SecretKey))
 	if err != nil {
-		log.Fatalf("failed to create mail client: %s", err)
+		log.Printf("failed to create mail client: %s", err)
 	}
 
+	c.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+
 	if err := c.DialAndSend(m); err != nil {
-		log.Fatalf("failed to send mail: %s", err)
+		log.Printf("failed to send mail: %s", err)
 	}
 
 	return nil
@@ -63,7 +65,7 @@ func SendOtp(toEmail, otp string, TemperveryToken string, credentials configl_au
 
 	// t := template.New("template/otp.html")
 
-	var err error
+	// var err error
 	t, err := template.ParseFiles("template/otp.html")
 	if err != nil {
 		return err
@@ -71,7 +73,7 @@ func SendOtp(toEmail, otp string, TemperveryToken string, credentials configl_au
 
 	var tpl bytes.Buffer
 	if err = t.Execute(&tpl, otpData); err != nil {
-		fmt.Println("--",tpl.String())
+		fmt.Println("--", tpl.String())
 		return err
 	}
 
@@ -102,3 +104,37 @@ func SendOtp(toEmail, otp string, TemperveryToken string, credentials configl_au
 
 	return nil
 }
+
+// func SendVerificationEmail(recipientEmail, verificationToken string, credentials configl_auth_server.Mail) error {
+
+// 	data := struct {
+// 		VerificationURL string
+// 	}{
+// 		VerificationURL: fmt.Sprintf("http://hyperhive.vajid.tech:8000/user/verify?email=%s&token=%s", recipientEmail, verificationToken),
+// 	}
+
+// 	t, err := template.ParseFiles("template/mail.html")
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	var tpl bytes.Buffer
+// 	if err = t.Execute(&tpl, data); err != nil {
+// 		return err
+// 	}
+
+// 	result := tpl.String()
+
+// 	m := go_mail.NewMessage()
+
+// 	m.SetHeader("From", credentials.From)
+
+// 	m.SetHeader("To", recipientEmail)
+
+// 	m.SetHeader("Subject", "Verification Mail From HiperHive!")
+
+// 	m.SetBody("text/html", result)
+
+// 	d := go_mail.NewDialer("smtp.gmail.com", 587, credentials.From, credentials.SecretKey)
+
+// }

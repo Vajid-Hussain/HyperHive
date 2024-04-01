@@ -31,6 +31,8 @@ func (u *AuthServer) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.Sig
 	UserDetails.UserName = req.UserName
 	UserDetails.Name = req.Name
 
+	fmt.Println("====", UserDetails)
+
 	userReq, err := u.userUseCase.Signup(UserDetails)
 	if err != nil {
 		return nil, err

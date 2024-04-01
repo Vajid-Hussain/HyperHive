@@ -91,22 +91,27 @@ func (d *UserRepository) IsUserIDExist(userID string) (count int, err error) {
 }
 
 func (d *UserRepository) VerifyUserSignup(userID, email string) error {
+	// d.DB.Begin()
+
 	query := "UPDATE users SET status = 'active' WHERE id = $1 AND email = $2"
 	result := d.DB.Exec(query, userID, email)
 	if result.Error != nil {
+		// d.DB.Rollback()
 		return responsemodel_auth_server.ErrInternalServer
 	}
 
 	if result.RowsAffected == 0 {
+		// d.DB.Rollback()
 		return responsemodel_auth_server.ErrNotFound
 	}
+	// d.DB.Commit()
 	return nil
 }
 
-func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
-
-	query := " SELECT count(*) FROM users WHERE id=? AND status ='active' "
-	result := d.DB.Raw(query, userID).Scan(&count)
+func (d *UserRepository) ConfirmSignup(userID string) (int, error) {
+	var count int64
+	query := " SELECT count(*) FROM users WHERE id=$1 AND status ='active' "
+	result := d.DB.Raw(query, userID).Count(&count)
 	if result.Error != nil {
 		return 0, responsemodel_auth_server.ErrInternalServer
 	}
@@ -115,8 +120,25 @@ func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
 		return 0, responsemodel_auth_server.ErrNotFound
 	}
 
-	return count, nil
+	return int(count), nil
 }
+
+// func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
+//     var userCount int
+//     query := "SELECT COUNT(*) FROM users WHERE id = ? AND status = 'active'"
+//     result := d.DB.Raw(query, userID).Count(&count)
+//     if result.Error != nil {
+//         // Handle specific database errors
+
+//         return 0, responsemodel_auth_server.ErrInternalServer
+//     }
+
+//     if userCount == 0 {
+//         return 0, responsemodel_auth_server.ErrNotFound
+//     }
+
+//     return userCount, nil
+// }
 
 // OTP
 

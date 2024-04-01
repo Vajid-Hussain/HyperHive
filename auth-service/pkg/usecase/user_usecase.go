@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"time"
 
+	_ "time/tzdata"
+
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
 	requestmodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/requestModel"
 	responsemodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/responseModel"
@@ -24,12 +26,15 @@ type UserUseCase struct {
 }
 
 func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_auth_server.S3Bucket, mailConstrains configl_auth_server.Mail, tokenSecret configl_auth_server.Token) interface_usecase_auth_server.IUserUseCase {
-	location, _ := time.LoadLocation("Asia/Kolkata")
+	locationInd, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		fmt.Println("error at exct place", err)
+	}
 	return &UserUseCase{userRepo: repo,
 		s3:             s3,
 		mailConstrains: mailConstrains,
 		tokenSecret:    tokenSecret,
-		Location:       location}
+		Location:       locationInd}
 }
 
 func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error) {
@@ -81,13 +86,13 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 }
 
 func (d *UserUseCase) VerifyUserSignup(email, token string) error {
-	// fmt.Println("--", email, token)
+	fmt.Println("-browser-", email, token)
 
 	userID, err := utils_auth_server.FetchUserIDFromToken(token, d.tokenSecret.TemperveryKey)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("verify", userID, email)
 	err = d.userRepo.VerifyUserSignup(userID, email)
 	if err != nil {
 		return err

@@ -1,0 +1,47 @@
+# version: "3"
+
+services:
+  postgres:
+    image: postgres
+    container_name: hyperhive_postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=8086
+      - POSTGRES_USER=postgres
+    networks:
+      - hyperhive_network
+    volumes:
+      - hyperhive_volume:/var/lib/postgresql/data
+    hostname:
+      postgresDB
+    ports:
+      - 5431:5432
+
+  api-gateway:
+    image: hyperhive_api_gateway
+    build: ./api-gateway/
+    restart: always
+    depends_on:
+      - postgres
+    container_name: hyperhive_api_gateway
+    networks:
+      - hyperhive_network
+    ports:
+      - 9000:8000
+    
+  auth-services:
+    image: hyperhive_auth_service
+    build: ./auth-service/
+    restart: always
+    depends_on:
+      - postgres
+    container_name: hyperhive_auth_service
+    networks:
+      - hyperhive_network
+
+networks:
+  hyperhive_network:
+    driver: bridge
+
+volumes:
+  hyperhive_volume:
