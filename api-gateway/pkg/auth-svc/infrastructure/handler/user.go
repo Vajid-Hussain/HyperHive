@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	requestmodel_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/Model/requestModel"
-	response_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/Model/response"
+	requestmodel_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/infrastructure/Model/requestModel"
+	response_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/infrastructure/Model/response"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	"github.com/labstack/echo/v4"

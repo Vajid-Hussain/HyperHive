@@ -19,26 +19,27 @@ func NewUserRepository(db *gorm.DB) interfacel_repo_auth_server.IUserRepository 
 }
 
 func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (userRes *responsemodel_auth_server.UserSignup, err error) {
-	d.DB.Begin()
-
+	// d.DB.Begin()
+	fmt.Println("==",userReq.CreatedAt)
 	query := "INSERT INTO users (name, user_name, email, password, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *"
 
 	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, userReq.CreatedAt).Scan(&userRes)
 	if result.Error != nil {
-		d.DB.Rollback()
+		// d.DB.Rollback()
 		return nil, responsemodel_auth_server.ErrInternalServer
 	}
 
 	if result.RowsAffected == 0 {
-		d.DB.Rollback()
+		// d.DB.Rollback()
 		return nil, responsemodel_auth_server.ErrDBNoRowAffected
 	}
 
-	d.DB.Commit()
+	// d.DB.Commit()
 	return userRes, nil
 }
 
 func (d *UserRepository) DeleteUnverifiedUsers() {
+	fmt.Println("--unverfied user accound deleted")
 	query := "DELETE FORM users WHERE status= 'pending' AND DATEDIFF('day', created_at, NOW())>=2"
 	err := d.DB.Raw(query).Error
 	if err != nil {
@@ -265,8 +266,9 @@ func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_serve
 }
 
 func (d *UserRepository) DeleteExpiredStatus(now time.Time) {
-	query := "DELETE FROM users WHERE expire < $1"
-	d.DB.Exec(query, now)
+	fmt.Println("=== expired status deleted", now)
+	query := "DELETE FROM user_profile_statuses WHERE status_till < $1"
+	d.DB.Raw(query, now)
 }
 
 func (d *UserRepository) UpdateOrCreateUserDescription(userID, description string) error {

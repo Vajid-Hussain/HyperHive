@@ -2,6 +2,7 @@ package di_auth_server
 
 import (
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
+	cron_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/cronJob"
 	db_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/db"
 	server_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/server"
 	repositoryl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/repository"
@@ -19,6 +20,9 @@ func InitAuthServer(config *configl_auth_server.Config) (*server_auth_server.Aut
 
 	adminRepository := repositoryl_auth_server.NewAdminRepository(DB)
 	adminUseCase := usecase_auth_server.NewAdminUseCase(adminRepository, config.Token)
+
+	crons:=cron_auth_server.NewCronJob(userRepository)
+	crons.StartCronInAuthService()
 
 	return server_auth_server.NewAuthServer(userUseCase, adminUseCase), nil
 }

@@ -68,7 +68,9 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 		return nil, responsemodel_auth_server.ErrUsernameTaken
 	}
 
+	fmt.Println("--", d.Location.String())
 	userDetails.CreatedAt = time.Now().In(d.Location)
+	fmt.Println("--", userDetails.CreatedAt)
 	userRes, err := d.userRepo.Signup(userDetails)
 	if err != nil {
 		return nil, err
@@ -86,7 +88,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 }
 
 func (d *UserUseCase) VerifyUserSignup(email, token string) error {
-	fmt.Println("-browser-", email, token)
+	// fmt.Println("-browser-", email, token)
 
 	userID, err := utils_auth_server.FetchUserIDFromToken(token, d.tokenSecret.TemperveryKey)
 	if err != nil {
@@ -327,8 +329,8 @@ func (d *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string,
 }
 
 func (d *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserProfileStatus, expire float32) error {
-	status.Expire = time.Now().In(d.Location).Add(time.Hour * time.Duration(expire)).Format("2006-01-02 15:04:05")
-	fmt.Println("-----", time.Now(), status.Expire)
+	status.Expire = time.Now().Add(time.Hour * time.Duration(expire)).Format("2006-01-02 15:04:05")
+	// fmt.Println("-----", time.Now(), status.Expire)
 
 	if expire > 6 {
 		return responsemodel_auth_server.ErrStatuTimeLongExpireTime
@@ -361,6 +363,7 @@ func (d *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.
 		profile.Status = ""
 	}
 
+	profile.UserSince = profile.UserSince.In(d.Location)
 	return profile, nil
 }
 

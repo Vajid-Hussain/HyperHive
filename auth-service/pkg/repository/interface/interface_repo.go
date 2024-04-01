@@ -20,6 +20,7 @@ type IUserRepository interface {
 	CreateOtp(string, string, time.Time) error
 	FetchOtp(string,time.Time) (string, error)
 	ForgotPassword(string, string) error
+	DeleteUnverifiedUsers() 
 
 	//profile
 	UpdateUserProfilePhoto(string, string) error
@@ -28,6 +29,7 @@ type IUserRepository interface {
 	UpdateOrCreateUserDescription(string, string) error
 	GetUserProfile(string) (*responsemodel_auth_server.UserProfile, error)
 	DeleteUserAcoount(string) error
+	DeleteExpiredStatus( time.Time)
 }
 
 type IAdminRepository interface {

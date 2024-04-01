@@ -53,7 +53,7 @@ func (u *AuthServer) VerifyUser(ctx context.Context, req *pb.UserVerifyRequest) 
 		return nil, err
 	}
 
-	return nil, nil
+	return new(emptypb.Empty), nil
 }
 
 func (u *AuthServer) SendOtp(ctx context.Context, req *pb.SendOtpRequest) (*pb.SendOtpResponse, error) {
@@ -75,7 +75,7 @@ func (u *AuthServer) ForgotPassword(ctx context.Context, req *pb.ForgotPasswordR
 		return nil, err
 	}
 
-	return nil, nil
+	return new(emptypb.Empty), nil
 }
 
 func (u *AuthServer) ReSendVerificationEmail(ctx context.Context, req *pb.ReSendVerificationEmailRequest) (*pb.ReSendVerificationEmailResponse, error) {
@@ -145,7 +145,7 @@ func (u *AuthServer) UpdateUserProfileStatus(ctx context.Context, req *pb.Update
 		return nil, err
 	}
 
-	return nil, nil
+	return new(emptypb.Empty), nil
 }
 
 func (u *AuthServer) UpdateUserProfileDescription(ctx context.Context, req *pb.UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error) {
@@ -155,7 +155,7 @@ func (u *AuthServer) UpdateUserProfileDescription(ctx context.Context, req *pb.U
 		return nil, err
 	}
 
-	return nil, nil
+	return new(emptypb.Empty), nil
 }
 
 func (u *AuthServer) DeleteAccount(ctx context.Context, req *pb.DeleteAccountRequest) (*emptypb.Empty, error) {
@@ -164,7 +164,7 @@ func (u *AuthServer) DeleteAccount(ctx context.Context, req *pb.DeleteAccountReq
 		return nil, err
 	}
 
-	return nil, nil
+	return new(emptypb.Empty), nil
 }
 
 //Admin
@@ -185,7 +185,6 @@ func (u *AuthServer) UserProfile(ctx context.Context, req *pb.UserProfileRequest
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("--", result)
 
 	return &pb.UserProfileResponse{
 		UserID:       req.UserID,
@@ -244,5 +243,5 @@ func (u *AuthServer) ValidateUserToken(ctx context.Context, req *pb.ValidateToke
 
 func (u *AuthServer) ValidateAdminToken(ctx context.Context, req *pb.ValidateAdminTokenRequest) (*emptypb.Empty, error) {
 	err := u.adminUseCase.VerifyAdminToken(req.Token)
-	return nil, err
+	return new(emptypb.Empty), err
 }

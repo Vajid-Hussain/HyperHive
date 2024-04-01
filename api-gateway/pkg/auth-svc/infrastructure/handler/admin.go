@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	requestmodel_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/Model/requestModel"
-	response_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/Model/response"
+	requestmodel_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/infrastructure/Model/requestModel"
+	response_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/infrastructure/Model/response"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	"github.com/labstack/echo/v4"
@@ -52,7 +52,7 @@ func (c *AdminAuthHanlder) BlockUserAccount(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	result, err := c.clind.BlockUse(context, &pb.BlockUseRequest{
-		UserID:  blockRequest.UserID,
+		UserID: blockRequest.UserID,
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
