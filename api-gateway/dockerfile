@@ -1,0 +1,11 @@
+FROM golang:1.22-alpine AS firstStage
+WORKDIR /HyperHive/
+COPY ./ ./
+RUN go mod download
+RUN go build -o ./cmd/binary ./cmd/main.go
+
+FROM scratch
+COPY --from=firstStage /HyperHive/cmd/binary /
+COPY --from=firstStage /HyperHive/dev.env /
+EXPOSE 8000
+CMD [ "/binary" ]

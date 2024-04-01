@@ -124,6 +124,12 @@ func (c *AuthHanlder) ForgotPassword(ctx echo.Context) error {
 func (c *AuthHanlder) MailVerificationCallback(ctx echo.Context) error {
 	mail := ctx.QueryParam("email")
 	token := ctx.QueryParam("token")
+	fmt.Println("==verrify email no email or token outside")
+
+	if mail == "" || token == "" {
+		fmt.Println("==verrify email no email or token ")
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", "no email or token"))
+	}
 
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -133,7 +139,7 @@ func (c *AuthHanlder) MailVerificationCallback(ctx echo.Context) error {
 		Email: mail,
 	})
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()+" no user match "))
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "You are verified, now you can confirm your signup", "", nil))

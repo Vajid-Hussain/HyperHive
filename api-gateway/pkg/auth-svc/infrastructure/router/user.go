@@ -17,9 +17,9 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 
 	engin.Use(middlewire.UserAuthMiddlewire)
 	{
-
 		account := engin.Group("/account")
-		{
+		{	
+			// engin.POST("/signup", userHandler.Signup)
 			account.DELETE("/", userHandler.DeleteUserAcoount)
 		}
 
