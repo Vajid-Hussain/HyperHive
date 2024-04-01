@@ -10,10 +10,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func InitAuthClind(engin *echo.Echo, config *config.Config) error {
+func InitAuthClind(engin *echo.Echo, config *config.Config) ( *middlewire_auth_svc.Middlewire,error) {
 	clind, err := clind_auth_svc.InitClind(config.Auth_service_port)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	engin.Use(middleware.Logger())
@@ -22,8 +22,8 @@ func InitAuthClind(engin *echo.Echo, config *config.Config) error {
 	UserHandler := handler_auth_svc.NewAuthHandler(clind)
 	AdminHandler := handler_auth_svc.NewAdminAuthHandler(clind)
 
-	router_auth_svc.UserRoutes(engin.Group("user"), UserHandler, middleWire)
+	router_auth_svc.UserRoutes(engin.Group(""), UserHandler, middleWire)
 	router_auth_svc.AdminRoutes(engin.Group("admin"), AdminHandler, middleWire)
 
-	return nil
+	return middleWire,nil
 }

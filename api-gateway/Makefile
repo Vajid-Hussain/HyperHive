@@ -6,3 +6,6 @@ protoAuthService:
 
 autoserver:
 	nodemon --watch './**/*.go' --signal SIGTERM --exec 'go' run cmd/main.go
+
+protoFriendService:
+	protoc ./pkg/friend-svc/pb/friend.proto --go_out=./ --go-grpc_out=./

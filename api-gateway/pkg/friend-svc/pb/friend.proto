@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package friends;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "./pkg/friend-svc/pb/";
+
+service FreindsService {
+    rpc FriendsRequest (FriendsRequestRequest) returns (google.protobuf.Empty);
+
+}
+
+message FriendsRequestRequest {
+    string UserOne =1;
+    string UserTwo =2; 
+}

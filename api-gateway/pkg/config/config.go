@@ -7,6 +7,7 @@ import (
 type Config struct {
 	PORT              string `mapstructure:"PORT"`
 	Auth_service_port string `mapstructure:"AUTH_SERVICE_PORT"`
+	Friend_service_Port string `mapstructure:"FRIEND_SERVICE_PORT"`
 }
 
 func InitConfig() (c *Config, err error) {
