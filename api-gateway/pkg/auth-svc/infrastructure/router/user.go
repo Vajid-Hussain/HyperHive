@@ -18,8 +18,7 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 	engin.Use(middlewire.UserAuthMiddlewire)
 	{
 		account := engin.Group("/account")
-		{	
-			// engin.POST("/signup", userHandler.Signup)
+		{
 			account.DELETE("/", userHandler.DeleteUserAcoount)
 		}
 
@@ -31,6 +30,8 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 			profile.POST("/coverphoto", userHandler.UpdateCoverPhoto)
 			profile.PATCH("/profilephoto", userHandler.UpdateProfilePhoto)
 			profile.PATCH("/coverphoto", userHandler.UpdateCoverPhoto)
+
+			profile.DELETE("/photoprofile", userHandler.DeletePhotFromUserProfile)
 
 			profile.POST("/status", userHandler.UpdateProfileStatus)
 			profile.POST("/description", userHandler.UpdateProfileDescription)

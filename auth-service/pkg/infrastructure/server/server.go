@@ -135,6 +135,15 @@ func (u *AuthServer) UpdateCoverPhoto(ctx context.Context, req *pb.UpdateCoverPh
 	}, nil
 }
 
+func (u *AuthServer) DeletePhotoInProfile(ctx context.Context, req *pb.DeletePhotoInProfileRequest) (*emptypb.Empty, error){
+	err:= u.userUseCase.DeletePhotoInProfile(req.UserID, req.Types)
+	if err != nil {
+		return nil, err
+	}
+
+	return new(emptypb.Empty), nil
+}
+
 func (u *AuthServer) UpdateUserProfileStatus(ctx context.Context, req *pb.UpdateUserProfileStatusRequest) (*emptypb.Empty, error) {
 	var statusReq requestmodel_auth_server.UserProfileStatus
 	statusReq.UserID = req.UserID

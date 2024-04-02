@@ -20,7 +20,7 @@ func NewUserRepository(db *gorm.DB) interfacel_repo_auth_server.IUserRepository 
 
 func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (userRes *responsemodel_auth_server.UserSignup, err error) {
 	// d.DB.Begin()
-	fmt.Println("==",userReq.CreatedAt)
+	fmt.Println("==", userReq.CreatedAt)
 	query := "INSERT INTO users (name, user_name, email, password, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *"
 
 	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, userReq.CreatedAt).Scan(&userRes)
@@ -132,24 +132,7 @@ func (d *UserRepository) ConfirmSignup(userID string) (int, error) {
 	return int(count), nil
 }
 
-// func (d *UserRepository) ConfirmSignup(userID string) (count int, err error) {
-//     var userCount int
-//     query := "SELECT COUNT(*) FROM users WHERE id = ? AND status = 'active'"
-//     result := d.DB.Raw(query, userID).Count(&count)
-//     if result.Error != nil {
-//         // Handle specific database errors
-
-//         return 0, responsemodel_auth_server.ErrInternalServer
-//     }
-
-//     if userCount == 0 {
-//         return 0, responsemodel_auth_server.ErrNotFound
-//     }
-
-//     return userCount, nil
-// }
-
-// OTP
+// ------OTP
 
 func (d *UserRepository) CreateOtp(otp, email string, expire time.Time) error {
 	fmt.Println("--", otp, email)
@@ -223,6 +206,8 @@ func (d *UserRepository) FetchUserIDUsingMail(email string) (userID string, err 
 	return userID, nil
 }
 
+// user Profile
+
 func (d *UserRepository) UpdateUserProfilePhoto(userID, photoUrl string) error {
 	query := "UPDATE  users SET profile_photo_url= $1 WHERE id = $2"
 	result := d.DB.Exec(query, photoUrl, userID)
@@ -249,7 +234,31 @@ func (d *UserRepository) UpdateCoverPhoto(userID, photoUrl string) error {
 	return nil
 }
 
-// user Profile
+func (d *UserRepository) DeleteProfilePhoto(userID string) error {
+	query := "UPDATE users SET profile_photo_url ='' WHERE id= $1"
+	result := d.DB.Exec(query, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
+
+func (d *UserRepository) DeleteCoverPhoto(userID string) error {
+	query := "UPDATE users SET cover_photo_url ='' WHERE id= $1"
+	result := d.DB.Exec(query, userID)
+	if result.Error != nil {
+		return responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_auth_server.ErrNotFound
+	}
+	return nil
+}
 
 func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_server.UserProfileStatus) error {
 
@@ -266,13 +275,11 @@ func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_serve
 }
 
 func (d *UserRepository) DeleteExpiredStatus(now time.Time) {
-	fmt.Println("=== expired status deleted", now)
 	query := "DELETE FROM user_profile_statuses WHERE status_till < $1"
 	d.DB.Raw(query, now)
 }
 
 func (d *UserRepository) UpdateOrCreateUserDescription(userID, description string) error {
-	fmt.Println("--", userID, description)
 	query := "INSERT INTO user_profile_statuses (status_id, description) VALUES ($1, $2) ON CONFLICT (status_id) DO UPDATE SET description = $2 "
 	result := d.DB.Exec(query, userID, description)
 	if result.Error != nil {

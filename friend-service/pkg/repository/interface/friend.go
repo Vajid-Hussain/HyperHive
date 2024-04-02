@@ -1,0 +1,1 @@
+package interface_repository_friend_server

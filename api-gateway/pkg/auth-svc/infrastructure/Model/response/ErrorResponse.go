@@ -12,4 +12,5 @@ var (
 
 var (
 	EmailSendSuccessfully = "Email sent successfully"
+	DeleteProfiesPhotos   = "succesfully deleted"
 )

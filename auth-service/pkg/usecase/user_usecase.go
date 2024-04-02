@@ -68,9 +68,7 @@ func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*
 		return nil, responsemodel_auth_server.ErrUsernameTaken
 	}
 
-	fmt.Println("--", d.Location.String())
-	userDetails.CreatedAt = time.Now().In(d.Location)
-	fmt.Println("--", userDetails.CreatedAt)
+	userDetails.CreatedAt = time.Now()
 	userRes, err := d.userRepo.Signup(userDetails)
 	if err != nil {
 		return nil, err
@@ -94,7 +92,7 @@ func (d *UserUseCase) VerifyUserSignup(email, token string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("verify", userID, email)
+	// fmt.Println("verify", userID, email)
 	err = d.userRepo.VerifyUserSignup(userID, email)
 	if err != nil {
 		return err
@@ -272,8 +270,9 @@ func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_ser
 	return &loginRes, nil
 }
 
+// -----------User auth middlewire
 func (d *UserUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
-	// fmt.Println("user middlewiere")
+
 	id, err := utils_auth_server.VerifyAcessToken(accessToken, d.tokenSecret.UserSecurityKey)
 	if err != nil {
 		return "", err
@@ -291,12 +290,12 @@ func (d *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url strin
 	s3Session := utils_auth_server.CreateSession(d.s3)
 
 	if len(image) > 1 {
-		fmt.Println("profile proto is sending to s3")
+		// fmt.Println("profile proto is sending to s3")
 		go utils_auth_server.UploadImageToS3(image, s3Session, chanProfilePhoto)
 	}
 
 	if len(image) > 1 {
-		fmt.Println("profile  url fetch by chan to s3")
+		// fmt.Println("profile  url fetch by chan to s3")
 		url = <-chanProfilePhoto
 	}
 
@@ -326,6 +325,24 @@ func (d *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string,
 	}
 
 	return url, nil
+}
+
+func (d *UserUseCase) DeletePhotoInProfile(userID, types string) error {
+	fmt.Println(userID, types)
+	if types == "profile photo" {
+		err := d.userRepo.DeleteProfilePhoto(userID)
+		if err != nil {
+			return err
+		}
+	} else if types == "cover photo" {
+		err := d.userRepo.DeleteCoverPhoto(userID)
+		if err != nil {
+			return err
+		}
+	} else {
+		return responsemodel_auth_server.ErrDeletePhotoProfile
+	}
+	return nil
 }
 
 func (d *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserProfileStatus, expire float32) error {

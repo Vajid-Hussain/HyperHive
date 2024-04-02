@@ -269,6 +269,24 @@ func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+func (c *AuthHanlder) DeletePhotFromUserProfile(ctx echo.Context) error {
+	var req requestmodel_auth_svc.DeleteUserProfilePhotoType
+
+	ctx.Bind(&req)
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, err := c.clind.DeletePhotoInProfile(context, &pb.DeletePhotoInProfileRequest{
+		UserID: ctx.Get("userID").(string),
+		Types:  req.Types,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", response_auth_svc.DeleteProfiesPhotos, nil))
+}
+
 func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 	var statusReq requestmodel_auth_svc.UserProfileStatus
 	ctx.Bind(&statusReq)
@@ -288,7 +306,7 @@ func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 		Duration: statusReq.Duration,
 	})
 	if err != nil {
-		fmt.Println(err,"--error in status update in profile with nill return from grpc")
+		fmt.Println(err, "--error in status update in profile with nill return from grpc")
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 

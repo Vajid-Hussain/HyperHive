@@ -30,6 +30,8 @@ type IUserRepository interface {
 	GetUserProfile(string) (*responsemodel_auth_server.UserProfile, error)
 	DeleteUserAcoount(string) error
 	DeleteExpiredStatus( time.Time)
+	DeleteProfilePhoto( string) error
+	DeleteCoverPhoto( string) error
 }
 
 type IAdminRepository interface {

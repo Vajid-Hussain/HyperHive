@@ -1,0 +1,1 @@
+package repository_friend_server

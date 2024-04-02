@@ -21,7 +21,7 @@ func SendVerificationEmail(recipientEmail, verificationToken string, credentials
 	data := struct {
 		VerificationURL string
 	}{
-		VerificationURL: fmt.Sprintf("http://hyperhive.vajid.tech:8000/user/verify?email=%s&token=%s", recipientEmail, verificationToken),
+		VerificationURL: fmt.Sprintf("http://hyperhive.vajid.tech:8000/verify?email=%s&token=%s", recipientEmail, verificationToken),
 	}
 
 	var body bytes.Buffer

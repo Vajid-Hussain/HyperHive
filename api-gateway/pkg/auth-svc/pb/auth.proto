@@ -17,6 +17,7 @@ service AuthService{
     // User Profile
     rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) {};
     rpc UpdateCoverPhoto ( UpdateCoverPhotoRequest) returns (UpdateCoverPhotoResponse) {};
+    rpc DeletePhotoInProfile (DeletePhotoInProfileRequest) returns (google.protobuf.Empty);
     rpc UpdateUserProfileStatus (UpdateUserProfileStatusRequest) returns (google.protobuf.Empty) {};
     rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) {};
     rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) {};
@@ -124,6 +125,11 @@ message UpdateCoverPhotoRequest{
 
 message UpdateCoverPhotoResponse{
     string Url =1;
+}
+
+message DeletePhotoInProfileRequest {
+    string UserID =1;
+    string types =2;
 }
 
 message ValidateTokenRequest{

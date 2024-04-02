@@ -14,15 +14,16 @@ service AuthService{
     rpc SendOtp (SendOtpRequest) returns (SendOtpResponse) {};
     rpc ForgotPassword (ForgotPasswordRequest) returns (google.protobuf.Empty) {};
 
-
     
     //User Profile 
     rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) {};
     rpc UpdateCoverPhoto ( UpdateCoverPhotoRequest) returns (UpdateCoverPhotoResponse) {};
+    rpc DeletePhotoInProfile (DeletePhotoInProfileRequest) returns (google.protobuf.Empty);
     rpc UpdateUserProfileStatus (UpdateUserProfileStatusRequest) returns (google.protobuf.Empty) {};
     rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) {};
     rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) {};
     rpc DeleteAccount (DeleteAccountRequest) returns (google.protobuf.Empty){};
+
 
     //admin
     rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
@@ -140,6 +141,11 @@ message UpdateCoverPhotoRequest{
 
 message UpdateCoverPhotoResponse{
     string Url =1;
+}
+
+message DeletePhotoInProfileRequest {
+    string UserID =1;
+    string types =2;
 }
 
 message  UpdateUserProfileStatusRequest{

@@ -22,6 +22,7 @@ type IUserUseCase interface {
 	UpdateDescriptionOfUser(userID, description string) error
 	GetUserProfile( string) (*responsemodel_auth_server.UserProfile, error) 
 	DeleteAccount( string) error 
+	DeletePhotoInProfile(string,  string) error
 }
 
 type IAdminUseCase interface {

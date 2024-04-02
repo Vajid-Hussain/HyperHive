@@ -34,6 +34,7 @@ type AuthServiceClient interface {
 	// User Profile
 	UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
+	DeletePhotoInProfile(ctx context.Context, in *DeletePhotoInProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateUserProfileStatus(ctx context.Context, in *UpdateUserProfileStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateUserProfileDescription(ctx context.Context, in *UpdateUserProfileDescriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UserProfile(ctx context.Context, in *UserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error)
@@ -143,6 +144,15 @@ func (c *authServiceClient) UpdateCoverPhoto(ctx context.Context, in *UpdateCove
 	return out, nil
 }
 
+func (c *authServiceClient) DeletePhotoInProfile(ctx context.Context, in *DeletePhotoInProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/DeletePhotoInProfile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) UpdateUserProfileStatus(ctx context.Context, in *UpdateUserProfileStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/UpdateUserProfileStatus", in, out, opts...)
@@ -230,6 +240,7 @@ type AuthServiceServer interface {
 	// User Profile
 	UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
+	DeletePhotoInProfile(context.Context, *DeletePhotoInProfileRequest) (*emptypb.Empty, error)
 	UpdateUserProfileStatus(context.Context, *UpdateUserProfileStatusRequest) (*emptypb.Empty, error)
 	UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error)
 	UserProfile(context.Context, *UserProfileRequest) (*UserProfileResponse, error)
@@ -275,6 +286,9 @@ func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *Updat
 }
 func (UnimplementedAuthServiceServer) UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCoverPhoto not implemented")
+}
+func (UnimplementedAuthServiceServer) DeletePhotoInProfile(context.Context, *DeletePhotoInProfileRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePhotoInProfile not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateUserProfileStatus(context.Context, *UpdateUserProfileStatusRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserProfileStatus not implemented")
@@ -493,6 +507,24 @@ func _AuthService_UpdateCoverPhoto_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_DeletePhotoInProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePhotoInProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).DeletePhotoInProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/DeletePhotoInProfile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).DeletePhotoInProfile(ctx, req.(*DeletePhotoInProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_UpdateUserProfileStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateUserProfileStatusRequest)
 	if err := dec(in); err != nil {
@@ -683,6 +715,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateCoverPhoto",
 			Handler:    _AuthService_UpdateCoverPhoto_Handler,
+		},
+		{
+			MethodName: "DeletePhotoInProfile",
+			Handler:    _AuthService_DeletePhotoInProfile_Handler,
 		},
 		{
 			MethodName: "UpdateUserProfileStatus",

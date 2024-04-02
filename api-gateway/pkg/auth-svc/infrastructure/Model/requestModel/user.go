@@ -16,13 +16,13 @@ type UserLogin struct {
 
 type UserProfileStatus struct {
 	UserID   string  `json:"-"`
-	Status   string  `json:"Status" validate:"required"`
-	Duration float32 `json:"Duration" validate:"required"`
+	Status   string  `json:"Status"`
+	Duration float32 `json:"Duration"`
 }
 
 type UserProfileDescription struct {
 	UserID      string `json:"-"`
-	Description string `json:"Description" validate:"required"`
+	Description string `json:"Description"`
 }
 
 type UserIDReq struct {
@@ -37,4 +37,8 @@ type ForgotPassword struct {
 	Password        string `json:"Password" validate:"min=5"`
 	ConfirmPassword string `json:"ConfirmPassword" validate:"eqfield=Password,required"`
 	Otp             string `json:"Otp" validate:"len=4"`
+}
+
+type DeleteUserProfilePhotoType struct {
+	Types string `json:"Type" validate:"required"`
 }

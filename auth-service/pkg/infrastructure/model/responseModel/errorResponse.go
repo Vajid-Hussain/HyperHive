@@ -24,7 +24,7 @@ var (
 	ErrEnterWithoutEmailConfimation = errors.New("please confirm your email before proceeding")
 	ErrNoUserExist                  = errors.New("no user exist")
 	ErrEmailNotVerified             = errors.New("confirm email first then next")
-
+	ErrDeletePhotoProfile           = errors.New("mention which photo should delete")
 	// User Profile
 	ErrStatuTimeLongExpireTime = errors.New("duration must under 6 hours")
 )

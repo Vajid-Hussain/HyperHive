@@ -1,0 +1,1 @@
+package di_friend_server
