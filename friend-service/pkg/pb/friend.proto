@@ -3,7 +3,8 @@ syntax = "proto3";
 option go_package= "./pkg/pb/";
 
 service FriendService {
-    rpc FriendRequest (FriendRequestRequest) returns (FriendRequestResponse);
+    rpc FriendRequest (FriendRequestRequest) returns (FriendRequestResponse){};
+    rpc FriendList (FriendListRequest) returns (FriendListResponse);
 }
 
 message FriendRequestRequest {
@@ -14,7 +15,20 @@ message FriendRequestRequest {
 message FriendRequestResponse {
     string FriendsID = 1;
     string UserID =2;
-    string FriendID =3;
     string Status =4;
     string  UpdateAt =5;
+}
+
+message FriendListRequest {
+    string UserID =1;
+    string OffSet =2;
+    string Limit=3;
+    string Status =4;
+}
+
+message FriendListResponse {
+    string FriendID =1;
+    string UpdateAt =2;
+    string Messsage =3;
+    string UniqueFriendsID =4;
 }

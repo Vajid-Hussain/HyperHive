@@ -4,8 +4,15 @@ import "time"
 
 type FriendRequest struct {
 	FriendsID string
-	User      string
+	User      string `gorm:"column:users"`
 	Friend    string
 	UpdateAt  time.Time
-	Status string
+	Status    string
+}
+
+type FriendList struct {
+	UniqueFriendID string `gorm:"column:friends_id"`
+	FriendID       string `gorm:"column:friend"`
+	UpdateAt       time.Time
+	LastMessage    interface{}
 }

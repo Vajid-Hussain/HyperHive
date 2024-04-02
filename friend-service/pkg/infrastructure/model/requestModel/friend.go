@@ -7,3 +7,10 @@ type FriendRequest struct {
 	Friend   string
 	UpdateAt time.Time
 }
+
+type GetFriendRequest struct{
+	UserID string 
+	Limit string
+	OffSet string
+	Status string
+}

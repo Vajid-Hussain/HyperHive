@@ -1,6 +1,8 @@
 package config_friend_server
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Frend_service struct {
 	Friend_Service_Port string `mapstructure:"FRIEND_SERVICE_PORT"`
@@ -9,19 +11,19 @@ type Frend_service struct {
 type DataBase struct {
 	Port               string `mapstructure:"PORT_AUTH_SVC"`
 	DBConeectionString string `mapstructure:"DBCONNECTION"`
-	DBName       string `mapstructure:"DATABASENAME"`
-	User         string `mapstructure:"USER"`
-	UserPassword string `mapstructure:"USERPASSWORD"`
-	Host         string `mapstructure:"HOST"`
+	DBName             string `mapstructure:"DATABASENAME"`
+	User               string `mapstructure:"USER"`
+	UserPassword       string `mapstructure:"PASSWORD"`
+	Host               string `mapstructure:"HOST"`
 }
 
-type Config struct{
-	friend Frend_service
-	DB DataBase
+type Config struct {
+	Friend Frend_service
+	DB     DataBase
 }
 
 func InitConfig() (*Config, error) {
-	var config Config
+	var config = Config{}
 	viper.AddConfigPath("./")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")
@@ -32,7 +34,7 @@ func InitConfig() (*Config, error) {
 	}
 
 	viper.Unmarshal(&config.DB)
-	viper.Unmarshal(&config.friend)
+	viper.Unmarshal(&config.Friend)
 
 	return &config, nil
 }
