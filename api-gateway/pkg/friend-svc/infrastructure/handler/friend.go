@@ -2,6 +2,7 @@ package handler_friend_svc
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,10 +13,10 @@ import (
 )
 
 type FriendSvc struct {
-	clind pb.FreindsServiceClient
+	clind pb.FriendServiceClient
 }
 
-func NewFriendSvc(clind pb.FreindsServiceClient) *FriendSvc {
+func NewFriendSvc(clind pb.FriendServiceClient) *FriendSvc {
 	return &FriendSvc{clind: clind}
 }
 
@@ -25,13 +26,31 @@ func (h *FriendSvc) FriendRequest(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
+	fmt.Println("====", req, ctx.Get("userID").(string))
 
-	_, err := h.clind.FriendsRequest(context, &pb.FriendsRequestRequest{
-		UserOne: req.FriendOne,
-		UserTwo: req.FriendTwo,
+	result, err := h.clind.FriendRequest(context, &pb.FriendRequestRequest{
+		UserID:   ctx.Get("userID").(string),
+		FriendID: req.FriendID,
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "Friend request send succesfully", "", nil))
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "Friend request send succesfully", result, nil))
+}
+
+func (h *FriendSvc) GetFriends(ctx echo.Context) error {
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	
+	result, err := h.clind.FriendList(context, &pb.FriendListRequest{
+		UserID: ctx.Get("userID").(string),
+		OffSet: ctx.QueryParam("page"),
+		Limit:  ctx.QueryParam("limit"),
+		Status: ctx.QueryParam("status"),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }

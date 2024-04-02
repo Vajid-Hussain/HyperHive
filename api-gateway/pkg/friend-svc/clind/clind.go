@@ -1,20 +1,23 @@
 package clind_friend_svc
 
 import (
+	"fmt"
+
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Clind struct {
-	Clind pb.FreindsServiceClient
+	Clind pb.FriendServiceClient
 }
 
-func InitClind(port string) (*Clind , error){
+func InitClind(port string) (*Clind, error) {
+	fmt.Println("", port)
 	cc, err := grpc.Dial(port, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
 
-	return  &Clind{Clind: pb.NewFreindsServiceClient(cc)}, nil
+	return &Clind{Clind: pb.NewFriendServiceClient(cc)}, nil
 }
