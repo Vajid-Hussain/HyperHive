@@ -4,11 +4,13 @@ import "errors"
 
 // Repository
 var (
-	ErrUnauthorizedAccess  = errors.New("unauthorized access. Please log in to continue")
-	ErrNotFound            = errors.New("the requested resource was not found")
-	ErrOtpIsExpire         = errors.New("no otp available or expired")
-	ErrOtpNotMatch         = errors.New("otp not match")
-	ErrInternalServer      = errors.New("an unexpected error occurred. Please try again later")
+	ErrUnauthorizedAccess = errors.New("unauthorized access. Please log in to continue")
+	ErrNotFound           = errors.New("the requested resource was not found")
+	ErrOtpIsExpire        = errors.New("no otp available or expired")
+	ErrOtpNotMatch        = errors.New("otp not match")
+	ErrInternalServer     = errors.New("an unexpected error occurred. Please try again later")
+	ErrDBNoRowAffected    = errors.New("no row affected")
+
 	ErrInvalidInput        = errors.New("invalid input. Please check your data and try again")
 	ErrUserBlockedOrNoUser = errors.New("no resourse or user is blocked")
 
@@ -27,4 +29,6 @@ var (
 	ErrDeletePhotoProfile           = errors.New("mention which photo should delete")
 	// User Profile
 	ErrStatuTimeLongExpireTime = errors.New("duration must under 6 hours")
+	ErrRegexNotMatch           = errors.New("password is not satify criteria")
+	ErrDBQueryExecution        = errors.New("request have some missaderstanding polisht your request")
 )

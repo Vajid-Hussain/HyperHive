@@ -1,14 +1,7 @@
 package responsemodel_auth_server
 
 import (
-	"fmt"
 	"time"
-)
-
-var (
-	ErrRegexNotMatch    = fmt.Errorf("password is not satify criteria")
-	ErrDBNoRowAffected  = fmt.Errorf("no row affected")
-	ErrDBQueryExecution = fmt.Errorf("request have some missaderstanding polisht your request")
 )
 
 type UserSignup struct {
@@ -42,8 +35,8 @@ type UserProfile struct {
 	UserSince        time.Time `gorm:"column:created_at"`
 }
 
-type AbstractUserDetails struct{
-	UserID string 
+type AbstractUserDetails struct {
+	UserID   string
 	UserName string
-	Name string
+	Name     string
 }

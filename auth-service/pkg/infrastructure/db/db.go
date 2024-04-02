@@ -27,7 +27,7 @@ func InitDB(config *configl_auth_server.DataBase) (*gorm.DB, error) {
 	}
 	defer rows.Close()
 
-	if rows.Next() {
+	if rows != nil && rows.Next() {
 		fmt.Println("Database" + config.DBName + " already exists.")
 	} else {
 		// If the database does not exist, create it
