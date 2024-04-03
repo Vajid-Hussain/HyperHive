@@ -30,6 +30,7 @@ type S3Bucket struct {
 type Mail struct {
 	SecretKey string `mapstructure:"SECRETKEY"`
 	From      string `mapstructure:"FROM"`
+	URL string `mapstructure:"URL"`
 }
 
 type Config struct {
