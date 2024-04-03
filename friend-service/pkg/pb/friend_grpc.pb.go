@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,6 +25,10 @@ const _ = grpc.SupportPackageIsVersion7
 type FriendServiceClient interface {
 	FriendRequest(ctx context.Context, in *FriendRequestRequest, opts ...grpc.CallOption) (*FriendRequestResponse, error)
 	FriendList(ctx context.Context, in *FriendListRequest, opts ...grpc.CallOption) (*FriendListResponse, error)
+	GetReceivedFriendRequest(ctx context.Context, in *GetReceivedFriendRequestRequest, opts ...grpc.CallOption) (*GetReceivedFriendRequestResponse, error)
+	GetSendFriendRequest(ctx context.Context, in *GetSendFriendRequestRequest, opts ...grpc.CallOption) (*GetSendFriendRequestResponse, error)
+	GetBlockFriendRequest(ctx context.Context, in *GetBlockFriendRequestRequest, opts ...grpc.CallOption) (*GetBlockFriendRequestResponse, error)
+	UpdateFriendshipStatus(ctx context.Context, in *UpdateFriendshipStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type friendServiceClient struct {
@@ -52,12 +57,52 @@ func (c *friendServiceClient) FriendList(ctx context.Context, in *FriendListRequ
 	return out, nil
 }
 
+func (c *friendServiceClient) GetReceivedFriendRequest(ctx context.Context, in *GetReceivedFriendRequestRequest, opts ...grpc.CallOption) (*GetReceivedFriendRequestResponse, error) {
+	out := new(GetReceivedFriendRequestResponse)
+	err := c.cc.Invoke(ctx, "/FriendService/GetReceivedFriendRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *friendServiceClient) GetSendFriendRequest(ctx context.Context, in *GetSendFriendRequestRequest, opts ...grpc.CallOption) (*GetSendFriendRequestResponse, error) {
+	out := new(GetSendFriendRequestResponse)
+	err := c.cc.Invoke(ctx, "/FriendService/GetSendFriendRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *friendServiceClient) GetBlockFriendRequest(ctx context.Context, in *GetBlockFriendRequestRequest, opts ...grpc.CallOption) (*GetBlockFriendRequestResponse, error) {
+	out := new(GetBlockFriendRequestResponse)
+	err := c.cc.Invoke(ctx, "/FriendService/GetBlockFriendRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *friendServiceClient) UpdateFriendshipStatus(ctx context.Context, in *UpdateFriendshipStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/FriendService/UpdateFriendshipStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FriendServiceServer is the server API for FriendService service.
 // All implementations must embed UnimplementedFriendServiceServer
 // for forward compatibility
 type FriendServiceServer interface {
 	FriendRequest(context.Context, *FriendRequestRequest) (*FriendRequestResponse, error)
 	FriendList(context.Context, *FriendListRequest) (*FriendListResponse, error)
+	GetReceivedFriendRequest(context.Context, *GetReceivedFriendRequestRequest) (*GetReceivedFriendRequestResponse, error)
+	GetSendFriendRequest(context.Context, *GetSendFriendRequestRequest) (*GetSendFriendRequestResponse, error)
+	GetBlockFriendRequest(context.Context, *GetBlockFriendRequestRequest) (*GetBlockFriendRequestResponse, error)
+	UpdateFriendshipStatus(context.Context, *UpdateFriendshipStatusRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedFriendServiceServer()
 }
 
@@ -70,6 +115,18 @@ func (UnimplementedFriendServiceServer) FriendRequest(context.Context, *FriendRe
 }
 func (UnimplementedFriendServiceServer) FriendList(context.Context, *FriendListRequest) (*FriendListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FriendList not implemented")
+}
+func (UnimplementedFriendServiceServer) GetReceivedFriendRequest(context.Context, *GetReceivedFriendRequestRequest) (*GetReceivedFriendRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReceivedFriendRequest not implemented")
+}
+func (UnimplementedFriendServiceServer) GetSendFriendRequest(context.Context, *GetSendFriendRequestRequest) (*GetSendFriendRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSendFriendRequest not implemented")
+}
+func (UnimplementedFriendServiceServer) GetBlockFriendRequest(context.Context, *GetBlockFriendRequestRequest) (*GetBlockFriendRequestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBlockFriendRequest not implemented")
+}
+func (UnimplementedFriendServiceServer) UpdateFriendshipStatus(context.Context, *UpdateFriendshipStatusRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFriendshipStatus not implemented")
 }
 func (UnimplementedFriendServiceServer) mustEmbedUnimplementedFriendServiceServer() {}
 
@@ -120,6 +177,78 @@ func _FriendService_FriendList_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FriendService_GetReceivedFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReceivedFriendRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendServiceServer).GetReceivedFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FriendService/GetReceivedFriendRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendServiceServer).GetReceivedFriendRequest(ctx, req.(*GetReceivedFriendRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FriendService_GetSendFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSendFriendRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendServiceServer).GetSendFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FriendService/GetSendFriendRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendServiceServer).GetSendFriendRequest(ctx, req.(*GetSendFriendRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FriendService_GetBlockFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBlockFriendRequestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendServiceServer).GetBlockFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FriendService/GetBlockFriendRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendServiceServer).GetBlockFriendRequest(ctx, req.(*GetBlockFriendRequestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FriendService_UpdateFriendshipStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFriendshipStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendServiceServer).UpdateFriendshipStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FriendService/UpdateFriendshipStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendServiceServer).UpdateFriendshipStatus(ctx, req.(*UpdateFriendshipStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FriendService_ServiceDesc is the grpc.ServiceDesc for FriendService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +263,22 @@ var FriendService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FriendList",
 			Handler:    _FriendService_FriendList_Handler,
+		},
+		{
+			MethodName: "GetReceivedFriendRequest",
+			Handler:    _FriendService_GetReceivedFriendRequest_Handler,
+		},
+		{
+			MethodName: "GetSendFriendRequest",
+			Handler:    _FriendService_GetSendFriendRequest_Handler,
+		},
+		{
+			MethodName: "GetBlockFriendRequest",
+			Handler:    _FriendService_GetBlockFriendRequest_Handler,
+		},
+		{
+			MethodName: "UpdateFriendshipStatus",
+			Handler:    _FriendService_UpdateFriendshipStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

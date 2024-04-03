@@ -1,12 +1,15 @@
 syntax = "proto3";
 
 option go_package= "./pkg/friend-svc/pb/";
+import "google/protobuf/empty.proto";
 
 service FriendService {
     rpc FriendRequest (FriendRequestRequest) returns (FriendRequestResponse){};
     rpc FriendList (FriendListRequest) returns (FriendListResponse);
     rpc GetReceivedFriendRequest (GetReceivedFriendRequestRequest) returns (GetReceivedFriendRequestResponse);
     rpc GetSendFriendRequest (GetSendFriendRequestRequest) returns (GetSendFriendRequestResponse);
+    rpc GetBlockFriendRequest (GetBlockFriendRequestRequest) returns (GetBlockFriendRequestResponse);
+    rpc UpdateFriendshipStatus (UpdateFriendshipStatusRequest) returns (google.protobuf.Empty);
 }
 
 message FriendRequestRequest {
@@ -21,22 +24,6 @@ message FriendRequestResponse {
     string UpdateAt =5;
 }
 
-message FriendListResponseModel {
-    string FriendID =1;
-    string UpdateAt =2;
-    string UniqueFriendsID =4;
-}
-
-message FriendListRequest {
-    string UserID =1;
-    string OffSet =2;
-    string Limit=3;
-}
-
-message  FriendListResponse {
-    repeated FriendListResponseModel Friends = 1;
-}
-
 message GetPendingListRequestModel {
     string UserID =1;
     string OffSet =2;
@@ -47,6 +34,18 @@ message GetPendingListResponseModel {
     string FriendID =1;
     string UpdateAt =2;
     string UniqueFriendsID =3;
+    string userID = 5;
+    string userName = 6;
+    string name = 7;
+    string profilePhoto = 8;
+}
+
+message FriendListRequest {
+    GetPendingListRequestModel Friend =1;
+}
+
+message  FriendListResponse {
+    repeated GetPendingListResponseModel Friends = 1;
 }
 
 message GetReceivedFriendRequestRequest {
@@ -64,3 +63,17 @@ message GetSendFriendRequestRequest {
 message GetSendFriendRequestResponse {
     repeated GetPendingListResponseModel Send  =1;
 }
+
+message GetBlockFriendRequestRequest {
+    GetPendingListRequestModel Block = 1;
+}
+
+message GetBlockFriendRequestResponse {
+    repeated GetPendingListResponseModel Block  =1;
+}
+
+message UpdateFriendshipStatusRequest {
+    string FriendShipID =1;
+    string Status =2;
+}
+

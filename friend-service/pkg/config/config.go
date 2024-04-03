@@ -8,6 +8,10 @@ type Frend_service struct {
 	Friend_Service_Port string `mapstructure:"FRIEND_SERVICE_PORT"`
 }
 
+type Auth_service struct {
+	Auth_Service_port string `mapstructure:"AUTH_SERVICE_PORT"`
+}
+
 type DataBase struct {
 	Port               string `mapstructure:"PORT_AUTH_SVC"`
 	DBConeectionString string `mapstructure:"DBCONNECTION"`
@@ -20,6 +24,7 @@ type DataBase struct {
 type Config struct {
 	Friend Frend_service
 	DB     DataBase
+	Auth   Auth_service
 }
 
 func InitConfig() (*Config, error) {
@@ -35,6 +40,7 @@ func InitConfig() (*Config, error) {
 
 	viper.Unmarshal(&config.DB)
 	viper.Unmarshal(&config.Friend)
+	viper.Unmarshal(&config.Auth)
 
 	return &config, nil
 }

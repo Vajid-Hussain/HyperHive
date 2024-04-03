@@ -22,7 +22,6 @@ func Responses(statusCode int, message string, data interface{}, err interface{}
 
 func trimPrefixOfRpcError(err interface{}) interface{} {
 	errMessage, ok := err.(string)
-	// fmt.Println("---", errMessage, ok)
 	if ok {
 		return strings.TrimPrefix(errMessage, "rpc error: code = Unknown desc = ")
 	}

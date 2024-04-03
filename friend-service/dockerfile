@@ -1,0 +1,10 @@
+FROM golang:1.22-alpine AS FirstBuild
+COPY ./ ./
+RUN go mod download
+RUN go build -o cmd/build cmd/main.go
+
+FROM scratch
+COPY --from=FirstBuild ./cmd/build /
+COPY --from=FirstBuild ./dev.env /
+EXPOSE 8002
+CMD [ "/build" ]

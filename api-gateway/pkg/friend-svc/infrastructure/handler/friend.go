@@ -41,11 +41,11 @@ func (h *FriendSvc) GetFriends(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	result, err := h.clind.FriendList(context, &pb.FriendListRequest{
+	result, err := h.clind.FriendList(context, &pb.FriendListRequest{Friend: &pb.GetPendingListRequestModel{
 		UserID: ctx.Get("userID").(string),
 		OffSet: ctx.QueryParam("page"),
 		Limit:  ctx.QueryParam("limit"),
-	})
+	}})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
@@ -82,4 +82,38 @@ func (h *FriendSvc) GetSendFriendRequest(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (h *FriendSvc) GetBlockFriendRequest(ctx echo.Context) error {
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := h.clind.GetBlockFriendRequest(context, &pb.GetBlockFriendRequestRequest{
+		Block: &pb.GetPendingListRequestModel{
+			UserID: ctx.Get("userID").(string),
+			OffSet: ctx.QueryParam("page"),
+			Limit:  ctx.QueryParam("limit"),
+		},
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
+	var req requestmodel_friend_svc.FrendShipStatusUpdate
+	ctx.Bind(&req)
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, err := h.clind.UpdateFriendshipStatus(context, &pb.UpdateFriendshipStatusRequest{
+
+		FriendShipID: req.FrendShipID,
+		Status:       ctx.QueryParam("action"),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "succesfully updated as "+ctx.QueryParam("action"), "", nil))
 }

@@ -7,5 +7,9 @@ import (
 
 type IFriendRepository interface {
 	CreateFriend(*requestmodel_friend_server.FriendRequest) (*responsemodel_friend_server.FriendRequest, error)
-	GetFriends(string) ([]*responsemodel_friend_server.FriendList, error)
+	GetFriends(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
+	GetReceivedFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
+	GetSendFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
+	FriendShipStatusUpdate(string, string) error
+	GetBlockFriendRequest( *requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList,  error) 
 }

@@ -11,6 +11,10 @@ func FriendRoute(engin *echo.Group, friend *handler_friend_svc.FriendSvc, middle
 
 	engin.POST("/request", friend.FriendRequest)
 	engin.GET("/friends", friend.GetFriends)
+	engin.GET("/send", friend.GetSendFriendRequest)
 	engin.GET("/received", friend.GetReceivedFriendRequest)
-	engin.GET("/send",friend.GetSendFriendRequest)
+	engin.GET("/block", friend.GetBlockFriendRequest)
+
+	engin.PATCH("/restrict", friend.UpdateFriendshipStatus)
+	engin.PATCH("/friendrequest", friend.UpdateFriendshipStatus)
 }

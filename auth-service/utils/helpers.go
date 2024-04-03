@@ -123,6 +123,7 @@ func GenerateRefreshToken(securityKey string) (string, error) {
 }
 
 func VerifyAcessToken(token string, secretkey string) (string, error) {
+
 	key := []byte(secretkey)
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		return key, nil

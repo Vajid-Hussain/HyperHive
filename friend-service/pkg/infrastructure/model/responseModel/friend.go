@@ -14,5 +14,13 @@ type FriendList struct {
 	UniqueFriendID string `gorm:"column:friends_id"`
 	FriendID       string `gorm:"column:friend"`
 	UpdateAt       time.Time
-	LastMessage    interface{}
+	LastMessage    interface{} `gorm:"-"`
+	UserProfile    AbstractUserProfile `gorm:"-"`
+}
+
+type AbstractUserProfile struct {
+	UserID       string
+	UserName     string
+	Name         string
+	ProfilePhoto string
 }

@@ -12,5 +12,4 @@ type GetFriendRequest struct{
 	UserID string 
 	Limit string
 	OffSet string
-	Status string
 }
