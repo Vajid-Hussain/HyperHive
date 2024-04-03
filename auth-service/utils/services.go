@@ -5,49 +5,90 @@ import (
 	"crypto/tls"
 	"fmt"
 	"html/template"
-	"log"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
-	"github.com/wneessen/go-mail"
 	go_mail "gopkg.in/mail.v2"
 )
 
-func SendVerificationEmail(recipientEmail, verificationToken string, credentials configl_auth_server.Mail) error {
-	tmpl, err := template.ParseFiles("template/mail.html")
-	if err != nil {
-		log.Fatalf("failed to parse email template: %s", err)
-	}
+// func SendVerificationEmail(recipientEmail, verificationToken string, credentials configl_auth_server.Mail) error {
+// 	tmpl, err := template.ParseFiles("template/mail.html")
+// 	if err != nil {
+// 		log.Fatalf("failed to parse email template: %s", err)
+// 	}
 
+// 	data := struct {
+// 		VerificationURL string
+// 	}{
+// 		VerificationURL: fmt.Sprintf("http://%s/verify?email=%s&token=%s", credentials.URL,recipientEmail, verificationToken),
+// 	}
+
+// 	var body bytes.Buffer
+// 	if err := tmpl.Execute(&body, data); err != nil {
+// 		log.Fatalf("failed to execute email template: %s", err)
+// 	}
+
+// 	// Define email message
+// 	m := mail.NewMsg()
+// 	m.From(credentials.From)
+// 	m.To(recipientEmail)
+// 	m.Subject("Verification Mail From HiperHive!")
+// 	m.SetBodyString(mail.TypeTextHTML, body.String())
+
+// 	// Set the email body
+// 	// m.SetBodyString(mail.TypeTextPlain, body)
+
+// 	c, err := mail.NewClient("smtp.gmail.com", mail.WithPort(587), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername(credentials.From), mail.WithPassword(credentials.SecretKey))
+// 	if err != nil {
+// 		log.Printf("failed to create mail client: %s", err)
+// 	}
+
+// 	c.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+
+// 	if err := c.DialAndSend(m); err != nil {
+// 		log.Printf("failed to send mail: %s", err)
+// 	}
+
+// 	return nil
+// }
+
+func SendVerificationEmail(recipientEmail, verificationToken string, credentials configl_auth_server.Mail) error {
 	data := struct {
 		VerificationURL string
 	}{
-		VerificationURL: fmt.Sprintf("http://%s/verify?email=%s&token=%s", credentials.URL,recipientEmail, verificationToken),
+		VerificationURL: fmt.Sprintf("http://%s/verify?email=%s&token=%s", credentials.URL, recipientEmail, verificationToken),
 	}
 
-	var body bytes.Buffer
-	if err := tmpl.Execute(&body, data); err != nil {
-		log.Fatalf("failed to execute email template: %s", err)
-	}
-
-	// Define email message
-	m := mail.NewMsg()
-	m.From(credentials.From)
-	m.To(recipientEmail)
-	m.Subject("Verification Mail From HiperHive!")
-	m.SetBodyString(mail.TypeTextHTML, body.String())
-
-	// Set the email body
-	// m.SetBodyString(mail.TypeTextPlain, body)
-
-	c, err := mail.NewClient("smtp.gmail.com", mail.WithPort(587), mail.WithSMTPAuth(mail.SMTPAuthPlain), mail.WithUsername(credentials.From), mail.WithPassword(credentials.SecretKey))
+	t, err := template.ParseFiles("template/mail.html")
 	if err != nil {
-		log.Printf("failed to create mail client: %s", err)
+		return err
 	}
 
-	c.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+	var tpl bytes.Buffer
+	if err = t.Execute(&tpl, data); err != nil {
+		fmt.Println("--", tpl.String())
+		return err
+	}
 
-	if err := c.DialAndSend(m); err != nil {
-		log.Printf("failed to send mail: %s", err)
+	result := tpl.String()
+
+	m := go_mail.NewMessage()
+
+	m.SetHeader("From", credentials.From)
+
+	m.SetHeader("To", recipientEmail)
+
+	m.SetHeader("Subject", "Verification Mail From HiperHive!")
+
+	m.SetBody("text/html", result)
+
+	d := go_mail.NewDialer("smtp.gmail.com", 587, credentials.From, credentials.SecretKey)
+
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
 	}
 
 	return nil
