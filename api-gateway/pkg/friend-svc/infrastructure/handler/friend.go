@@ -2,7 +2,6 @@ package handler_friend_svc
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -26,7 +25,6 @@ func (h *FriendSvc) FriendRequest(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	fmt.Println("====", req, ctx.Get("userID").(string))
 
 	result, err := h.clind.FriendRequest(context, &pb.FriendRequestRequest{
 		UserID:   ctx.Get("userID").(string),
@@ -42,15 +40,46 @@ func (h *FriendSvc) GetFriends(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	
+
 	result, err := h.clind.FriendList(context, &pb.FriendListRequest{
 		UserID: ctx.Get("userID").(string),
 		OffSet: ctx.QueryParam("page"),
 		Limit:  ctx.QueryParam("limit"),
-		Status: ctx.QueryParam("status"),
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (h *FriendSvc) GetReceivedFriendRequest(ctx echo.Context) error {
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := h.clind.GetReceivedFriendRequest(context, &pb.GetReceivedFriendRequestRequest{
+		Received: &pb.GetPendingListRequestModel{
+			UserID: ctx.Get("userID").(string),
+			OffSet: ctx.QueryParam("page"),
+			Limit:  ctx.QueryParam("limit"),
+		},
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (h *FriendSvc) GetSendFriendRequest(ctx echo.Context) error {
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := h.clind.GetSendFriendRequest(context, &pb.GetSendFriendRequestRequest{
+		Send: &pb.GetPendingListRequestModel{
+			UserID: ctx.Get("userID").(string),
+			OffSet: ctx.QueryParam("page"),
+			Limit:  ctx.QueryParam("limit"),
+		},
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
