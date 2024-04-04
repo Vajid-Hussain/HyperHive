@@ -19,7 +19,7 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 	{
 		account := engin.Group("/account")
 		{
-			account.DELETE("/", userHandler.DeleteUserAcoount)
+			account.DELETE("", userHandler.DeleteUserAcoount)
 		}
 
 		profile := engin.Group("/profile")

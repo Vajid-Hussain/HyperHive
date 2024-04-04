@@ -17,4 +17,9 @@ func FriendRoute(engin *echo.Group, friend *handler_friend_svc.FriendSvc, middle
 
 	engin.PATCH("/restrict", friend.UpdateFriendshipStatus)
 	engin.PATCH("/friendrequest", friend.UpdateFriendshipStatus)
+
+	friendMessage := engin.Group("/chat")
+	{
+		friendMessage.GET("",friend.FriendMessage)
+	}
 }
