@@ -306,7 +306,8 @@ func (d *UserRepository) GetUserProfile(userID string) (userProfile *responsemod
 }
 
 func (d *UserRepository) DeleteUserAcoount(userID string) error {
-	query := "UPDATE users SET status = 'delete' WHERE id= $1"
+	// query := "UPDATE users SET status = 'delete' WHERE id= $1"
+	query:= "DELETE FROM users WHERE id =$1"
 	result := d.DB.Exec(query, userID)
 	if result.Error != nil {
 		return responsemodel_auth_server.ErrInternalServer
