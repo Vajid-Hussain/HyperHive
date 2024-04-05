@@ -21,7 +21,7 @@ func InitFriendService(config *config_friend_server.Config) (*server_friend_serv
 	}
 
 	friendRepository := repository_friend_server.NewAdminRepository(DB)
-	friendUseCase := usecase_friend_server.NewFriendUseCase(friendRepository, authClind)
+	friendUseCase := usecase_friend_server.NewFriendUseCase(friendRepository, authClind, config.Kafka)
 
 	return server_friend_server.NewFriendServer(friendUseCase), nil
 }

@@ -21,10 +21,16 @@ type DataBase struct {
 	Host               string `mapstructure:"HOST"`
 }
 
+type Kafka struct {
+	KafkaPort  string `mapstructure:"KAFKAPORT"`
+	KafkaTopic string `mapstrucuture:"TOPIC"`
+}
+
 type Config struct {
 	Friend Frend_service
 	DB     DataBase
 	Auth   Auth_service
+	Kafka  Kafka
 }
 
 func InitConfig() (*Config, error) {
