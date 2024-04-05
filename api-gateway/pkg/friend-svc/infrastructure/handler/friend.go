@@ -17,10 +17,17 @@ import (
 
 type FriendSvc struct {
 	clind pb.FriendServiceClient
-	redis *Caching
+	redis *Helper
 }
 
-func NewFriendSvc(clind pb.FriendServiceClient, redis *Caching) *FriendSvc {
+var upgrade = websocket.Upgrader{
+	ReadBufferSize: 1024,
+	WriteBufferSize: 1024,
+}
+
+var User = make(map[string]*websocket.Conn)
+
+func NewFriendSvc(clind pb.FriendServiceClient, redis *Helper) *FriendSvc {
 	return &FriendSvc{clind: clind,
 		redis: redis}
 }
@@ -124,19 +131,6 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "succesfully updated as "+ctx.QueryParam("action"), "", nil))
 }
 
-var upgrade = websocket.Upgrader{}
-
-type Message struct {
-	SenderID    int       `json:"sender_id"`
-	RecipientID int       `json:"recipient_id"`
-	Content     string    `json:"content"`
-	Timestamp   time.Time `json:"timestamp"`
-}
-
-type WebSocketInfo struct {
-	RemoteAddr string `json:"remote_addr"`
-}
-
 func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	fmt.Println("message called")
 
@@ -144,42 +138,39 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	defer fmt.Println("closed")
+	defer delete(User, ctx.Get("userID").(string))
 	defer conn.Close()
 
-	err = h.redis.CachingUserConnection(ctx.Get("userID").(string), conn)
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
-	}
+	User[ctx.Get("userID").(string)] = conn
 
 	for {
-		err := conn.WriteMessage(websocket.TextMessage, []byte("hellow world"))
-		if err != nil {
-			return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
-		}
+		fmt.Println("loop starts", ctx.Get("userID"), User)
 
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
 			return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 		}
-		fmt.Println(string(msg))
 
-		var message Message
+		var message requestmodel_friend_svc.Message
 		if err := json.Unmarshal([]byte(msg), &message); err != nil {
+			fmt.Println("unmarshel err", err)
 			return err
+			// continue
 		}
 
-		err = h.redis.SendMessage(message)
-		if err != nil {
-			return err
+		senderConn, ok := User[message.RecipientID]
+		if !ok {
+			fmt.Println("==", ok)
+			delete(User, message.RecipientID)
+			continue
 		}
 
-		err = json.Unmarshal(msg, &message)
+		err = senderConn.WriteMessage(websocket.TextMessage, []byte(message.Content))
 		if err != nil {
 			fmt.Println("--", err)
+			delete(User, message.RecipientID)
 		}
-		fmt.Println(message, message)
-
+		fmt.Println("message send ")
 	}
 
 	return errors.New("work done")

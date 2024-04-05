@@ -1,8 +1,6 @@
 package di_friend_svc
 
 import (
-	"fmt"
-
 	middlewire_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/infrastructure/middlewire"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	clind_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/clind"
@@ -19,11 +17,11 @@ func InitFriendClind(engin *echo.Echo, config *config.Config, middlewire *middle
 	}
 
 	redisDB := InitRedisDB(&config.RedisDB)
-	fmt.Println("db connected ==", redisDB)
+	// fmt.Println("db connected ==", redisDB)
 
-	redis:= handler_friend_svc.NewCaching(redisDB)
+	helper := handler_friend_svc.NewHelper(redisDB, config)
 
-	handler := handler_friend_svc.NewFriendSvc(clind.Clind, redis)
+	handler := handler_friend_svc.NewFriendSvc(clind.Clind, helper)
 
 	router_friend_svc.FriendRoute(engin.Group("friend"), handler, middlewire)
 

@@ -8,6 +8,8 @@ type Config struct {
 	PORT                string `mapstructure:"PORT"`
 	Auth_service_port   string `mapstructure:"AUTH_SERVICE_PORT"`
 	Friend_service_Port string `mapstructure:"FRIEND_SERVICE_PORT"`
+	KafkaPort           string `mapstructure:"KAFKAPORT"`
+	KafkaTopic          string `mapstrucuture:"TOPIC"`
 	RedisDB             Redis
 }
 
