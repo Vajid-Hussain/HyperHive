@@ -16,20 +16,20 @@ import (
 )
 
 type FriendSvc struct {
-	clind pb.FriendServiceClient
-	redis *Helper
+	clind  pb.FriendServiceClient
+	helper *Helper
 }
 
 var upgrade = websocket.Upgrader{
-	ReadBufferSize: 1024,
+	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
 var User = make(map[string]*websocket.Conn)
 
-func NewFriendSvc(clind pb.FriendServiceClient, redis *Helper) *FriendSvc {
+func NewFriendSvc(clind pb.FriendServiceClient, helper *Helper) *FriendSvc {
 	return &FriendSvc{clind: clind,
-		redis: redis}
+		helper: helper}
 }
 
 func (h *FriendSvc) FriendRequest(ctx echo.Context) error {
@@ -160,9 +160,15 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 
 		senderConn, ok := User[message.RecipientID]
 		if !ok {
+			message.Status = "pending"
 			fmt.Println("==", ok)
 			delete(User, message.RecipientID)
 			continue
+		}
+
+		err = h.helper.MessageProducer(message)
+		if err != nil {
+			fmt.Println("--", err)
 		}
 
 		err = senderConn.WriteMessage(websocket.TextMessage, []byte(message.Content))

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/IBM/sarama"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	requestmodel_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/infrastructure/model/requestModel"
 	"github.com/gorilla/websocket"
@@ -18,7 +19,19 @@ type Helper struct {
 
 func NewHelper(connection *redis.Client, config *config.Config) *Helper {
 	return &Helper{RedisDb: connection,
-	config: config,}
+		config: config}
+}
+
+func (r *Helper) MessageProducer(message requestmodel_friend_svc.Message) error {
+	configs := sarama.NewConfig()
+	configs.Producer.Return.Successes = true
+
+	producer, err := sarama.NewSyncProducer([]string{r.config.KafkaPort}, configs)
+	if err != nil {
+		return err
+	}
+
+	msg := &sarama.ProducerMessage{Topic: r.config.KafkaTopic, Key: sarama.StringEncoder("pearTopear"), Value: sarama.StringEncoder(message)}
 }
 
 func (r *Helper) HelperUserConnection(userID string, conn *websocket.Conn) error {
