@@ -2,8 +2,6 @@ package handler_friend_svc
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -151,33 +149,6 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 			return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 		}
 
-		var message requestmodel_friend_svc.Message
-		if err := json.Unmarshal([]byte(msg), &message); err != nil {
-			fmt.Println("unmarshel err", err)
-			return err
-			// continue
-		}
-
-		senderConn, ok := User[message.RecipientID]
-		if !ok {
-			message.Status = "pending"
-			fmt.Println("==", ok)
-			delete(User, message.RecipientID)
-			continue
-		}
-
-		err = h.helper.MessageProducer(message)
-		if err != nil {
-			fmt.Println("--", err)
-		}
-
-		err = senderConn.WriteMessage(websocket.TextMessage, []byte(message.Content))
-		if err != nil {
-			fmt.Println("--", err)
-			delete(User, message.RecipientID)
-		}
-		fmt.Println("message send ")
+		h.helper.SendMessageToUser(User, msg, ctx.Get("userID").(string))
 	}
-
-	return errors.New("work done")
 }

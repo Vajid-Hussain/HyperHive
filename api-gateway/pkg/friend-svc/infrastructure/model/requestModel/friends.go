@@ -11,13 +11,13 @@ type FrendShipStatusUpdate struct {
 }
 
 type Message struct {
-	SenderID    string    `json:"SenderID"`
-	RecipientID string    `json:"RecipientID"`
-	Content     string    `json:"Content"`
-	Timestamp   time.Time `json:"TimeStamp"`
-	Type        string    `json:"Type"`
+	SenderID    string    `json:"SenderID" validate:"required"`
+	RecipientID string    `json:"RecipientID" validate:"required"`
+	Content     string    `json:"Content" validate:"required"`
+	Timestamp   time.Time `json:"TimeStamp" validate:"required"`
+	Type        string    `json:"Type" validate:"required"`
 	Tag         string    `json:"Tag"`
-	Status      string    `json:"Status" default:"send"`
+	Status      string    `json:"Status"`
 }
 
 type WebSocketInfo struct {

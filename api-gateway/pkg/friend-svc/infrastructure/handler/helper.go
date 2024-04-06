@@ -2,7 +2,9 @@ package handler_friend_svc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/IBM/sarama"
@@ -22,18 +24,70 @@ func NewHelper(connection *redis.Client, config *config.Config) *Helper {
 		config: config}
 }
 
-func (r *Helper) MessageProducer(message requestmodel_friend_svc.Message) error {
+func (r *Helper) KafkaProducer(message requestmodel_friend_svc.Message) error {
+	fmt.Println("from kafka ", message)
+
 	configs := sarama.NewConfig()
 	configs.Producer.Return.Successes = true
+	configs.Producer.Retry.Max = 5
 
 	producer, err := sarama.NewSyncProducer([]string{r.config.KafkaPort}, configs)
 	if err != nil {
 		return err
 	}
 
-	msg := &sarama.ProducerMessage{Topic: r.config.KafkaTopic, Key: sarama.StringEncoder("pearTopear"), Value: sarama.StringEncoder(message)}
+	result, err := json.Marshal(message)
+	if err != nil {
+		return err
+	}
+
+	msg := &sarama.ProducerMessage{Topic: r.config.KafkaTopic, Key: sarama.StringEncoder("pearTopear"), Value: sarama.StringEncoder(result)}
+	partition, offset, err := producer.SendMessage(msg)
+	if err != nil {
+		fmt.Println("err send message in kafka ", err)
+	}
+	log.Printf("[producer] partition id: %d; offset:%d, value: %v\n", partition, offset, msg)
+	return nil
 }
 
+func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn,  msg []byte, userID string) {
+
+	var message requestmodel_friend_svc.Message
+	if err := json.Unmarshal([]byte(msg), &message); err != nil {
+		senderConn, ok := User[message.RecipientID]
+		if ok{
+			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		}
+		return 
+	}
+	message.Status = "send"
+	message.SenderID= userID
+
+	senderConn, ok := User[message.RecipientID]
+	if !ok {
+		message.Status = "pending"
+		delete(User, message.RecipientID)
+
+		err := r.KafkaProducer(message)
+		if err != nil {
+			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		}
+		return 
+	}
+
+	err := r.KafkaProducer(message)
+	if err != nil {
+		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	}
+
+	err = senderConn.WriteMessage(websocket.TextMessage, []byte(message.Content))
+	if err != nil {
+		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		delete(User, message.RecipientID)
+	}
+}
+
+// redis
 func (r *Helper) HelperUserConnection(userID string, conn *websocket.Conn) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
