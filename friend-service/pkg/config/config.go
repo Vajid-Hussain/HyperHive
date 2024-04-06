@@ -21,9 +21,15 @@ type DataBase struct {
 	Host               string `mapstructure:"HOST"`
 }
 
+type MongodDb struct {
+	MongodbURL           string `mapstructure:"MONGODBURL"`
+	DataBase             string `mapstructure:"MONGODBDATABASE"`
+	FriendChatCollection string `mapstructure:"MONGODBCOLLECTION"`
+}
+
 type Kafka struct {
 	KafkaPort  string `mapstructure:"KAFKAPORT"`
-	KafkaTopic string `mapstrucuture:"TOPIC"`
+	KafkaTopic string `mapstructure:"TOPIC"`
 }
 
 type Config struct {
@@ -31,6 +37,7 @@ type Config struct {
 	DB     DataBase
 	Auth   Auth_service
 	Kafka  Kafka
+	Mongo  MongodDb
 }
 
 func InitConfig() (*Config, error) {
@@ -47,6 +54,8 @@ func InitConfig() (*Config, error) {
 	viper.Unmarshal(&config.DB)
 	viper.Unmarshal(&config.Friend)
 	viper.Unmarshal(&config.Auth)
+	viper.Unmarshal(&config.Kafka)
+	viper.Unmarshal(&config.Mongo)
 
 	return &config, nil
 }

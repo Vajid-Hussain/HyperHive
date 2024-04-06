@@ -12,4 +12,5 @@ type IFriendUseCase interface {
 	GetSendFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	FriendShipStatusUpdate(string, string) error
 	GetBlockFriendRequest( *requestmodel_friend_server.GetFriendRequest) ( []*responsemodel_friend_server.FriendList,  error) 
+	MessageConsumer() 
 }

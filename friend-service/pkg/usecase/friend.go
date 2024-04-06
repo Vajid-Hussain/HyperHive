@@ -2,9 +2,12 @@ package usecase_friend_server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
+	"github.com/IBM/sarama"
+	config_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/config"
 	requestmodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/requestModel"
 	responsemodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/responseModel"
 	"github.com/Vajid-Hussain/HyperHive/friend-service/pkg/pb"
@@ -17,16 +20,18 @@ type FriendUseCase struct {
 	friendRepo interface_repository_friend_server.IFriendRepository
 	authClind  pb.AuthServiceClient
 	Location   *time.Location
+	Kafka      config_friend_server.Kafka
 }
 
-func NewFriendUseCase(repo interface_repository_friend_server.IFriendRepository, authClind pb.AuthServiceClient) interface_usecase_friend_server.IFriendUseCase {
+func NewFriendUseCase(repo interface_repository_friend_server.IFriendRepository, authClind pb.AuthServiceClient, Kafka config_friend_server.Kafka) interface_usecase_friend_server.IFriendUseCase {
 	locationInd, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		fmt.Println("error at exct place", err)
 	}
 	return &FriendUseCase{friendRepo: repo,
 		authClind: authClind,
-		Location:  locationInd}
+		Location:  locationInd,
+		Kafka:     Kafka}
 }
 
 func (r *FriendUseCase) FriendRequest(req *requestmodel_friend_server.FriendRequest) (*responsemodel_friend_server.FriendRequest, error) {
@@ -153,4 +158,39 @@ func (r *FriendUseCase) FriendShipStatusUpdate(friendShipID, status string) erro
 		return responsemodel_friend_server.ErrStatusNotMatching
 	}
 	return nil
+}
+
+func (u *FriendUseCase) MessageConsumer() {
+	fmt.Println("Kafka started ")
+	configs := sarama.NewConfig()
+
+	consumer, err := sarama.NewConsumer([]string{u.Kafka.KafkaPort}, configs)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+	defer consumer.Close()
+
+	consumerPartishion, err := consumer.ConsumePartition(u.Kafka.KafkaTopic, 0, sarama.OffsetNewest)
+	if err != nil {
+		fmt.Println("err :", err)
+	}
+	defer consumerPartishion.Close()
+
+	for {
+		message := <-consumerPartishion.Messages()
+		fmt.Println("--message: ", string(message.Value))
+		msg, _ := u.UnmarshelChatMessage(message.Value)
+		u.friendRepo.StoreFriendsChat(*msg)
+	}
+}
+
+func (u *FriendUseCase) UnmarshelChatMessage(data []byte) (*requestmodel_friend_server.Message, error) {
+	var message requestmodel_friend_server.Message
+	err := json.Unmarshal(data, &message)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("unmarshel ", message)
+	message.Timestamp= time.Now()
+	return &message, nil
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func InitFriendService(config *config_friend_server.Config) (*server_friend_server.FriendServer, error) {
-	DB, err := db_friend_server.InitDB(&config.DB)
+	DB, mongoCollection, err := db_friend_server.InitDB(&config.DB, &config.Mongo)
 	if err != nil {
 		return nil, err
 	}
@@ -20,8 +20,11 @@ func InitFriendService(config *config_friend_server.Config) (*server_friend_serv
 		return nil, err
 	}
 
-	friendRepository := repository_friend_server.NewAdminRepository(DB)
+	friendRepository := repository_friend_server.NewFriendRepository(DB, mongoCollection)
 	friendUseCase := usecase_friend_server.NewFriendUseCase(friendRepository, authClind, config.Kafka)
+	friendServer := server_friend_server.NewFriendServer(friendUseCase)
 
-	return server_friend_server.NewFriendServer(friendUseCase), nil
+	friendUseCase.MessageConsumer()
+
+	return friendServer, nil
 }

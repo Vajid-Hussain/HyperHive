@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/IBM/sarama"
-	config_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/config"
 	requestmodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/requestModel"
 	"github.com/Vajid-Hussain/HyperHive/friend-service/pkg/pb"
 	interface_usecase_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/usecase/interface"
@@ -15,12 +13,10 @@ import (
 type FriendServer struct {
 	useCase interface_usecase_friend_server.IFriendUseCase
 	pb.UnimplementedFriendServiceServer
-	Kafka config_friend_server.Kafka
 }
 
-func NewFriendServer(usecase interface_usecase_friend_server.IFriendUseCase, Kafka config_friend_server.Kafka) *FriendServer {
-	return &FriendServer{useCase: usecase,
-		Kafka: Kafka}
+func NewFriendServer(usecase interface_usecase_friend_server.IFriendUseCase) *FriendServer {
+	return &FriendServer{useCase: usecase}
 }
 
 func (u *FriendServer) FriendRequest(ctx context.Context, req *pb.FriendRequestRequest) (*pb.FriendRequestResponse, error) {
@@ -163,25 +159,4 @@ func (u *FriendServer) UpdateFriendshipStatus(ctx context.Context, req *pb.Updat
 		return new(emptypb.Empty), err
 	}
 	return new(emptypb.Empty), nil
-}
-
-func (u *FriendServer) MessageConsumer() {
-	configs := sarama.NewConfig()
-
-	consumer, err := sarama.NewConsumer([]string{u.Kafka.KafkaPort}, configs)
-	if err != nil {
-		fmt.Println("err: ", err)
-	}
-	defer consumer.Close()
-
-	consumerPartishion, err := consumer.ConsumePartition(u.Kafka.KafkaTopic, 0, sarama.OffsetNewest)
-	if err != nil {
-		fmt.Println("err :", err)
-	}
-	defer consumerPartishion.Close()
-
-	for {
-		message:= <- consumerPartishion.Messages()
-		fmt.Println("--message: ", message)
-	}
 }
