@@ -2,7 +2,6 @@ package server_friend_server
 
 import (
 	"context"
-	"fmt"
 
 	requestmodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/requestModel"
 	"github.com/Vajid-Hussain/HyperHive/friend-service/pkg/pb"
@@ -20,7 +19,7 @@ func NewFriendServer(usecase interface_usecase_friend_server.IFriendUseCase) *Fr
 }
 
 func (u *FriendServer) FriendRequest(ctx context.Context, req *pb.FriendRequestRequest) (*pb.FriendRequestResponse, error) {
-	fmt.Println("friend request called")
+
 	var friendRequest requestmodel_friend_server.FriendRequest
 	friendRequest.Friend = req.FriendID
 	friendRequest.User = req.UserID
@@ -31,10 +30,11 @@ func (u *FriendServer) FriendRequest(ctx context.Context, req *pb.FriendRequestR
 	}
 
 	return &pb.FriendRequestResponse{
-		FriendsID: result.FriendsID,
-		UserID:    result.User,
-		Status:    result.Status,
-		UpdateAt:  result.UpdateAt.String(),
+		FriendShipID: result.FriendShipID,
+		UserID:       result.User,
+		FriendID:     result.Friend,
+		Status:       result.Status,
+		UpdateAt:     result.UpdateAt.String(),
 	}, nil
 }
 
@@ -53,13 +53,13 @@ func (u *FriendServer) FriendList(ctx context.Context, req *pb.FriendListRequest
 	for _, val := range result {
 		if val != nil {
 			finalResult = append(finalResult, &pb.GetPendingListResponseModel{
-				FriendID:        val.FriendID,
-				UpdateAt:        val.UpdateAt.String(),
-				UniqueFriendsID: val.UniqueFriendID,
-				UserID:          val.UserProfile.UserID,
-				UserName:        val.UserProfile.UserName,
-				Name:            val.UserProfile.Name,
-				ProfilePhoto:    val.UserProfile.ProfilePhoto,
+				// FriendID:     val.FriendID,
+				UpdateAt:     val.UpdateAt.String(),
+				FriendShipID: val.UniqueFriendID,
+				UserID:       val.UserProfile.UserID,
+				UserName:     val.UserProfile.UserName,
+				Name:         val.UserProfile.Name,
+				ProfilePhoto: val.UserProfile.ProfilePhoto,
 			})
 		}
 	}
@@ -80,16 +80,16 @@ func (u *FriendServer) GetReceivedFriendRequest(ctx context.Context, req *pb.Get
 
 	var finalResult []*pb.GetPendingListResponseModel
 	for _, val := range result {
-		fmt.Println("--", val.UniqueFriendID)
+		// fmt.Println("--", val.UniqueFriendID)
 		if val != nil {
 			finalResult = append(finalResult, &pb.GetPendingListResponseModel{
-				FriendID:        val.FriendID,
-				UpdateAt:        val.UpdateAt.String(),
-				UniqueFriendsID: val.UniqueFriendID,
-				UserID:          val.UserProfile.UserID,
-				UserName:        val.UserProfile.UserName,
-				Name:            val.UserProfile.Name,
-				ProfilePhoto:    val.UserProfile.ProfilePhoto,
+				// FriendID:     val.FriendID,
+				UpdateAt:     val.UpdateAt.String(),
+				FriendShipID: val.UniqueFriendID,
+				UserID:       val.UserProfile.UserID,
+				UserName:     val.UserProfile.UserName,
+				Name:         val.UserProfile.Name,
+				ProfilePhoto: val.UserProfile.ProfilePhoto,
 			})
 		}
 	}
@@ -112,13 +112,13 @@ func (u *FriendServer) GetSendFriendRequest(ctx context.Context, req *pb.GetSend
 	for _, val := range result {
 		if val != nil {
 			finalResult = append(finalResult, &pb.GetPendingListResponseModel{
-				FriendID:        val.FriendID,
-				UpdateAt:        val.UpdateAt.String(),
-				UniqueFriendsID: val.UniqueFriendID,
-				UserID:          val.UserProfile.UserID,
-				UserName:        val.UserProfile.UserName,
-				Name:            val.UserProfile.Name,
-				ProfilePhoto:    val.UserProfile.ProfilePhoto,
+				// FriendID:     val.FriendID,
+				UpdateAt:     val.UpdateAt.String(),
+				FriendShipID: val.UniqueFriendID,
+				UserID:       val.UserProfile.UserID,
+				UserName:     val.UserProfile.UserName,
+				Name:         val.UserProfile.Name,
+				ProfilePhoto: val.UserProfile.ProfilePhoto,
 			})
 		}
 	}
@@ -140,13 +140,13 @@ func (u *FriendServer) GetBlockFriendRequest(ctx context.Context, req *pb.GetBlo
 	for _, val := range result {
 		if val != nil {
 			finalResult = append(finalResult, &pb.GetPendingListResponseModel{
-				FriendID:        val.FriendID,
-				UpdateAt:        val.UpdateAt.String(),
-				UniqueFriendsID: val.UniqueFriendID,
-				UserID:          val.UserProfile.UserID,
-				UserName:        val.UserProfile.UserName,
-				Name:            val.UserProfile.Name,
-				ProfilePhoto:    val.UserProfile.ProfilePhoto,
+				// FriendID:     val.FriendID,
+				UpdateAt:     val.UpdateAt.String(),
+				FriendShipID: val.UniqueFriendID,
+				UserID:       val.UserProfile.UserID,
+				UserName:     val.UserProfile.UserName,
+				Name:         val.UserProfile.Name,
+				ProfilePhoto: val.UserProfile.ProfilePhoto,
 			})
 		}
 	}

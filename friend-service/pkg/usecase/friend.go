@@ -40,6 +40,7 @@ func (r *FriendUseCase) FriendRequest(req *requestmodel_friend_server.FriendRequ
 	if err != nil {
 		return nil, err
 	}
+	response.UpdateAt = response.UpdateAt.In(r.Location)
 	return response, nil
 }
 
@@ -69,7 +70,7 @@ func (r *FriendUseCase) GetReceivedFriendRequest(req *requestmodel_friend_server
 		return nil, err
 	}
 
-	return r.CreateFriendListResponse(receivedRequest), nil
+	return r.ReceivedFriendRequestResponse(receivedRequest), nil
 }
 
 func (r *FriendUseCase) GetSendFriendRequest(req *requestmodel_friend_server.GetFriendRequest) (res []*responsemodel_friend_server.FriendList, err error) {
@@ -124,7 +125,63 @@ func (r *FriendUseCase) CreateFriendListResponse(friendList []*responsemodel_fri
 		if profile == nil {
 			friendList[i] = nil
 		} else {
-			friendList[i].UserProfile = *mp[val.FriendID]
+			friendList[i].UserProfile = *profile
+			friendList[i].UpdateAt = friendList[i].UpdateAt.In(r.Location)
+		}
+	}
+
+	return friendList
+}
+
+func (r *FriendUseCase) ReceivedFriendRequestResponse(friendList []*responsemodel_friend_server.FriendList) []*responsemodel_friend_server.FriendList {
+	var ch = make(chan *responsemodel_friend_server.AbstractUserProfile)
+	var mp = make(map[string]*responsemodel_friend_server.AbstractUserProfile)
+
+	for _, val := range friendList {
+		go r.UserProfile(val.UserID, ch)
+	}
+
+	for i := 1; i <= len(friendList); i++ {
+		userProfile := <-ch
+		if userProfile != nil {
+			mp[userProfile.UserID] = userProfile
+		}
+	}
+
+	for i, val := range friendList {
+		profile := mp[val.UserID]
+		if profile == nil {
+			friendList[i] = nil
+		} else {
+			friendList[i].UserProfile = *profile
+			friendList[i].UpdateAt = friendList[i].UpdateAt.In(r.Location)
+		}
+	}
+
+	return friendList
+}
+
+func (r *FriendUseCase) FriendListReponse(friendList []*responsemodel_friend_server.FriendList) []*responsemodel_friend_server.FriendList {
+	var ch = make(chan *responsemodel_friend_server.AbstractUserProfile)
+	var mp = make(map[string]*responsemodel_friend_server.AbstractUserProfile)
+
+	for _, val := range friendList {
+		go r.UserProfile(val.UserID, ch)
+	}
+
+	for i := 1; i <= len(friendList); i++ {
+		userProfile := <-ch
+		if userProfile != nil {
+			mp[userProfile.UserID] = userProfile
+		}
+	}
+
+	for i, val := range friendList {
+		profile := mp[val.UserID]
+		if profile == nil {
+			friendList[i] = nil
+		} else {
+			friendList[i].UserProfile = *profile
 			friendList[i].UpdateAt = friendList[i].UpdateAt.In(r.Location)
 		}
 	}
@@ -145,7 +202,7 @@ func (r *FriendUseCase) UserProfile(userID string, ch chan *responsemodel_friend
 }
 
 func (r *FriendUseCase) FriendShipStatusUpdate(friendShipID, status string) error {
-	if status == "block" || status == "unblock" || status == "accept" || status == "reject" {
+	if status == "block" || status == "unblock" || status == "accept" || status == "reject" || status == "revoke" {
 		if status == "accept" || status == "unblock" {
 			status = "active"
 		}
@@ -178,7 +235,7 @@ func (u *FriendUseCase) MessageConsumer() {
 
 	for {
 		message := <-consumerPartishion.Messages()
-		fmt.Println("--message: ", string(message.Value))
+		// fmt.Println("--message: ", string(message.Value))
 		msg, _ := u.UnmarshelChatMessage(message.Value)
 		u.friendRepo.StoreFriendsChat(*msg)
 	}
@@ -190,7 +247,7 @@ func (u *FriendUseCase) UnmarshelChatMessage(data []byte) (*requestmodel_friend_
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("unmarshel ", message)
-	message.Timestamp= time.Now()
+	// fmt.Println("unmarshel ", message)
+	message.Timestamp = time.Now()
 	return &message, nil
 }
