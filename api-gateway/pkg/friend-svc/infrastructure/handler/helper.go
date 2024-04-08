@@ -51,10 +51,11 @@ func (r *Helper) KafkaProducer(message requestmodel_friend_svc.Message) error {
 }
 
 func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
+	senderConn, ok := User[userID]
 
 	var message requestmodel_friend_svc.Message
 	if err := json.Unmarshal([]byte(msg), &message); err != nil {
-		senderConn, ok := User[message.RecipientID]
+		// recipientConn, ok := User[message.RecipientID]
 		if ok {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
@@ -63,7 +64,7 @@ func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, 
 	message.Status = "send"
 	message.SenderID = userID
 
-	senderConn, ok := User[message.RecipientID]
+	recipientConn, ok := User[message.RecipientID]
 	if !ok {
 		message.Status = "pending"
 		delete(User, message.RecipientID)
@@ -80,7 +81,7 @@ func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, 
 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 	}
 
-	err = senderConn.WriteMessage(websocket.TextMessage, msg)
+	err = recipientConn.WriteMessage(websocket.TextMessage, msg)
 	if err != nil {
 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		delete(User, message.RecipientID)
