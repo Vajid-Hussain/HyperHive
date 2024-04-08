@@ -11,8 +11,12 @@ type IFriendRepository interface {
 	GetReceivedFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	GetSendFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	FriendShipStatusUpdate(string, string) error
-	GetBlockFriendRequest( *requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList,  error) 
+	GetBlockFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 
 	//------- mongo
-	StoreFriendsChat( requestmodel_friend_server.Message) error
+	StoreFriendsChat(requestmodel_friend_server.Message) error
+	GetLastMessage(string, string) (*responsemodel_friend_server.Message, error)
+	GetMessageCount(string,  string) (int, error)
+	GetFriendChat(string, string, requestmodel_friend_server.Pagination) ([]responsemodel_friend_server.Message, error)
+	UpdateReadAsMessage(string,  string) error
 }

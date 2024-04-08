@@ -152,3 +152,21 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 		h.helper.SendMessageToUser(User, msg, ctx.Get("userID").(string))
 	}
 }
+
+func (h *FriendSvc) GetChat(ctx echo.Context) error {
+	var chatRequet requestmodel_friend_svc.ChatRequest
+	ctx.Bind(&chatRequet)
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := h.clind.GetFriendChat(context, &pb.GetFriendChatRequest{
+		UserID:   ctx.Get("userID").(string),
+		FriendID: chatRequet.FriendID,
+		OffSet:   chatRequet.Offset,
+		Limit:    chatRequet.Limit,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+}

@@ -20,6 +20,7 @@ func FriendRoute(engin *echo.Group, friend *handler_friend_svc.FriendSvc, middle
 
 	friendMessage := engin.Group("/chat")
 	{
-		friendMessage.GET("",friend.FriendMessage)
+		friendMessage.GET("", friend.FriendMessage)
+		friendMessage.GET("/message", friend.GetChat)
 	}
 }

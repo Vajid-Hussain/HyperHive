@@ -2,6 +2,7 @@ package server_friend_server
 
 import (
 	"context"
+	"time"
 
 	requestmodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/requestModel"
 	"github.com/Vajid-Hussain/HyperHive/friend-service/pkg/pb"
@@ -54,12 +55,15 @@ func (u *FriendServer) FriendList(ctx context.Context, req *pb.FriendListRequest
 		if val != nil {
 			finalResult = append(finalResult, &pb.GetPendingListResponseModel{
 				// FriendID:     val.FriendID,
-				UpdateAt:     val.UpdateAt.String(),
-				FriendShipID: val.UniqueFriendID,
-				UserID:       val.UserProfile.UserID,
-				UserName:     val.UserProfile.UserName,
-				Name:         val.UserProfile.Name,
-				ProfilePhoto: val.UserProfile.ProfilePhoto,
+				UpdateAt:            val.UpdateAt.String(),
+				FriendShipID:        val.UniqueFriendID,
+				UserID:              val.UserProfile.UserID,
+				UserName:            val.UserProfile.UserName,
+				Name:                val.UserProfile.Name,
+				ProfilePhoto:        val.UserProfile.ProfilePhoto,
+				LastMessage:         val.LastMessage,
+				LastMessageSenderID: val.LastMessageSenderID,
+				UnreadMessage:       int32(val.UnreadMessage),
 			})
 		}
 	}
@@ -159,4 +163,27 @@ func (u *FriendServer) UpdateFriendshipStatus(ctx context.Context, req *pb.Updat
 		return new(emptypb.Empty), err
 	}
 	return new(emptypb.Empty), nil
+}
+
+func (u *FriendServer) GetFriendChat(ctx context.Context, req *pb.GetFriendChatRequest) (*pb.GetFriendChatResponse, error) {
+	ind, _ := time.LoadLocation("Asia/Kolkata")
+
+	result, err := u.useCase.GetFriendChat(req.UserID, req.FriendID, requestmodel_friend_server.Pagination{Limit: req.Limit, OffSet: req.OffSet})
+	if err != nil {
+		return nil, err
+	}
+
+	var finalResult []*pb.Message
+	for _, val := range result {
+		finalResult = append(finalResult, &pb.Message{
+			MessageID:   val.ID,
+			SenderId:    val.SenderID,
+			RecipientId: val.RecipientID,
+			Content:     val.Content,
+			Timestamp:   val.Timestamp.In(ind).String(),
+			Type:        val.Type,
+			Status:      val.Status,
+		})
+	}
+	return &pb.GetFriendChatResponse{FriendChat: finalResult}, nil
 }

@@ -8,9 +8,9 @@ type FriendRequest struct {
 	UpdateAt time.Time
 }
 
-type GetFriendRequest struct{
-	UserID string 
-	Limit string
+type GetFriendRequest struct {
+	UserID string
+	Limit  string
 	OffSet string
 }
 
@@ -22,4 +22,9 @@ type Message struct {
 	Type        string    `json:"Type"`
 	Tag         string    `json:"Tag"`
 	Status      string    `json:"Status" default:"send"`
+}
+
+type Pagination struct {
+	Limit  string
+	OffSet string
 }

@@ -29,6 +29,7 @@ type FriendServiceClient interface {
 	GetSendFriendRequest(ctx context.Context, in *GetSendFriendRequestRequest, opts ...grpc.CallOption) (*GetSendFriendRequestResponse, error)
 	GetBlockFriendRequest(ctx context.Context, in *GetBlockFriendRequestRequest, opts ...grpc.CallOption) (*GetBlockFriendRequestResponse, error)
 	UpdateFriendshipStatus(ctx context.Context, in *UpdateFriendshipStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetFriendChat(ctx context.Context, in *GetFriendChatRequest, opts ...grpc.CallOption) (*GetFriendChatResponse, error)
 }
 
 type friendServiceClient struct {
@@ -93,6 +94,15 @@ func (c *friendServiceClient) UpdateFriendshipStatus(ctx context.Context, in *Up
 	return out, nil
 }
 
+func (c *friendServiceClient) GetFriendChat(ctx context.Context, in *GetFriendChatRequest, opts ...grpc.CallOption) (*GetFriendChatResponse, error) {
+	out := new(GetFriendChatResponse)
+	err := c.cc.Invoke(ctx, "/FriendService/GetFriendChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FriendServiceServer is the server API for FriendService service.
 // All implementations must embed UnimplementedFriendServiceServer
 // for forward compatibility
@@ -103,6 +113,7 @@ type FriendServiceServer interface {
 	GetSendFriendRequest(context.Context, *GetSendFriendRequestRequest) (*GetSendFriendRequestResponse, error)
 	GetBlockFriendRequest(context.Context, *GetBlockFriendRequestRequest) (*GetBlockFriendRequestResponse, error)
 	UpdateFriendshipStatus(context.Context, *UpdateFriendshipStatusRequest) (*emptypb.Empty, error)
+	GetFriendChat(context.Context, *GetFriendChatRequest) (*GetFriendChatResponse, error)
 	mustEmbedUnimplementedFriendServiceServer()
 }
 
@@ -127,6 +138,9 @@ func (UnimplementedFriendServiceServer) GetBlockFriendRequest(context.Context, *
 }
 func (UnimplementedFriendServiceServer) UpdateFriendshipStatus(context.Context, *UpdateFriendshipStatusRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFriendshipStatus not implemented")
+}
+func (UnimplementedFriendServiceServer) GetFriendChat(context.Context, *GetFriendChatRequest) (*GetFriendChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFriendChat not implemented")
 }
 func (UnimplementedFriendServiceServer) mustEmbedUnimplementedFriendServiceServer() {}
 
@@ -249,6 +263,24 @@ func _FriendService_UpdateFriendshipStatus_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FriendService_GetFriendChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFriendChatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FriendServiceServer).GetFriendChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FriendService/GetFriendChat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FriendServiceServer).GetFriendChat(ctx, req.(*GetFriendChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FriendService_ServiceDesc is the grpc.ServiceDesc for FriendService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -279,6 +311,10 @@ var FriendService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateFriendshipStatus",
 			Handler:    _FriendService_UpdateFriendshipStatus_Handler,
+		},
+		{
+			MethodName: "GetFriendChat",
+			Handler:    _FriendService_GetFriendChat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

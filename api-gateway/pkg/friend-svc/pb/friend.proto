@@ -10,6 +10,7 @@ service FriendService {
     rpc GetSendFriendRequest (GetSendFriendRequestRequest) returns (GetSendFriendRequestResponse);
     rpc GetBlockFriendRequest (GetBlockFriendRequestRequest) returns (GetBlockFriendRequestResponse);
     rpc UpdateFriendshipStatus (UpdateFriendshipStatusRequest) returns (google.protobuf.Empty);
+    rpc GetFriendChat (GetFriendChatRequest) returns (GetFriendChatResponse);
 }
 
 message FriendRequestRequest {
@@ -40,6 +41,8 @@ message GetPendingListResponseModel {
     string name = 7;
     string profilePhoto = 8;
     string LastMessage =9;
+    string LastMessageSenderID =10;
+    int32 UnreadMessage =11;
 }
 
 message FriendListRequest {
@@ -79,3 +82,24 @@ message UpdateFriendshipStatusRequest {
     string Status =2;
 }
 
+message GetFriendChatRequest {
+    string UserID =1;
+    string OffSet =2;
+    string Limit=3;
+    string FriendID =4;
+}
+
+message Message {
+    string MessageID = 1;
+    string sender_id = 2;
+    string recipient_id = 3;
+    string content = 4;
+    string timestamp = 5;
+    string type = 6;
+    string tag = 7;
+    string status = 8;
+}
+
+message GetFriendChatResponse {
+    repeated Message FriendChat =1;
+}

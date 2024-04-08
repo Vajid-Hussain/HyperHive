@@ -25,6 +25,7 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 		profile := engin.Group("/profile")
 		{
 			profile.GET("/", userHandler.GetUserProfile)
+			profile.GET("/:userID", userHandler.GetUserProfile)
 
 			profile.POST("/profilephoto", userHandler.UpdateProfilePhoto)
 			profile.POST("/coverphoto", userHandler.UpdateCoverPhoto)

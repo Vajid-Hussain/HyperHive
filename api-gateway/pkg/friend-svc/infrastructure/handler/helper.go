@@ -50,18 +50,18 @@ func (r *Helper) KafkaProducer(message requestmodel_friend_svc.Message) error {
 	return nil
 }
 
-func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn,  msg []byte, userID string) {
+func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
 
 	var message requestmodel_friend_svc.Message
 	if err := json.Unmarshal([]byte(msg), &message); err != nil {
 		senderConn, ok := User[message.RecipientID]
-		if ok{
+		if ok {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
-		return 
+		return
 	}
 	message.Status = "send"
-	message.SenderID= userID
+	message.SenderID = userID
 
 	senderConn, ok := User[message.RecipientID]
 	if !ok {
@@ -72,7 +72,7 @@ func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn,  msg []byte,
 		if err != nil {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
-		return 
+		return
 	}
 
 	err := r.KafkaProducer(message)
@@ -80,7 +80,7 @@ func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn,  msg []byte,
 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 	}
 
-	err = senderConn.WriteMessage(websocket.TextMessage, []byte(message.Content))
+	err = senderConn.WriteMessage(websocket.TextMessage, msg)
 	if err != nil {
 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		delete(User, message.RecipientID)

@@ -23,3 +23,9 @@ type Message struct {
 type WebSocketInfo struct {
 	RemoteAddr string `json:"remote_addr"`
 }
+
+type ChatRequest struct {
+	FriendID string `query:"FriendID"`
+	Offset   string `query:"Offset"`
+	Limit    string `query:"Limit"`
+}

@@ -55,7 +55,7 @@ func (r *FriendUseCase) GetFriends(req *requestmodel_friend_server.GetFriendRequ
 		return nil, err
 	}
 
-	return r.CreateFriendListResponse(friendRequest), nil
+	return r.FriendListReponse(friendRequest, req.UserID), nil
 }
 
 func (r *FriendUseCase) GetReceivedFriendRequest(req *requestmodel_friend_server.GetFriendRequest) (res []*responsemodel_friend_server.FriendList, err error) {
@@ -161,12 +161,12 @@ func (r *FriendUseCase) ReceivedFriendRequestResponse(friendList []*responsemode
 	return friendList
 }
 
-func (r *FriendUseCase) FriendListReponse(friendList []*responsemodel_friend_server.FriendList) []*responsemodel_friend_server.FriendList {
+func (r *FriendUseCase) FriendListReponse(friendList []*responsemodel_friend_server.FriendList, userID string) []*responsemodel_friend_server.FriendList {
 	var ch = make(chan *responsemodel_friend_server.AbstractUserProfile)
 	var mp = make(map[string]*responsemodel_friend_server.AbstractUserProfile)
 
 	for _, val := range friendList {
-		go r.UserProfile(val.UserID, ch)
+		go r.UserProfile(val.FriendID, ch)
 	}
 
 	for i := 1; i <= len(friendList); i++ {
@@ -177,12 +177,27 @@ func (r *FriendUseCase) FriendListReponse(friendList []*responsemodel_friend_ser
 	}
 
 	for i, val := range friendList {
-		profile := mp[val.UserID]
+		profile := mp[val.FriendID]
 		if profile == nil {
 			friendList[i] = nil
 		} else {
 			friendList[i].UserProfile = *profile
-			friendList[i].UpdateAt = friendList[i].UpdateAt.In(r.Location)
+			res, err := r.friendRepo.GetLastMessage(userID, val.FriendID)
+
+			if err != nil {
+				// fmt.Println("==, ", err)
+			}
+
+			if res == nil {
+				friendList[i].UpdateAt = friendList[i].UpdateAt.In(r.Location)
+			} else {
+				friendList[i].UpdateAt = res.Timestamp.In(r.Location)
+				friendList[i].LastMessage = res.Content
+				friendList[i].LastMessageSenderID = res.SenderID
+				if msgCount, err := r.friendRepo.GetMessageCount(userID, val.FriendID); err == nil {
+					friendList[i].UnreadMessage = msgCount
+				}
+			}
 		}
 	}
 
@@ -250,4 +265,14 @@ func (u *FriendUseCase) UnmarshelChatMessage(data []byte) (*requestmodel_friend_
 	// fmt.Println("unmarshel ", message)
 	message.Timestamp = time.Now()
 	return &message, nil
+}
+
+func (u *FriendUseCase) GetFriendChat(userID, friendID string, pagination requestmodel_friend_server.Pagination) ([]responsemodel_friend_server.Message, error) {
+	var err error
+	pagination.OffSet, err = utils_friend_service.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
+		return nil, err
+	}
+	err=u.friendRepo.UpdateReadAsMessage(userID, friendID)
+	return u.friendRepo.GetFriendChat(userID, friendID, pagination)
 }
