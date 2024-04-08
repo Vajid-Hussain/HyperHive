@@ -26,7 +26,7 @@ type UserProfileDescription struct {
 }
 
 type UserIDReq struct {
-	UserID string `json:"UserID" param:"userID"`
+	UserID string `json:"UserID" param:"UserID"`
 }
 
 type EmailReq struct {

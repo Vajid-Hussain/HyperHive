@@ -2,7 +2,9 @@ package handler_friend_svc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -132,6 +134,13 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	fmt.Println("message called")
 
+	if reqHeadersBytes, err := json.Marshal(ctx.Request().Header); err != nil {
+		log.Println("Could not Marshal Req Headers")
+	} else {
+		fmt.Println("==")
+		log.Println(string(reqHeadersBytes))
+	}
+
 	conn, err := upgrade.Upgrade(ctx.Response(), ctx.Request(), nil)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
@@ -170,3 +179,24 @@ func (h *FriendSvc) GetChat(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+//nginx config
+
+
+// 	#root /var/www/your_domain/html;
+//    # index index.html index.htm index.nginx-debian.html;
+
+// map $http_upgrade $connection_upgrade {
+// 	default upgrade;
+// 	 ''      close;
+// }
+// server {
+// 	server_name hyperhive.vajid.tech www.hyperhive.vajid.tech;
+
+// 	location / {
+// 			proxy_pass http://localhost:9000;
+// 	proxy_set_header Upgrade $http_upgrade;
+// 	proxy_set_header Connection $connection_upgrade;
+// 			#try_files $uri $uri/ =404;
+// 	}
+// }

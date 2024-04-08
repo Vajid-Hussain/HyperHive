@@ -14,6 +14,7 @@ import (
 	interface_repository_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/repository/interface"
 	interface_usecase_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/usecase/interface"
 	utils_friend_service "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/utils"
+	_ "time/tzdata"
 )
 
 type FriendUseCase struct {

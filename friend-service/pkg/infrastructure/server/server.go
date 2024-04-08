@@ -8,6 +8,7 @@ import (
 	"github.com/Vajid-Hussain/HyperHive/friend-service/pkg/pb"
 	interface_usecase_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/usecase/interface"
 	"google.golang.org/protobuf/types/known/emptypb"
+	_ "time/tzdata"
 )
 
 type FriendServer struct {

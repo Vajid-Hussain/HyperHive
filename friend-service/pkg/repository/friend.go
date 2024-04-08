@@ -173,7 +173,7 @@ func (d *FriendRepository) GetFriendChat(userID, friendID string, pagination req
 
 func (d *FriendRepository) UpdateReadAsMessage(userID, friendID string) error{
 
-	_,err:= d.mongoCollection.FriendChatCollection.UpdateMany(context.TODO(), bson.M{"senderid": bson.M{"$in": bson.A{userID, friendID}} , "recipientid": bson.M{"$in":bson.A{userID, friendID}}}, bson.D{{ "$set", bson.D{{ "status", "send"}}  } } )
+	_,err:= d.mongoCollection.FriendChatCollection.UpdateMany(context.TODO(), bson.M{"senderid": bson.M{"$in": bson.A{ friendID}} , "recipientid": bson.M{"$in":bson.A{userID}}}, bson.D{{ "$set", bson.D{{ "status", "send"}}  } } )
 	if err!=nil{
 		return responsemodel_friend_server.ErrInternalServer
 	}

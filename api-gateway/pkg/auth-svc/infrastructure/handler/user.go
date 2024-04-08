@@ -318,7 +318,7 @@ func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 	ctx.Bind(&descriptionReq)
 	descriptionReq.UserID = ctx.Get("userID").(string)
 
-	fmt.Println("--", descriptionReq)
+	// fmt.Println("--", descriptionReq)
 	validateError := helper_api_gateway.Validator(descriptionReq)
 	if len(validateError) > 0 {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
@@ -338,30 +338,18 @@ func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 }
 
 func (c *AuthHanlder) GetUserProfile(ctx echo.Context) error {
+	var userID string
+	userID = ctx.Get("userID").(string)
 
-	var userID requestmodel_auth_svc.UserIDReq
-	err := ctx.Bind(&userID)
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	if ctx.Param("userID") != "" {
+		userID = ctx.Param("userID")
 	}
 
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	fmt.Println(userID.UserID,"===")
-
-	if userID.UserID != "" {
-		result, err := c.clind.UserProfile(context, &pb.UserProfileRequest{
-			UserID: userID.UserID,
-		})
-		if err != nil {
-			return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
-		}
-
-		return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
-	}
 
 	result, err := c.clind.UserProfile(context, &pb.UserProfileRequest{
-		UserID: ctx.Get("userID").(string),
+		UserID: userID,
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
