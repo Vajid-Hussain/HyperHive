@@ -42,3 +42,8 @@ type ForgotPassword struct {
 type DeleteUserProfilePhotoType struct {
 	Types string `json:"Type" validate:"required"`
 }
+
+// type Pagination struct {
+// 	Limit  string `json:"Limit"`
+// 	OffSet string `json:"Offset"`
+// }

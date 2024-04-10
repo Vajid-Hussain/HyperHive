@@ -23,6 +23,7 @@ type IUserUseCase interface {
 	GetUserProfile( string) (*responsemodel_auth_server.UserProfile, error) 
 	DeleteAccount( string) error 
 	DeletePhotoInProfile(string,  string) error
+	SerchUsers( string,  requestmodel_auth_server.Pagination) ( *[]responsemodel_auth_server.UserProfile,  error)
 }
 
 type IAdminUseCase interface {

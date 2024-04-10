@@ -40,5 +40,9 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 			profile.PATCH("/description", userHandler.UpdateProfileDescription)
 		}
 
+		users := engin.Group("users")
+		{
+			users.GET("", userHandler.SerchUsers)
+		}
 	}
 }

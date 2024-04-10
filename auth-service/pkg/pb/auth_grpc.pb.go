@@ -39,6 +39,7 @@ type AuthServiceClient interface {
 	UpdateUserProfileDescription(ctx context.Context, in *UpdateUserProfileDescriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UserProfile(ctx context.Context, in *UserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error)
 	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SerchUsers(ctx context.Context, in *SerchUsersRequest, opts ...grpc.CallOption) (*SerchUsersResponse, error)
 	// admin
 	AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
 	ValidateAdminToken(ctx context.Context, in *ValidateAdminTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -189,6 +190,15 @@ func (c *authServiceClient) DeleteAccount(ctx context.Context, in *DeleteAccount
 	return out, nil
 }
 
+func (c *authServiceClient) SerchUsers(ctx context.Context, in *SerchUsersRequest, opts ...grpc.CallOption) (*SerchUsersResponse, error) {
+	out := new(SerchUsersResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/SerchUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) AdminLogin(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error) {
 	out := new(AdminLoginResponse)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/AdminLogin", in, out, opts...)
@@ -245,6 +255,7 @@ type AuthServiceServer interface {
 	UpdateUserProfileDescription(context.Context, *UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error)
 	UserProfile(context.Context, *UserProfileRequest) (*UserProfileResponse, error)
 	DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error)
+	SerchUsers(context.Context, *SerchUsersRequest) (*SerchUsersResponse, error)
 	// admin
 	AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
 	ValidateAdminToken(context.Context, *ValidateAdminTokenRequest) (*emptypb.Empty, error)
@@ -301,6 +312,9 @@ func (UnimplementedAuthServiceServer) UserProfile(context.Context, *UserProfileR
 }
 func (UnimplementedAuthServiceServer) DeleteAccount(context.Context, *DeleteAccountRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
+}
+func (UnimplementedAuthServiceServer) SerchUsers(context.Context, *SerchUsersRequest) (*SerchUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SerchUsers not implemented")
 }
 func (UnimplementedAuthServiceServer) AdminLogin(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
@@ -597,6 +611,24 @@ func _AuthService_DeleteAccount_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_SerchUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SerchUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SerchUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/SerchUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SerchUsers(ctx, req.(*SerchUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_AdminLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdminLoginRequest)
 	if err := dec(in); err != nil {
@@ -735,6 +767,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAccount",
 			Handler:    _AuthService_DeleteAccount_Handler,
+		},
+		{
+			MethodName: "SerchUsers",
+			Handler:    _AuthService_SerchUsers_Handler,
 		},
 		{
 			MethodName: "AdminLogin",

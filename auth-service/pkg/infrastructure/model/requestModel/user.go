@@ -31,3 +31,8 @@ type ForgotPassword struct {
 	Token    string
 	Otp      string
 }
+
+type Pagination struct {
+	Limit  string
+	OffSet string
+}

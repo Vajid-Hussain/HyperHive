@@ -274,6 +274,6 @@ func (u *FriendUseCase) GetFriendChat(userID, friendID string, pagination reques
 	if err != nil {
 		return nil, err
 	}
-	err=u.friendRepo.UpdateReadAsMessage(userID, friendID)
+	_=u.friendRepo.UpdateReadAsMessage(userID, friendID)
 	return u.friendRepo.GetFriendChat(userID, friendID, pagination)
 }

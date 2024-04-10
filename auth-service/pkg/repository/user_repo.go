@@ -307,7 +307,7 @@ func (d *UserRepository) GetUserProfile(userID string) (userProfile *responsemod
 
 func (d *UserRepository) DeleteUserAcoount(userID string) error {
 	// query := "UPDATE users SET status = 'delete' WHERE id= $1"
-	query:= "DELETE FROM users WHERE id =$1"
+	query := "DELETE FROM users WHERE id =$1"
 	result := d.DB.Exec(query, userID)
 	if result.Error != nil {
 		return responsemodel_auth_server.ErrInternalServer
@@ -317,4 +317,18 @@ func (d *UserRepository) DeleteUserAcoount(userID string) error {
 		return responsemodel_auth_server.ErrNotFound
 	}
 	return nil
+}
+
+func (d *UserRepository) SerchUsers(userName string, pagination requestmodel_auth_server.Pagination) (res *[]responsemodel_auth_server.UserProfile, err error) {
+
+	query := "SELECT * FROM users WHERE user_name ILIKE '%' || $1 || '%' AND status = 'active'"
+	result := d.DB.Raw(query, userName).Scan(&res)
+	if result.Error != nil {
+		return nil, responsemodel_auth_server.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, responsemodel_auth_server.ErrSerchUsers
+	}
+	return
 }

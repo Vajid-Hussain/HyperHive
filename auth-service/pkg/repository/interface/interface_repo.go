@@ -18,9 +18,9 @@ type IUserRepository interface {
 	GetUserPasswordUsingEmail(string) (string, error)
 	FetchUserIDUsingMail(string) (string, error)
 	CreateOtp(string, string, time.Time) error
-	FetchOtp(string,time.Time) (string, error)
+	FetchOtp(string, time.Time) (string, error)
 	ForgotPassword(string, string) error
-	DeleteUnverifiedUsers() 
+	DeleteUnverifiedUsers()
 
 	//profile
 	UpdateUserProfilePhoto(string, string) error
@@ -29,9 +29,10 @@ type IUserRepository interface {
 	UpdateOrCreateUserDescription(string, string) error
 	GetUserProfile(string) (*responsemodel_auth_server.UserProfile, error)
 	DeleteUserAcoount(string) error
-	DeleteExpiredStatus( time.Time)
-	DeleteProfilePhoto( string) error
-	DeleteCoverPhoto( string) error
+	DeleteExpiredStatus(time.Time)
+	DeleteProfilePhoto(string) error
+	DeleteCoverPhoto(string) error
+	SerchUsers(string, requestmodel_auth_server.Pagination) (*[]responsemodel_auth_server.UserProfile, error)
 }
 
 type IAdminRepository interface {

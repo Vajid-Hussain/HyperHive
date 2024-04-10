@@ -22,6 +22,8 @@ service AuthService{
     rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) {};
     rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) {};
     rpc DeleteAccount (DeleteAccountRequest) returns (google.protobuf.Empty){};
+    rpc SerchUsers (SerchUsersRequest) returns (SerchUsersResponse);
+
 
     //admin
     rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
@@ -192,4 +194,15 @@ message UnBlockUserResponse {
     string UserID =1;
     string Name =2;
     string UserName =3;
+}
+
+message SerchUsersRequest {
+    string UserName =1;
+    string Limit=2;
+    string Offset = 3;
+}
+
+
+message SerchUsersResponse {
+    repeated UserProfileResponse users =1;
 }

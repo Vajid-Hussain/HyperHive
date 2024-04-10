@@ -387,3 +387,11 @@ func (d *UserUseCase) GetUserProfile(userID string) (*responsemodel_auth_server.
 func (d *UserUseCase) DeleteAccount(userID string) error {
 	return d.userRepo.DeleteUserAcoount(userID)
 }
+
+func (d *UserUseCase) SerchUsers(userName string, pagination requestmodel_auth_server.Pagination) (res *[]responsemodel_auth_server.UserProfile, err error) {
+	pagination.OffSet, err = utils_auth_server.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
+		return nil, err
+	}
+	return d.userRepo.SerchUsers(userName, pagination)
+}

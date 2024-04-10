@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	configl_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/config"
+	responsemodel_auth_server "github.com/Vajid-Hussain/HiperHive/auth-service/pkg/infrastructure/model/responseModel"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -228,4 +230,21 @@ func ExtractEmailFromToken(tokenString string) (string, error) {
 	}
 
 	return claims.Email, nil
+}
+
+func Pagination(limit, offset string) (string, error) {
+	offsetInt, err := strconv.Atoi(offset)
+	if err != nil {
+		return "", err
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		return "", err
+	}
+
+	if limitInt < 1 || offsetInt < 1 {
+		return "", responsemodel_auth_server.ErrPaginationWrongValue
+	}
+
+	return strconv.Itoa((offsetInt * limitInt) - limitInt), nil
 }

@@ -135,8 +135,8 @@ func (u *AuthServer) UpdateCoverPhoto(ctx context.Context, req *pb.UpdateCoverPh
 	}, nil
 }
 
-func (u *AuthServer) DeletePhotoInProfile(ctx context.Context, req *pb.DeletePhotoInProfileRequest) (*emptypb.Empty, error){
-	err:= u.userUseCase.DeletePhotoInProfile(req.UserID, req.Types)
+func (u *AuthServer) DeletePhotoInProfile(ctx context.Context, req *pb.DeletePhotoInProfileRequest) (*emptypb.Empty, error) {
+	err := u.userUseCase.DeletePhotoInProfile(req.UserID, req.Types)
 	if err != nil {
 		return nil, err
 	}
@@ -253,4 +253,18 @@ func (u *AuthServer) ValidateUserToken(ctx context.Context, req *pb.ValidateToke
 func (u *AuthServer) ValidateAdminToken(ctx context.Context, req *pb.ValidateAdminTokenRequest) (*emptypb.Empty, error) {
 	err := u.adminUseCase.VerifyAdminToken(req.Token)
 	return new(emptypb.Empty), err
+}
+
+func (u *AuthServer) SerchUsers(ctx context.Context, req *pb.SerchUsersRequest) (*pb.SerchUsersResponse, error) {
+	result, err := u.userUseCase.SerchUsers(req.UserName, requestmodell_auth_server.Pagination{Limit: req.Limit, OffSet: req.Offset})
+	if err != nil {
+		return nil, err
+	}
+
+	var finalResult []*pb.UserProfileResponse
+	for _, val := range *result {
+		finalResult = append(finalResult, &pb.UserProfileResponse{UserID: val.UserID, UserName: val.UserName, Name: val.Name, ProfilePhoto: val.ProfilePhoto})
+	}
+
+	return &pb.SerchUsersResponse{Users: finalResult}, nil
 }

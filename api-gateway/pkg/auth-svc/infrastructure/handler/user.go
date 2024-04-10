@@ -371,3 +371,20 @@ func (c *AuthHanlder) DeleteUserAcoount(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "Succesfully Deleted", result, nil))
 }
+
+func (c *AuthHanlder) SerchUsers(ctx echo.Context) error {
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	fmt.Println("==", ctx.QueryParam("username"), ctx.QueryParam("page"), ctx.QueryParam("limit"))
+
+	result, err := c.clind.SerchUsers(context, &pb.SerchUsersRequest{
+		UserName: ctx.QueryParam("username"),
+		Limit:    ctx.QueryParam("page"),
+		Offset:   ctx.QueryParam("limit"),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}
