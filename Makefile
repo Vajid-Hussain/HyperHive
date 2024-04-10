@@ -10,3 +10,7 @@ deploydown:
 
 dockerPostgres:
 	docker exec -it hyperhive_postgres bash -c 'psql -U postgres'
+
+
+swaggo:
+	swag init -g ./api-gateway/cmd/main.go

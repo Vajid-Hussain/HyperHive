@@ -3,3 +3,5 @@ dev.env
 .terraform
 
 .env
+
+hyperhive-k8s-secret.yaml
