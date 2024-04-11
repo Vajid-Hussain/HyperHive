@@ -2,9 +2,7 @@ package handler_friend_svc
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -134,12 +132,12 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	fmt.Println("message called")
 
-	if reqHeadersBytes, err := json.Marshal(ctx.Request().Header); err != nil {
-		log.Println("Could not Marshal Req Headers")
-	} else {
-		fmt.Println("==")
-		log.Println(string(reqHeadersBytes))
-	}
+	// if reqHeadersBytes, err := json.Marshal(ctx.Request().Header); err != nil {
+	// 	log.Println("Could not Marshal Req Headers")
+	// } else {
+	// 	fmt.Println("==")
+	// 	log.Println(string(reqHeadersBytes))
+	// }
 
 	conn, err := upgrade.Upgrade(ctx.Response(), ctx.Request(), nil)
 	if err != nil {
@@ -181,7 +179,6 @@ func (h *FriendSvc) GetChat(ctx echo.Context) error {
 }
 
 //nginx config
-
 
 // 	#root /var/www/your_domain/html;
 //    # index index.html index.htm index.nginx-debian.html;

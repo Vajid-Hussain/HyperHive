@@ -201,9 +201,9 @@ func (c *AuthHanlder) UpdateProfilePhoto(ctx echo.Context) error {
 		return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", response_auth_svc.ErrImageOverSize.Error()))
 	}
 
-	if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", response_auth_svc.ErrUnsupportImageType.Error()))
-	}
+	// if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
+	// 	return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", response_auth_svc.ErrUnsupportImageType.Error()))
+	// }
 
 	image, err := file.Open()
 	if err != nil {
@@ -239,13 +239,15 @@ func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, response_auth_svc.ErrNoImageInRequest.Error(), "", err.Error()))
 	}
 
+	fmt.Println("==", file.Header)
+
 	if file.Size/(1024) > 1024 {
 		return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", response_auth_svc.ErrImageOverSize.Error()))
 	}
 
-	if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
-		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", response_auth_svc.ErrUnsupportImageType.Error()))
-	}
+	// if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
+	// 	return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", response_auth_svc.ErrUnsupportImageType.Error()))
+	// }
 
 	image, err := file.Open()
 	if err != nil {
@@ -379,8 +381,8 @@ func (c *AuthHanlder) SerchUsers(ctx echo.Context) error {
 
 	result, err := c.clind.SerchUsers(context, &pb.SerchUsersRequest{
 		UserName: ctx.QueryParam("username"),
-		Limit:    ctx.QueryParam("page"),
-		Offset:   ctx.QueryParam("limit"),
+		Limit:    ctx.QueryParam("limit"),
+		Offset:   ctx.QueryParam("page"),
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))

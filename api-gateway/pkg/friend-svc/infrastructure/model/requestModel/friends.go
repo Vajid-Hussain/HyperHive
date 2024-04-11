@@ -29,3 +29,7 @@ type ChatRequest struct {
 	Offset   string `query:"Offset"`
 	Limit    string `query:"Limit"`
 }
+
+type Sample struct {
+	SenderID string `json:"SenderID" validate:"required"`
+}

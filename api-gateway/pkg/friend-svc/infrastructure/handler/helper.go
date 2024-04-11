@@ -53,48 +53,59 @@ func (r *Helper) KafkaProducer(message requestmodel_friend_svc.Message) error {
 func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
 	senderConn, ok := User[userID]
 
-	var message requestmodel_friend_svc.Message
+	var message requestmodel_friend_svc.Sample
 	if err := json.Unmarshal([]byte(msg), &message); err != nil {
-		// recipientConn, ok := User[message.RecipientID]
 		if ok {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		}
 		return
 	}
-	message.Status = "send"
-	message.SenderID = userID
+	fmt.Println("==", message)
+	// message.Status = "send"
+	// message.SenderID = userID
 
-	recipientConn, ok := User[message.RecipientID]
-	if !ok {
-		message.Status = "pending"
-		delete(User, message.RecipientID)
+	// recipientConn, ok := User[message.RecipientID]
+	// if !ok {
+	// 	message.Status = "pending"
+	// 	delete(User, message.RecipientID)
 
-		err := r.KafkaProducer(message)
-		if err != nil {
-			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-		}
-		return
-	}
+	// 	err := r.KafkaProducer(message)
+	// 	if err != nil {
+	// 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	// 	}
+	// 	return
+	// }
 
-	err := r.KafkaProducer(message)
-	if err != nil {
-		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-	}
+	// err := r.KafkaProducer(message)
+	// if err != nil {
+	// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	// }
 
-	err = recipientConn.WriteMessage(websocket.TextMessage, msg)
-	if err != nil {
-		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-		delete(User, message.RecipientID)
-	}
+	// err = recipientConn.WriteMessage(websocket.TextMessage, msg)
+	// if err != nil {
+	// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	// 	delete(User, message.RecipientID)
+	// }
+}
+
+type connection struct {
+	Conn *websocket.Conn `json:"conn"`
 }
 
 // redis
 func (r *Helper) HelperUserConnection(userID string, conn *websocket.Conn) error {
+	// fmt.Println("==", userID, conn)
+	connModel := connection{Conn: conn}
+
+	resultConn, err := json.Marshal(connModel)
+	fmt.Println("=== marshel", resultConn, err)
+
+	connString := string(resultConn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	result, err := r.RedisDb.Set(ctx, userID, conn.RemoteAddr().String(), 0).Result()
+	result, err := r.RedisDb.Set(ctx, userID, connString, 3*time.Hour).Result()
 	if err != nil {
 		fmt.Println("----err", err)
 		return err

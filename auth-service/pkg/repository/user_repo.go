@@ -321,8 +321,8 @@ func (d *UserRepository) DeleteUserAcoount(userID string) error {
 
 func (d *UserRepository) SerchUsers(userName string, pagination requestmodel_auth_server.Pagination) (res *[]responsemodel_auth_server.UserProfile, err error) {
 
-	query := "SELECT * FROM users WHERE user_name ILIKE '%' || $1 || '%' AND status = 'active'"
-	result := d.DB.Raw(query, userName).Scan(&res)
+	query := "SELECT * FROM users WHERE user_name ILIKE '%' || $1 || '%' AND status = 'active' order by user_name limit $2 offset $3"
+	result := d.DB.Raw(query, userName, pagination.Limit, pagination.OffSet).Scan(&res)
 	if result.Error != nil {
 		return nil, responsemodel_auth_server.ErrInternalServer
 	}
