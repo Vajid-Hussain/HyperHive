@@ -1,0 +1,17 @@
+ syntax = "proto3";
+
+option go_package = "/pkg/friend-svc/pb";
+
+
+service Server {
+    rpc CreateServer (CreateServerRequest) returns (CreateServerResponse);
+}
+
+message CreateServerRequest {
+    string ServerName =1;
+}
+
+message CreateServerResponse {
+    string ServerID =1;
+    string ServerName =2;
+}
