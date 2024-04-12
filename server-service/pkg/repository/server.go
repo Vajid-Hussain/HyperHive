@@ -31,7 +31,7 @@ func (d *ServerRepository) CreateServer(server *requestmodel_server_service.Serv
 }
 
 func (d *ServerRepository) CreateOrUpdateChannelCategory(name string, serverID string) (res *responsemodel_server_service.ChannelCategory, err error) {
-	query := "INSERT INTO channel_category (server_id, name) VALUES($1, $2) ON CONFLICT (server_id, name) DO UPDATE SET name=$2 RETURNING *"
+	query := "INSERT INTO channel_categories (server_id, name) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM channel_categories WHERE server_id= $1 AND name=$2) RETURNING *"
 	result := d.DB.Raw(query, serverID, name).Scan(&res)
 	if result.Error != nil {
 		return nil, responsemodel_server_service.ErrInternalServer
@@ -44,8 +44,9 @@ func (d *ServerRepository) CreateOrUpdateChannelCategory(name string, serverID s
 	return res, nil
 }
 
-func (d *ServerRepository) CreateSuperAdmin(admin requestmodel_server_service.ServerAdmin) (res *responsemodel_server_service.ServerAdmin, err error) {
-	query := "INSERT INTO server_admin (server_id , user_id, role) VALUES ($1, $2, $3) ON CONFLICT (server_id, user_id) DO UPDATE SET server_id=$1, user_id=$2 "
+func (d *ServerRepository) CreateSuperAdmin(admin requestmodel_server_service.ServerAdmin) (*responsemodel_server_service.ServerAdmin, error) {
+	var res responsemodel_server_service.ServerAdmin
+	query := "INSERT INTO server_moderators (server_id , user_id, role) VALUES ($1, $2, $3)  RETURNING *"
 	result := d.DB.Raw(query, admin.ServerID, admin.UserID, admin.Role).Scan(&res)
 	if result.Error != nil {
 		return nil, responsemodel_server_service.ErrInternalServer
@@ -55,5 +56,22 @@ func (d *ServerRepository) CreateSuperAdmin(admin requestmodel_server_service.Se
 		return nil, responsemodel_server_service.ErrEmptyResponse
 	}
 
-	return res, nil
+	return &res, nil
 }
+
+func (d *ServerRepository) CreateCategory(req *requestmodel_server_service.CreateCategory) error {
+	query := "INSERT INTO channel_categories (server_id, name) SELECT $1, $2 WHERE NOT EXIST (SELECT 1 FROM channel_categories WHERE server_id=$1 AND name =$2) AND EXIST(SELECT 1 FROM server_moderators WHERE server_id= $1, AND user_id= $3 AND role= 'SuperAdmin')"
+	result := d.DB.Raw(query, req.ServerID, req.CategoryName, req.UserID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrEmptyResponse
+	}
+	return nil
+}
+
+// func (d *ServerRepository) CreateChannel(req *requestmodel_server_service.CreateChannel) error {
+// 	query := "INSET INTO "
+// }

@@ -18,13 +18,16 @@ type ChannelCategory struct {
 }
 
 type Channels struct {
-	ChannelID string `gorm:"primaryKey;autoIncrement"`
-	ServerID  string
-	FKey      Server `gorm:"foreignkey:ServerID;referances:ID"`
-	Name      string
+	ChannelID    string `gorm:"primaryKey;autoIncrement"`
+	ServerID     string
+	FKey         Server `gorm:"foreignkey:ServerID;referances:ID"`
+	CategoryID   string
+	FkeyCategory ChannelCategory  `gorm:"foreignkey:CategoryID;references:CategoryID"`
+	Name         string
+	Type         string
 }
 
-type ServerAdmins struct {
+type ServerModerator struct {
 	ID       int `gorm:"primarykey;autoIncrement"`
 	ServerID string
 	Fkey     Server `gorm:"foreignkey:ServerID;referances:ID"`

@@ -15,7 +15,7 @@ type ServerService struct {
 	Clind pb.ServerClient
 }
 
-func NewServerService(clind pb.ServerClient) *ServerService{
+func NewServerService(clind pb.ServerClient) *ServerService {
 	return &ServerService{Clind: clind}
 }
 
@@ -30,7 +30,7 @@ func (c *ServerService) CreateServer(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	result, err := c.Clind.CreateServer(context, &pb.CreateServerRequest{ServerName: serverReq.Name})
+	result, err := c.Clind.CreateServer(context, &pb.CreateServerRequest{ServerName: serverReq.Name, UserID: ctx.Get("userID").(string)})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}

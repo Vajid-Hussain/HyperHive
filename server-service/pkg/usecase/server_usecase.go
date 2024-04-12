@@ -22,7 +22,12 @@ func (r *ServerUsecase) CreateServer(server *requestmodel_server_service.Server)
 	}
 
 	_, err = r.repository.CreateOrUpdateChannelCategory("General", serverRes.ServerID)
-	if err!=nil{
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = r.repository.CreateSuperAdmin(requestmodel_server_service.ServerAdmin{UserID: server.UserID, ServerID: serverRes.ServerID, Role: "SuperAdmin"})
+	if err != nil {
 		return nil, err
 	}
 	return serverRes, nil

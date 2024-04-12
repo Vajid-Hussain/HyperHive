@@ -41,7 +41,8 @@ func DbInit(DbConfig config_server_service.DataBasePostgres) (*gorm.DB, error) {
 	err = DB.AutoMigrate(
 		domain_server_service.Server{},
 		domain_server_service.ChannelCategory{},
-		domain_server_service.ServerAdmins{},
+		domain_server_service.ServerModerator{},
+		domain_server_service.Channels{},
 	)
 	if err != nil {
 		return nil, err

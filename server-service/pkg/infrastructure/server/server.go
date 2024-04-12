@@ -18,7 +18,7 @@ func NewServerServer(usecase interface_useCase_server_service.IServerUseCase) *S
 }
 
 func (u *ServerServer) CreateServer(ctx context.Context, req *pb.CreateServerRequest) (*pb.CreateServerResponse, error) {
-	result, err := u.useCase.CreateServer(&requestmodel_server_service.Server{Name: req.ServerName})
+	result, err := u.useCase.CreateServer(&requestmodel_server_service.Server{Name: req.ServerName, UserID: req.UserID})
 	if err != nil {
 		return nil, err
 	}
