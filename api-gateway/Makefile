@@ -9,3 +9,6 @@ autoserver:
 
 protoFriendService:
 	protoc ./pkg/friend-svc/pb/friend.proto --go_out=./ --go-grpc_out=./
+
+protoServerService:
+	protoc ./pkg/server-svc/pb/server.proto --go_out=./ --go-grpc_out=./

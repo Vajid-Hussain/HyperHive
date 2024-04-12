@@ -1,6 +1,6 @@
  syntax = "proto3";
 
-option go_package = "/pkg/friend-svc/pb";
+option go_package = "./pkg/server-svc/pb/";
 
 
 service Server {
@@ -15,3 +15,4 @@ message CreateServerResponse {
     string ServerID =1;
     string ServerName =2;
 }
+    

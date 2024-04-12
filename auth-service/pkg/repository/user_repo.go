@@ -280,6 +280,7 @@ func (d *UserRepository) DeleteExpiredStatus(now time.Time) {
 }
 
 func (d *UserRepository) UpdateOrCreateUserDescription(userID, description string) error {
+	fmt.Println("===", userID, description)
 	query := "INSERT INTO user_profile_statuses (status_id, description) VALUES ($1, $2) ON CONFLICT (status_id) DO UPDATE SET description = $2 "
 	result := d.DB.Exec(query, userID, description)
 	if result.Error != nil {

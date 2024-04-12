@@ -26,8 +26,10 @@ var upgrade = websocket.Upgrader{
 var User = make(map[string]*websocket.Conn)
 
 func NewFriendSvc(clind pb.FriendServiceClient, helper *Helper) *FriendSvc {
-	return &FriendSvc{clind: clind,
-		helper: helper}
+	return &FriendSvc{
+		clind:  clind,
+		helper: helper,
+	}
 }
 
 func (h *FriendSvc) FriendRequest(ctx echo.Context) error {

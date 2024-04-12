@@ -12,7 +12,7 @@ import (
 )
 
 func DbInit(DbConfig config_server_service.DataBasePostgres) (*gorm.DB, error) {
-	connectionString := fmt.Sprintf("user=%s password=%s host=%s sslmode=disable", DbConfig.DBName, DbConfig.UserPassword, DbConfig.Host)
+	connectionString := fmt.Sprintf("user=%s password=%s host=%s sslmode=disable", DbConfig.User, DbConfig.UserPassword, DbConfig.Host)
 	sql, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,11 @@ func DbInit(DbConfig config_server_service.DataBasePostgres) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = DB.AutoMigrate(domain_server_service.Server{})
+	err = DB.AutoMigrate(
+		domain_server_service.Server{},
+		domain_server_service.ChannelCategory{},
+		domain_server_service.ServerAdmins{},
+	)
 	if err != nil {
 		return nil, err
 	}

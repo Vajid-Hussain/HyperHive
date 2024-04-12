@@ -239,7 +239,7 @@ func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, response_auth_svc.ErrNoImageInRequest.Error(), "", err.Error()))
 	}
 
-	fmt.Println("==", file.Header)
+	// fmt.Println("==", file.Header, file.Size)
 
 	if file.Size/(1024) > 1024 {
 		return ctx.JSON(http.StatusRequestEntityTooLarge, response_auth_svc.Responses(http.StatusRequestEntityTooLarge, "", "", response_auth_svc.ErrImageOverSize.Error()))
@@ -317,10 +317,16 @@ func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 
 func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 	var descriptionReq requestmodel_auth_svc.UserProfileDescription
-	ctx.Bind(&descriptionReq)
+	err:=ctx.Bind(&descriptionReq)
+	if err!=nil{
+		return ctx.JSON(http.StatusUnsupportedMediaType, response_auth_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
+	}
 	descriptionReq.UserID = ctx.Get("userID").(string)
 
-	// fmt.Println("--", descriptionReq)
+	// json_map := make(map[string]interface{})
+	// json.NewDecoder(ctx.Request().Body).Decode(&json_map)
+	// fmt.Println("****", json_map)
+
 	validateError := helper_api_gateway.Validator(descriptionReq)
 	if len(validateError) > 0 {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", validateError))
@@ -328,7 +334,7 @@ func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	_, err := c.clind.UpdateUserProfileDescription(context, &pb.UpdateUserProfileDescriptionRequest{
+	_, err = c.clind.UpdateUserProfileDescription(context, &pb.UpdateUserProfileDescriptionRequest{
 		UserID:      descriptionReq.UserID,
 		Description: descriptionReq.Description,
 	})
@@ -336,6 +342,7 @@ func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 
+	fmt.Println("===", err)
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", "description succesfully updated", nil))
 }
 

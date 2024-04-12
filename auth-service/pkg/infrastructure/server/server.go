@@ -158,7 +158,7 @@ func (u *AuthServer) UpdateUserProfileStatus(ctx context.Context, req *pb.Update
 }
 
 func (u *AuthServer) UpdateUserProfileDescription(ctx context.Context, req *pb.UpdateUserProfileDescriptionRequest) (*emptypb.Empty, error) {
-
+	fmt.Println("===", req.Description)
 	err := u.userUseCase.UpdateDescriptionOfUser(req.UserID, req.Description)
 	if err != nil {
 		return nil, err

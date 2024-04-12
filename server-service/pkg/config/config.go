@@ -11,16 +11,22 @@ type DataBasePostgres struct {
 	Host               string `mapstructure:"HOST"`
 }
 
-type Config struct {
-	DB DataBasePostgres
+type ServerCredential struct {
+	ServerPort string `mapstructure:"PORT_SERVER_SERVICE"`
 }
 
-func ConfigInit() (config *Config, err error) {
+type Config struct {
+	DB               DataBasePostgres
+	ServerCredential ServerCredential
+}
+
+func ConfigInit() (*Config, error) {
+	var config = Config{}
 	viper.AddConfigPath("./")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")
 
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -30,5 +36,10 @@ func ConfigInit() (config *Config, err error) {
 		return nil, err
 	}
 
-	return config, nil
+	err = viper.Unmarshal(&config.ServerCredential)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
 }
