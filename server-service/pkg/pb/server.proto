@@ -2,8 +2,15 @@ syntax = "proto3";
 
 option go_package ="./pkg/pb/";
 
+import "google/protobuf/empty.proto";
+
 service Server {
     rpc CreateServer (CreateServerRequest) returns (CreateServerResponse);
+    rpc CreateCategory (CreateCategoryRequest) returns (google.protobuf.Empty);
+    rpc CreateChannel (CreateChannelRequest) returns (google.protobuf.Empty);
+    rpc JoinToServer (JoinToServerRequest) returns (google.protobuf.Empty);
+    rpc GetCategoryOfServer (GetCategoryOfServerRequest) returns (GetCategoryOfServerResponse);
+    rpc GetChannelsOfServer (GetChannelsOfServerRequest) returns (GetChannelsOfServerResponse);
 }
 
 message CreateServerRequest {
@@ -15,3 +22,52 @@ message CreateServerResponse {
     string ServerID =1;
     string ServerName =2;
 }
+
+message CreateCategoryRequest {
+    string UserID =1;
+    string ServerID =2;
+    string CategoryName=3;
+}
+
+message CreateChannelRequest {
+    string UserID =1;
+    string ServerID =2;
+    string CategoryID =3;
+    string ChannelName =4;
+    string ChannelType =5;
+}
+
+message JoinToServerRequest {
+    string UserID =1;
+    string ServerID =2;
+}
+
+message Channel {
+    string ChannelID = 1;
+    string CategoryID = 2;
+    string Name = 3;
+    string Type = 4;
+}
+
+message FullServerChannel {
+    string CategoryID = 1;
+    string Name = 2;
+    repeated Channel channel = 3;  
+}
+
+message GetCategoryOfServerRequest {
+    string ServerID =1;
+}
+
+message GetChannelsOfServerRequest {
+    string ServerID =1;
+}
+
+message GetChannelsOfServerResponse {
+    repeated FullServerChannel Data =1;
+}
+
+message GetCategoryOfServerResponse {
+    repeated FullServerChannel Data =1;
+}
+

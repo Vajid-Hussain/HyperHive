@@ -2,7 +2,7 @@ package requestmodel_server_service
 
 type Server struct {
 	UserID string
-	Name string
+	Name   string
 }
 
 type ServerAdmin struct {
@@ -10,15 +10,23 @@ type ServerAdmin struct {
 	ServerID string
 	Role     string
 }
-type CreateCategory struct{
-	UserID string
-	ServerID string
+
+type CreateCategory struct {
+	UserID       string
+	ServerID     string
 	CategoryName string
 }
-type CreateChannel struct{
+
+type CreateChannel struct {
 	ChannelName string
-	UserID string
+	UserID      string
+	ServerID    string
+	CategoryID  string
+	Type        string
+}
+
+type JoinToServer struct {
+	UserID   string
 	ServerID string
-	CategoryID string
-	Type string
+	Role     string
 }

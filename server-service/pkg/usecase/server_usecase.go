@@ -32,3 +32,36 @@ func (r *ServerUsecase) CreateServer(server *requestmodel_server_service.Server)
 	}
 	return serverRes, nil
 }
+
+func (r *ServerUsecase) CreateCategory(req *requestmodel_server_service.CreateCategory) error {
+	return r.repository.CreateCategory(req)
+}
+
+func (r *ServerUsecase) CreateChannel(req *requestmodel_server_service.CreateChannel) error {
+	if req.Type != "voice" && req.Type != "text" && req.Type != "forum" {
+		return responsemodel_server_service.ErrChannelTypeIsNotMatch
+	}
+
+	return r.repository.CreateChannel(req)
+}
+
+func (r *ServerUsecase) JoinToServer(req *requestmodel_server_service.JoinToServer) error {
+	req.Role = "member"
+	return r.repository.JoinInServer(req)
+}
+
+func (r *ServerUsecase) GetServerCategory(serverID string) ([]*responsemodel_server_service.FullServerChannel, error) {
+	return r.repository.GetServerCategory(serverID)
+}
+
+func (r *ServerUsecase) GetChannels(serverID string) ([]*responsemodel_server_service.FullServerChannel, error) {
+	category, err := r.repository.GetServerCategory(serverID)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, val := range category {
+		category[i].Channel, _ = r.repository.GetChannelUnderCategory(val.CategoryID)
+	}
+	return category, nil
+}

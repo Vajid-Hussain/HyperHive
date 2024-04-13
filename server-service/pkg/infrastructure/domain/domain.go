@@ -8,6 +8,7 @@ type Server struct {
 	Icon        string
 	CoverPhoto  string
 	Description string
+	Status      string `gorm:"default:active"`
 }
 
 type ChannelCategory struct {
@@ -18,16 +19,16 @@ type ChannelCategory struct {
 }
 
 type Channels struct {
-	ChannelID    string `gorm:"primaryKey;autoIncrement"`
+	ChannelID    int `gorm:"primaryKey;autoIncrement"`
 	ServerID     string
 	FKey         Server `gorm:"foreignkey:ServerID;referances:ID"`
-	CategoryID   string
-	FkeyCategory ChannelCategory  `gorm:"foreignkey:CategoryID;references:CategoryID"`
+	Categoryid   string
+	FkeyCategory ChannelCategory `gorm:"foreignkey:Categoryid;references:CategoryID"`
 	Name         string
 	Type         string
 }
 
-type ServerModerator struct {
+type ServerMembers struct {
 	ID       int `gorm:"primarykey;autoIncrement"`
 	ServerID string
 	Fkey     Server `gorm:"foreignkey:ServerID;referances:ID"`

@@ -20,3 +20,16 @@ type ServerAdmin struct {
 	ServerID string
 	Role     string
 }
+
+type Channel struct {
+	ChannelID  string
+	CategoryID string
+	Name       string
+	Type       string
+}
+
+type FullServerChannel struct {
+	CategoryID string
+	Name       string
+	Channel    []*Channel `gorm:"-"`
+}

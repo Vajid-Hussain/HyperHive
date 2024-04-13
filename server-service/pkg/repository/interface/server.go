@@ -8,5 +8,10 @@ import (
 type IRepositoryServer interface {
 	CreateServer(*requestmodel_server_service.Server) (*responsemodel_server_service.Server, error)
 	CreateOrUpdateChannelCategory(string, string) (*responsemodel_server_service.ChannelCategory, error)
-	CreateSuperAdmin( requestmodel_server_service.ServerAdmin) ( *responsemodel_server_service.ServerAdmin,  error)
+	CreateSuperAdmin(requestmodel_server_service.ServerAdmin) (*responsemodel_server_service.ServerAdmin, error)
+	CreateCategory(*requestmodel_server_service.CreateCategory) error
+	CreateChannel(*requestmodel_server_service.CreateChannel) error
+	JoinInServer(*requestmodel_server_service.JoinToServer) error
+	GetServerCategory(string) ([]*responsemodel_server_service.FullServerChannel, error)
+	GetChannelUnderCategory(string) ([]*responsemodel_server_service.Channel, error)
 }

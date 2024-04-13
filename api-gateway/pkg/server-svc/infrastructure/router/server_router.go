@@ -10,5 +10,18 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 	engin.Use(authMiddleWire.UserAuthMiddlewire)
 	{
 		engin.POST("", handler.CreateServer)
+		engin.POST("/join", handler.JoinToServer)
+
+		categoryManagement := engin.Group("/category")
+		{
+			categoryManagement.POST("", handler.CreateCategory)
+			categoryManagement.GET("", handler.GetCategoryOfServer)
+		}
+
+		channelManagement := engin.Group("/channel")
+		{
+			channelManagement.POST("", handler.CreateChannel)
+			channelManagement.GET("", handler.GetChannelsOfServer)
+		}
 	}
 }
