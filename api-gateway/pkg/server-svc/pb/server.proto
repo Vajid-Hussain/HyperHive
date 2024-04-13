@@ -11,6 +11,8 @@ service Server {
     rpc JoinToServer (JoinToServerRequest) returns (google.protobuf.Empty);
     rpc GetCategoryOfServer (GetCategoryOfServerRequest) returns (GetCategoryOfServerResponse);
     rpc GetChannelsOfServer (GetChannelsOfServerRequest) returns (GetChannelsOfServerResponse);
+    rpc GetUserServer (GetUserServerRequest) returns (GetUserServerResponse);
+    rpc GetServer (GetServerRequest) returns (GetServerResponse);
 }
 
 message CreateServerRequest {
@@ -69,4 +71,24 @@ message GetChannelsOfServerResponse {
 
 message GetCategoryOfServerResponse {
     repeated FullServerChannel Data =1;
+}
+
+message GetUserServerRequest {
+    string UserID =1;
+}
+
+message GetUserServerResponse {
+    repeated string server_id = 1;
+}
+
+message GetServerRequest {
+    string ServerID=1;
+}
+
+message GetServerResponse {
+    string server_id = 1;
+    string name = 2;
+    string description = 3;
+    string icon = 4;
+    string cover_photo = 5;
 }

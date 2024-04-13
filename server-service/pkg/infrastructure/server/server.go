@@ -92,3 +92,31 @@ func (u *ServerServer) GetChannelsOfServer(ctx context.Context, req *pb.GetChann
 
 	return &pb.GetChannelsOfServerResponse{Data: finalResult}, nil
 }
+
+func (u *ServerServer) GetUserServer(ctx context.Context, req *pb.GetUserServerRequest) (*pb.GetUserServerResponse, error) {
+	result, err := u.useCase.GetUserServers(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	var finalResult []string
+	for _, val := range result {
+		finalResult = append(finalResult, val.ServerID)
+	}
+	return &pb.GetUserServerResponse{ServerId: finalResult}, nil
+}
+
+func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) (*pb.GetServerResponse, error) {
+	result, err := u.useCase.GetServer(req.ServerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetServerResponse{
+		ServerId:    req.ServerID,
+		Name:        result.Name,
+		Description: result.Description,
+		Icon:        result.Icon,
+		CoverPhoto:  result.CoverPhoto,
+	}, nil
+}

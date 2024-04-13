@@ -65,3 +65,11 @@ func (r *ServerUsecase) GetChannels(serverID string) ([]*responsemodel_server_se
 	}
 	return category, nil
 }
+
+func (r *ServerUsecase) GetUserServers(userID string) ([]*responsemodel_server_service.UserServerList, error) {
+	return r.repository.GetUserServers(userID)
+}
+
+func (r *ServerUsecase) GetServer(serverID string) (*responsemodel_server_service.Server, error){
+	return r.repository.GetServer(serverID)
+}

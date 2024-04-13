@@ -24,5 +24,5 @@ type JoinToServer struct {
 }
 
 type ServerReq struct {
-	ServerID string `json:"ServerID"`
+	ServerID string `json:"ServerID" param:"id"`
 }

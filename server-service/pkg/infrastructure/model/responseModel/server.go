@@ -33,3 +33,7 @@ type FullServerChannel struct {
 	Name       string
 	Channel    []*Channel `gorm:"-"`
 }
+
+type UserServerList struct {
+	ServerID string	
+}

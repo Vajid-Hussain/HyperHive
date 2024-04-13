@@ -132,3 +132,24 @@ func (c *ServerService) GetChannelsOfServer(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+func (c *ServerService) GetUserServer(ctx echo.Context) error {
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.GetUserServer(context, &pb.GetUserServerRequest{UserID: ctx.Get("userID").(string)})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (c *ServerService) GetServer(ctx echo.Context) error {
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	result, err := c.Clind.GetServer(context, &pb.GetServerRequest{ServerID: ctx.Param("id")})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+}

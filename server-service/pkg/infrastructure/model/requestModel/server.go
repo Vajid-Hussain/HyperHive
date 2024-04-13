@@ -30,3 +30,9 @@ type JoinToServer struct {
 	ServerID string
 	Role     string
 }
+
+type MemberStatusUpdate struct{
+	UserID string
+	ServerID string
+	TargetUserID string
+}

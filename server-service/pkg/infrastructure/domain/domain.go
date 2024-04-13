@@ -16,6 +16,7 @@ type ChannelCategory struct {
 	ServerID   string
 	Fkey       Server `gorm:"foreignkey:ServerID;referances:ID"`
 	Name       string
+	Status     string `gorm:"default:active"`
 }
 
 type Channels struct {
@@ -26,6 +27,7 @@ type Channels struct {
 	FkeyCategory ChannelCategory `gorm:"foreignkey:Categoryid;references:CategoryID"`
 	Name         string
 	Type         string
+	Status       string `gorm:"default:active"`
 }
 
 type ServerMembers struct {
@@ -34,4 +36,5 @@ type ServerMembers struct {
 	Fkey     Server `gorm:"foreignkey:ServerID;referances:ID"`
 	UserID   string
 	Role     string
+	Status   string `gorm:"default:active"`
 }

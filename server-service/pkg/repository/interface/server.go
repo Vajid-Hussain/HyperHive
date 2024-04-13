@@ -14,4 +14,8 @@ type IRepositoryServer interface {
 	JoinInServer(*requestmodel_server_service.JoinToServer) error
 	GetServerCategory(string) ([]*responsemodel_server_service.FullServerChannel, error)
 	GetChannelUnderCategory(string) ([]*responsemodel_server_service.Channel, error)
+	GetServer(string) (*responsemodel_server_service.Server, error)
+	UpdateServerCoverPhoto(string, string) error
+	UpdateServerIcon(string, string) error
+	GetUserServers(string) ([]*responsemodel_server_service.UserServerList, error)
 }
