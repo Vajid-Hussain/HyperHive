@@ -3,7 +3,7 @@ package requestmodel_friend_svc
 import "time"
 
 type FriendRequest struct {
-	FriendID string `json:"FriendID"`
+	FriendID string `json:"FriendID" validate:"required"`
 }
 
 type FrendShipStatusUpdate struct {
@@ -25,11 +25,12 @@ type WebSocketInfo struct {
 }
 
 type ChatRequest struct {
-	FriendID string `query:"FriendID"`
-	Offset   string `query:"Offset"`
-	Limit    string `query:"Limit"`
+	FriendID string `query:"FriendID" validate:"required"`
+	Offset   string `query:"Offset" validate:"required"`
+	Limit    string `query:"Limit" validate:"required"`
 }
 
 type Sample struct {
 	SenderID string `json:"SenderID" validate:"required"`
 }
+

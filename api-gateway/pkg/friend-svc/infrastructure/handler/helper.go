@@ -53,7 +53,7 @@ func (r *Helper) KafkaProducer(message requestmodel_friend_svc.Message) error {
 func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
 	senderConn, ok := User[userID]
 
-	var message requestmodel_friend_svc.Sample
+	var message requestmodel_friend_svc.Message
 	if err := json.Unmarshal([]byte(msg), &message); err != nil {
 		if ok {
 			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))

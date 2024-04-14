@@ -1,28 +1,28 @@
 package requestmodel_server_svc
 
 type Server struct {
-	Name string `json:"Name"`
+	Name string `json:"Name" validate:"required"`
 }
 
 type CreateCategory struct {
 	UserID       string `json:"-"`
-	ServerID     string `json:"serverID"`
-	CategoryName string `json:"categoryName"`
+	ServerID     string `json:"serverID" validate:"required"`
+	CategoryName string `json:"categoryName" validate:"required"`
 }
 
 type CreateChannel struct {
-	ChannelName string `json:"channelName"`
+	ChannelName string `json:"channelName" validate:"required"`
 	UserID      string `json:"-"`
-	ServerID    string `json:"serverID"`
-	CategoryID  string `json:"categoryID"`
-	Type        string `json:"type"`
+	ServerID    string `json:"serverID" validate:"required"`
+	CategoryID  string `json:"categoryID" validate:"required"`
+	Type        string `json:"type" validate:"required"`
 }
 
 type JoinToServer struct {
 	UserID   string `json:"-"`
-	ServerID string `json:"ServerID"`
+	ServerID string `json:"ServerID" validate:"required"`
 }
 
 type ServerReq struct {
-	ServerID string `json:"ServerID" param:"id"`
+	ServerID string `json:"ServerID" param:"id" validate:"required"`
 }

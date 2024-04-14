@@ -39,12 +39,11 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 		// Set the "userID" in the context for downstream handlers to access
 		c.Set("userID", result.UserID)
 		// fmt.Println("----", result.UserID)
-
 		// Call the next handler in the chain
 		return next(c)
 	}
 }
-
+	
 func (m *Middlewire) AdminAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		token := c.Request().Header.Get("Token")

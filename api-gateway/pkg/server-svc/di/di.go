@@ -16,6 +16,7 @@ func InitServerClind(engin *echo.Echo, config *config.Config, middleWire *middle
 	}
 
 	serverHandler := handler_server_svc.NewServerService(serverClind.Clind)
+	// engin.GET("/socket.io/", serverHandler.SoketIO)
 
 	router_server_svc.ServerRouter(engin.Group("/server"), serverHandler, middleWire)
 

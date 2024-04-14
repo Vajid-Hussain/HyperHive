@@ -8,6 +8,7 @@ import (
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
 	resonsemodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/resonseModel"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/pb"
+	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,6 +28,11 @@ func (c *ServerService) CreateServer(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 
+	validateError := helper_api_gateway.Validator(serverReq)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -42,6 +48,11 @@ func (c *ServerService) CreateCategory(ctx echo.Context) error {
 	err := ctx.Bind(&req)
 	if err != nil {
 		return ctx.JSON(http.StatusUnsupportedMediaType, resonsemodel_server_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
+	}
+
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
 	}
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -63,6 +74,11 @@ func (c *ServerService) CreateChannel(ctx echo.Context) error {
 	err := ctx.Bind(&req)
 	if err != nil {
 		return ctx.JSON(http.StatusUnsupportedMediaType, resonsemodel_server_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
+	}
+
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
 	}
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -87,6 +103,11 @@ func (c *ServerService) JoinToServer(ctx echo.Context) error {
 		return ctx.JSON(http.StatusUnsupportedMediaType, resonsemodel_server_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
 	}
 
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	_, err = c.Clind.JoinToServer(context, &pb.JoinToServerRequest{
@@ -106,6 +127,11 @@ func (c *ServerService) GetCategoryOfServer(ctx echo.Context) error {
 		return ctx.JSON(http.StatusUnsupportedMediaType, resonsemodel_server_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
 	}
 
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -121,6 +147,11 @@ func (c *ServerService) GetChannelsOfServer(ctx echo.Context) error {
 	err := ctx.Bind(&req)
 	if err != nil {
 		return ctx.JSON(http.StatusUnsupportedMediaType, resonsemodel_server_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
+	}
+
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
 	}
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -153,3 +184,74 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+// func (c *ServerService) SoketIO(ctx echo.Context) error {
+// 	fmt.Println("called=====================", ctx.Request())
+// 	server := socketio.NewServer(nil)
+
+// 	server.OnConnect("/", func(s socketio.Conn) error {
+// 		s.SetContext("")
+// 		fmt.Println("connected:", s.ID())
+// 		return nil
+// 	})
+
+// 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
+// 		fmt.Println("notice:", msg)
+// 		s.Emit("reply", "have "+msg)
+// 	})
+
+// 	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
+// 		s.SetContext(msg)
+// 		return "recv " + msg
+// 	})
+
+// 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
+// 		last := s.Context().(string)
+// 		s.Emit("bye", last)
+// 		s.Close()
+// 		return last
+// 	})
+
+// 	server.OnError("/", func(s socketio.Conn, e error) {
+// 		// server.Remove(s.ID())
+// 		fmt.Println("meet error:", e)
+// 	})
+
+// 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+
+// 		// Add the Remove session id. Fixed the connection & mem leak
+// 		// server.Remove(s.ID())
+// 		fmt.Println("closed =>", reason)
+// 	})
+
+// 	return errors.New("i dont know what is the errro")
+// }
+
+// server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
+// 	log.Println("notice:", msg)
+// 	s.Emit("reply", "have "+msg)
+// })
+
+// server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
+// 	s.SetContext(msg)
+// 	return "recv " + msg
+// })
+
+// server.OnEvent("/", "echo", func(s socketio.Conn, msg interface{}) {
+// 	s.Emit("echo", msg)
+// })
+
+// server.OnEvent("/", "bye", func(s socketio.Conn) string {
+// 	last := s.Context().(string)
+// 	s.Emit("bye", last)
+// 	s.Close()
+// 	return last
+// })
+
+// server.OnError("/", func(s socketio.Conn, e error) {
+// 	log.Println("meet error:", e)
+// })
+
+// server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+// 	log.Println("closed", reason)
+// })

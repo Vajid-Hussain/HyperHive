@@ -9,6 +9,7 @@ import (
 	requestmodel_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/infrastructure/model/requestModel"
 	responsemodel_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/infrastructure/model/responseModel"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/pb"
+	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
@@ -35,6 +36,11 @@ func NewFriendSvc(clind pb.FriendServiceClient, helper *Helper) *FriendSvc {
 func (h *FriendSvc) FriendRequest(ctx echo.Context) error {
 	var req requestmodel_friend_svc.FriendRequest
 	ctx.Bind(&req)
+
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -116,6 +122,10 @@ func (h *FriendSvc) GetBlockFriendRequest(ctx echo.Context) error {
 func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 	var req requestmodel_friend_svc.FrendShipStatusUpdate
 	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -165,6 +175,10 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 func (h *FriendSvc) GetChat(ctx echo.Context) error {
 	var chatRequet requestmodel_friend_svc.ChatRequest
 	ctx.Bind(&chatRequet)
+	validateError := helper_api_gateway.Validator(chatRequet)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
