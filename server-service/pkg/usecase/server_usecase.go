@@ -1,6 +1,7 @@
 package usecase_server_service
 
 import (
+	config_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/config"
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	interface_Repository_Server_Service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/repository/interface"
@@ -9,6 +10,7 @@ import (
 
 type ServerUsecase struct {
 	repository interface_Repository_Server_Service.IRepositoryServer
+	s3         config_server_service.S3Bucket
 }
 
 func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer) interface_useCase_server_service.IServerUseCase {
@@ -70,6 +72,22 @@ func (r *ServerUsecase) GetUserServers(userID string) ([]*responsemodel_server_s
 	return r.repository.GetUserServers(userID)
 }
 
-func (r *ServerUsecase) GetServer(serverID string) (*responsemodel_server_service.Server, error){
+func (r *ServerUsecase) GetServer(serverID string) (*responsemodel_server_service.Server, error) {
 	return r.repository.GetServer(serverID)
 }
+
+// func (d *ServerUsecase) UpdateCoverPhoto(req requestmodel_server_service.ServerImages) (err error) {
+// 	s3Session := utils_server_service.CreateSession(d.s3)
+
+// 	url, err = utils_server_service.UploadImageToS3(image, s3Session)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	err = d.repository.(userID, url)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

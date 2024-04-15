@@ -144,13 +144,6 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	fmt.Println("message called")
 
-	// if reqHeadersBytes, err := json.Marshal(ctx.Request().Header); err != nil {
-	// 	log.Println("Could not Marshal Req Headers")
-	// } else {
-	// 	fmt.Println("==")
-	// 	log.Println(string(reqHeadersBytes))
-	// }
-
 	conn, err := upgrade.Upgrade(ctx.Response(), ctx.Request(), nil)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))

@@ -7,12 +7,13 @@ import (
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	di_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/di"
 	di_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/di"
+	di_websocket_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/webSocket/di"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	serverError := "error at initial setup "
-	
+
 	config, err := config.InitConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -31,6 +32,11 @@ func main() {
 	}
 
 	err = di_server_svc.InitServerClind(engin, config, middlewire)
+	if err != nil {
+		log.Fatal(serverError, err)
+	}
+
+	di_websocket_svc.InitWebSocket(engin, config, middlewire)
 	if err != nil {
 		log.Fatal(serverError, err)
 	}

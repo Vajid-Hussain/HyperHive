@@ -11,6 +11,7 @@ type Config struct {
 	Server_service_port string `mapstructure:"SERVER_SERVICE_PORT"`
 	KafkaPort           string `mapstructure:"KAFKAPORT"`
 	KafkaTopic          string `mapstructure:"TOPIC"`
+	KafkaServerTopic    string `mapstructure:"KAFKASERVERTOPIC"`
 	RedisDB             Redis
 }
 

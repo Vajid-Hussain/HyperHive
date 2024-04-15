@@ -36,3 +36,9 @@ type MemberStatusUpdate struct{
 	ServerID string
 	TargetUserID string
 }
+
+type ServerImages struct{
+	ServerID string
+	Image []bytes
+	Type string
+}

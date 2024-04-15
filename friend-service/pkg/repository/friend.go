@@ -49,9 +49,9 @@ func (d *FriendRepository) GetFriends(req *requestmodel_friend_server.GetFriendR
 		return nil, responsemodel_friend_server.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_friend_server.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_friend_server.ErrEmptyResponse
+	// }
 
 	return friends, nil
 }
@@ -63,9 +63,9 @@ func (d *FriendRepository) GetReceivedFriendRequest(req *requestmodel_friend_ser
 		return nil, responsemodel_friend_server.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_friend_server.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_friend_server.ErrEmptyResponse
+	// }
 
 	return response, nil
 }
@@ -77,9 +77,9 @@ func (d *FriendRepository) GetSendFriendRequest(req *requestmodel_friend_server.
 		return nil, responsemodel_friend_server.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_friend_server.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_friend_server.ErrEmptyResponse
+	// }
 
 	return response, nil
 }
@@ -91,9 +91,9 @@ func (d *FriendRepository) GetBlockFriendRequest(req *requestmodel_friend_server
 		return nil, responsemodel_friend_server.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_friend_server.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_friend_server.ErrEmptyResponse
+	// }
 
 	return response, nil
 }

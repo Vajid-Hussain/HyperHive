@@ -13,7 +13,7 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 		engin.GET("/:id", handler.GetServer)
 		engin.POST("/join", handler.JoinToServer)
 		engin.GET("/userserver", handler.GetUserServer)
-		// engin.GET("/", handler.SoketIO)
+		engin.GET("/", handler.SoketIO)
 
 		categoryManagement := engin.Group("/category")
 		{

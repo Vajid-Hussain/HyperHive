@@ -2,6 +2,8 @@ package handler_server_svc
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -9,6 +11,7 @@ import (
 	resonsemodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/resonseModel"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/pb"
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
+	socketio "github.com/googollee/go-socket.io"
 	"github.com/labstack/echo/v4"
 )
 
@@ -185,47 +188,47 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
-// func (c *ServerService) SoketIO(ctx echo.Context) error {
-// 	fmt.Println("called=====================", ctx.Request())
-// 	server := socketio.NewServer(nil)
+func (c *ServerService) SoketIO(ctx echo.Context) error {
+	fmt.Println("called=====================", ctx.Request())
+	server := socketio.NewServer(nil)
 
-// 	server.OnConnect("/", func(s socketio.Conn) error {
-// 		s.SetContext("")
-// 		fmt.Println("connected:", s.ID())
-// 		return nil
-// 	})
+	server.OnConnect("/", func(s socketio.Conn) error {
+		s.SetContext("")
+		fmt.Println("connected:", s.ID())
+		return nil
+	})
 
-// 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-// 		fmt.Println("notice:", msg)
-// 		s.Emit("reply", "have "+msg)
-// 	})
+	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
+		fmt.Println("notice:", msg)
+		s.Emit("reply", "have "+msg)
+	})
 
-// 	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-// 		s.SetContext(msg)
-// 		return "recv " + msg
-// 	})
+	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
+		s.SetContext(msg)
+		return "recv " + msg
+	})
 
-// 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-// 		last := s.Context().(string)
-// 		s.Emit("bye", last)
-// 		s.Close()
-// 		return last
-// 	})
+	server.OnEvent("/", "bye", func(s socketio.Conn) string {
+		last := s.Context().(string)
+		s.Emit("bye", last)
+		s.Close()
+		return last
+	})
 
-// 	server.OnError("/", func(s socketio.Conn, e error) {
-// 		// server.Remove(s.ID())
-// 		fmt.Println("meet error:", e)
-// 	})
+	server.OnError("/", func(s socketio.Conn, e error) {
+		// server.Remove(s.ID())
+		fmt.Println("meet error:", e)
+	})
 
-// 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
 
-// 		// Add the Remove session id. Fixed the connection & mem leak
-// 		// server.Remove(s.ID())
-// 		fmt.Println("closed =>", reason)
-// 	})
+		// Add the Remove session id. Fixed the connection & mem leak
+		// server.Remove(s.ID())
+		fmt.Println("closed =>", reason)
+	})
 
-// 	return errors.New("i dont know what is the errro")
-// }
+	return errors.New("i dont know what is the errro")
+}
 
 // server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
 // 	log.Println("notice:", msg)

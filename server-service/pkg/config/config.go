@@ -11,6 +11,13 @@ type DataBasePostgres struct {
 	Host               string `mapstructure:"HOST"`
 }
 
+type S3Bucket struct {
+	AccessKeyID     string `mapstructure:"AccessKeyID"`
+	AccessKeySecret string `mapstructure:"AccessKeySecret"`
+	Region          string `mapstructure:"Region"`
+	BucketName      string `mapstructure:"BucketName"`
+}
+
 type ServerCredential struct {
 	ServerPort string `mapstructure:"PORT_SERVER_SERVICE"`
 }
@@ -18,6 +25,7 @@ type ServerCredential struct {
 type Config struct {
 	DB               DataBasePostgres
 	ServerCredential ServerCredential
+	S3               S3Bucket
 }
 
 func ConfigInit() (*Config, error) {
@@ -37,6 +45,11 @@ func ConfigInit() (*Config, error) {
 	}
 
 	err = viper.Unmarshal(&config.ServerCredential)
+	if err != nil {
+		return nil, err
+	}
+
+	err = viper.Unmarshal(&config.S3)
 	if err != nil {
 		return nil, err
 	}

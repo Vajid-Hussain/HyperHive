@@ -20,8 +20,10 @@ type Helper struct {
 }
 
 func NewHelper(connection *redis.Client, config *config.Config) *Helper {
-	return &Helper{RedisDb: connection,
-		config: config}
+	return &Helper{
+		RedisDb: connection,
+		config:  config,
+	}
 }
 
 func (r *Helper) KafkaProducer(message requestmodel_friend_svc.Message) error {
@@ -61,38 +63,68 @@ func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, 
 		return
 	}
 	fmt.Println("==", message)
-	// message.Status = "send"
-	// message.SenderID = userID
+	// data, err := base64.StdEncoding.DecodeString(message.Tag)
+	// if err != nil {
+	// 	fmt.Println("=", err)
+	// }
+	// // fmt.Println("==", string(data))
 
-	// recipientConn, ok := User[message.RecipientID]
-	// if !ok {
-	// 	message.Status = "pending"
-	// 	delete(User, message.RecipientID)
+	// reader := bytes.NewReader(data)
+	// img, format, err := image.Decode(reader)
+	// if err != nil {
+	// 	fmt.Println("==", err)
+	// 	return
+	// }
+	// fmt.Println("Image format:", format)
 
-	// 	err := r.KafkaProducer(message)
-	// 	if err != nil {
-	// 		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-	// 	}
+	// out, err := os.Create("decoded_image.jpg")
+	// if err != nil {
+	// 	fmt.Println("Error creating file:", err)
+	// 	return
+	// }
+	// defer out.Close()
+
+	// err = jpeg.Encode(out, img, nil)
+	// if err != nil {
+	// 	fmt.Println("Error saving image:", err)
 	// 	return
 	// }
 
-	// err := r.KafkaProducer(message)
-	// if err != nil {
-	// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-	// }
+	// fmt.Println("Image saved as decoded_image.jpg")
 
-	// err = recipientConn.WriteMessage(websocket.TextMessage, msg)
-	// if err != nil {
-	// 	senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-	// 	delete(User, message.RecipientID)
-	// }
+	message.Status = "send"
+	message.SenderID = userID
+
+	recipientConn, ok := User[message.RecipientID]
+	if !ok {
+		message.Status = "pending"
+		delete(User, message.RecipientID)
+
+		err := r.KafkaProducer(message)
+		if err != nil {
+			senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		}
+		return
+	}
+
+	err := r.KafkaProducer(message)
+	if err != nil {
+		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	}
+
+	err = recipientConn.WriteMessage(websocket.TextMessage, msg)
+	if err != nil {
+		senderConn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		delete(User, message.RecipientID)
+	}
 }
+
+// redis
 
 type connection struct {
 	Conn *websocket.Conn `json:"conn"`
 }
 
-// redis
 func (r *Helper) HelperUserConnection(userID string, conn *websocket.Conn) error {
 	// fmt.Println("==", userID, conn)
 	connModel := connection{Conn: conn}

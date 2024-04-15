@@ -183,6 +183,28 @@ func (d *ServerRepository) GetUserServers(userID string) ([]*responsemodel_serve
 	return res, nil
 }
 
-// func (d *ServerRepository) RemoveUserFromServer(req *requestmodel_server_service.MemberStatusUpdate) error{
-// 	query:= "UPDATE "
+// func (d *ServerRepository) UpdateServerCoverPhoto(url string) error{
+// 	query:= "UPDATE servers SET cover_photo= $1"
+// 	result:=d.DB.Exec(query,url)
+// 	if result.Error != nil {
+// 		return responsemodel_server_service.ErrInternalServer
+// 	}
+
+// 	if result.RowsAffected == 0 {
+// 		return responsemodel_server_service.ErrEmptyResponse
+// 	}
+// 	return nil
+// }
+
+// func (d *ServerRepository) UpdateServerIcon(url string) error{
+// 	query:= "UPDATE servers SET icon= $1"
+// 	result:=d.DB.Exec(query,url)
+// 	if result.Error != nil {
+// 		return responsemodel_server_service.ErrInternalServer
+// 	}
+
+// 	if result.RowsAffected == 0 {
+// 		return responsemodel_server_service.ErrEmptyResponse
+// 	}
+// 	return nil
 // }
