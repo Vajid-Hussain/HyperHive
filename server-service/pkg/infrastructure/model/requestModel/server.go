@@ -1,5 +1,9 @@
 package requestmodel_server_service
 
+import (
+	"time"
+)
+
 type Server struct {
 	UserID string
 	Name   string
@@ -31,14 +35,29 @@ type JoinToServer struct {
 	Role     string
 }
 
-type MemberStatusUpdate struct{
-	UserID string
-	ServerID string
+type MemberStatusUpdate struct {
+	UserID       string
+	ServerID     string
 	TargetUserID string
 }
 
-type ServerImages struct{
+type ServerImages struct {
 	ServerID string
-	Image []byte
-	Type string
+	Image    []byte
+	Type     string
+}
+
+type ServerMessage struct {
+	// ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	UserID    int       `bson:"UserID" json:"UserID"`
+	ChannelID int       `bson:"ChannelID" json:"ChannelID"`
+	ServerID  int       `bson:"ServerID" json:"ServerID"`
+	Content   string    `bson:"Content" json:"Content"`
+	TimeStamp time.Time `bson:"TimeStamp" json:"TimeStamp"`
+	Type      string    `bson:"Type" json:"Type"`
+}
+
+type Pagination struct {
+    Limit  string
+    OffSet string
 }

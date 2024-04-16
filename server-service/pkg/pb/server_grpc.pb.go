@@ -31,6 +31,7 @@ type ServerClient interface {
 	GetChannelsOfServer(ctx context.Context, in *GetChannelsOfServerRequest, opts ...grpc.CallOption) (*GetChannelsOfServerResponse, error)
 	GetUserServer(ctx context.Context, in *GetUserServerRequest, opts ...grpc.CallOption) (*GetUserServerResponse, error)
 	GetServer(ctx context.Context, in *GetServerRequest, opts ...grpc.CallOption) (*GetServerResponse, error)
+	GetChannelMessage(ctx context.Context, in *GetChannelMessageRequest, opts ...grpc.CallOption) (*GetChannelMessageResponse, error)
 }
 
 type serverClient struct {
@@ -113,6 +114,15 @@ func (c *serverClient) GetServer(ctx context.Context, in *GetServerRequest, opts
 	return out, nil
 }
 
+func (c *serverClient) GetChannelMessage(ctx context.Context, in *GetChannelMessageRequest, opts ...grpc.CallOption) (*GetChannelMessageResponse, error) {
+	out := new(GetChannelMessageResponse)
+	err := c.cc.Invoke(ctx, "/Server/GetChannelMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServerServer is the server API for Server service.
 // All implementations must embed UnimplementedServerServer
 // for forward compatibility
@@ -125,6 +135,7 @@ type ServerServer interface {
 	GetChannelsOfServer(context.Context, *GetChannelsOfServerRequest) (*GetChannelsOfServerResponse, error)
 	GetUserServer(context.Context, *GetUserServerRequest) (*GetUserServerResponse, error)
 	GetServer(context.Context, *GetServerRequest) (*GetServerResponse, error)
+	GetChannelMessage(context.Context, *GetChannelMessageRequest) (*GetChannelMessageResponse, error)
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -155,6 +166,9 @@ func (UnimplementedServerServer) GetUserServer(context.Context, *GetUserServerRe
 }
 func (UnimplementedServerServer) GetServer(context.Context, *GetServerRequest) (*GetServerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServer not implemented")
+}
+func (UnimplementedServerServer) GetChannelMessage(context.Context, *GetChannelMessageRequest) (*GetChannelMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChannelMessage not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 
@@ -313,6 +327,24 @@ func _Server_GetServer_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Server_GetChannelMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChannelMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).GetChannelMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/GetChannelMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).GetChannelMessage(ctx, req.(*GetChannelMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Server_ServiceDesc is the grpc.ServiceDesc for Server service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -351,6 +383,10 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetServer",
 			Handler:    _Server_GetServer_Handler,
+		},
+		{
+			MethodName: "GetChannelMessage",
+			Handler:    _Server_GetChannelMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

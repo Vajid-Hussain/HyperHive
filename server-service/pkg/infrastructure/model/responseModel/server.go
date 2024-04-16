@@ -1,5 +1,9 @@
 package responsemodel_server_service
 
+import (
+	"time"
+)
+
 type Server struct {
 	ServerID    string `gorm:"column:id"`
 	Name        string
@@ -35,5 +39,15 @@ type FullServerChannel struct {
 }
 
 type UserServerList struct {
-	ServerID string	
+	ServerID string
+}
+
+type ServerMessage struct {
+	ID        string    `bson:"_id,omitempty"`
+	UserID    int       `bson:"UserID"`
+	ChannelID int       `bson:"ChannelID"`
+	ServerID  int       `bson:"ServerID"`
+	Content   string    `bson:"Content"`
+	TimeStamp time.Time `bson:"TimeStamp"`
+	Type      string    `bson:"Type"`
 }

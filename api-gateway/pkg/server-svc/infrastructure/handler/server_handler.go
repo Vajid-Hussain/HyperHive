@@ -201,13 +201,12 @@ func (c *ServerService) InitSoketio(ctx echo.Context) {
 		fmt.Println("connected:=", conn.ID())
 		err := c.serverUseCase.JoinToServerRoom(ctx.Get("userID").(string), c.SoketioServer, conn)
 		if err != nil {
-			c.serverUseCase.EmitErrorMessage(conn, err.Error())
+			conn.Emit("error", err.Error())
 		}
 		return nil
 	})
 
 	c.SoketioServer.OnEvent("/", "server chat", func(s socketio.Conn, msg string) {
-		fmt.Println(msg)
 		c.serverUseCase.BroadcastMessage([]byte(msg), c.SoketioServer)
 	})
 
@@ -215,4 +214,26 @@ func (c *ServerService) InitSoketio(ctx echo.Context) {
 		fmt.Println("closed =>", reason)
 		c.SoketioServer.LeaveAllRooms("/", conn)
 	})
+}
+
+func (c *ServerService) GetChannelMessage(ctx echo.Context) error {
+	var req requestmodel_server_svc.ChatRequest
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.GetChannelMessage(context, &pb.GetChannelMessageRequest{
+		ChannelID: req.ChannelID,
+		OffSet:    req.Offset,
+		Limit:     req.Limit,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+
 }

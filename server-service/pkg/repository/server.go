@@ -1,20 +1,29 @@
 package repository_server_service
 
 import (
+	"context"
 	"fmt"
+	"strconv"
 
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	interface_Repository_Server_Service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/repository/interface"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 )
 
 type ServerRepository struct {
-	DB *gorm.DB
+	DB              *gorm.DB
+	mongoCollection *mongo.Collection
 }
 
-func NewServerRepository(db *gorm.DB) interface_Repository_Server_Service.IRepositoryServer {
-	return &ServerRepository{DB: db}
+func NewServerRepository(db *gorm.DB, mongoCollection *mongo.Collection) interface_Repository_Server_Service.IRepositoryServer {
+	return &ServerRepository{
+		DB:              db,
+		mongoCollection: mongoCollection,
+	}
 }
 
 func (d *ServerRepository) CreateServer(server *requestmodel_server_service.Server) (*responsemodel_server_service.Server, error) {
@@ -208,3 +217,35 @@ func (d *ServerRepository) GetUserServers(userID string) ([]*responsemodel_serve
 // 	}
 // 	return nil
 // }
+
+// Mongodb Queries
+
+func (d *ServerRepository) KeepMessageInDB(message requestmodel_server_service.ServerMessage) error {
+	fmt.Println("message before store ", message)
+	_, err := d.mongoCollection.InsertOne(context.TODO(), message)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *ServerRepository) GetChannelMessages(chanelID string, pagination requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMessage, error) {
+	fmt.Println("==", chanelID, pagination)
+	var messages []responsemodel_server_service.ServerMessage
+	limit, _ := strconv.Atoi(pagination.Limit)
+	offset, _ := strconv.Atoi(pagination.OffSet)
+
+	option := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
+	channelIDInt, _:= strconv.Atoi(chanelID)
+
+	cursor, err := d.mongoCollection.Find(context.TODO(), bson.M{"ChannelID": channelIDInt}, option, options.Find().SetSort(bson.D{{"TimeStamp", -1}}))
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(context.TODO())
+	cursor.All(context.TODO(), &messages)
+
+	fmt.Println("==", messages)
+	return messages, nil
+}

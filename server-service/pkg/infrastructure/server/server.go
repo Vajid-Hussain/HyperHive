@@ -2,6 +2,7 @@ package server_server_service
 
 import (
 	"context"
+	"strconv"
 
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	"github.com/Vajid-Hussain/HyperHive/server-service/pkg/pb"
@@ -119,4 +120,26 @@ func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) 
 		Icon:        result.Icon,
 		CoverPhoto:  result.CoverPhoto,
 	}, nil
+}
+
+func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannelMessageRequest) (*pb.GetChannelMessageResponse, error) {
+	result, err := u.useCase.GetChannelMessages(req.ChannelID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.OffSet})
+	if err != nil {
+		return nil, err
+	}
+
+	var finalResult []*pb.ChannelMessage
+	for _, val := range result {
+		var msg pb.ChannelMessage
+		msg.ChannelID = strconv.Itoa(val.ChannelID)
+		msg.Content = val.Content
+		msg.ID = val.ID
+		msg.ServerID = strconv.Itoa(val.ServerID)
+		msg.TimeStamp = val.TimeStamp.String()
+		msg.Type = val.Type
+		msg.UserID = strconv.Itoa(val.UserID)
+		finalResult = append(finalResult, &msg)
+	}
+
+	return &pb.GetChannelMessageResponse{Messages: finalResult}, nil
 }

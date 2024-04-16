@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "./pkg/pb";
+
+service AuthService {
+    rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) {};
+}
+
+message UserProfileRequest {
+    string UserID=1;
+}
+
+message UserProfileResponse {
+    string UserID = 1;
+    string UserName = 2;
+    string Name = 3;
+    string ProfilePhoto = 5;        
+}
+

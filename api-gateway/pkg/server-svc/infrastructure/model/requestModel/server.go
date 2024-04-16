@@ -35,16 +35,22 @@ type ServerMessage struct {
 	UserID           int    `json:"UserID"`
 	ChannelID        int    `json:"ChannelID"`
 	ServerID         int    `json:"ServerID"`
-	Content          string `json:"content"`
+	Content          string `json:"Content"`
 	TimeStamp        time.Time
-	Type             string `json:"type"`
+	Type             string `json:"Type"`
 }
 
 type KafkaServerMessage struct {
-	UserID           int    `json:"UserID"`
-	ChannelID        int    `json:"ChannelID"`
-	ServerID         int    `json:"ServerID"`
-	Content          string `json:"content"`
-	TimeStamp        time.Time
-	Type             string `json:"type"`
+	UserID    int    `json:"UserID"`
+	ChannelID int    `json:"ChannelID"`
+	ServerID  int    `json:"ServerID"`
+	Content   string `json:"content"`
+	TimeStamp time.Time
+	Type      string `json:"type"`
+}
+
+type ChatRequest struct {
+	ChannelID string `query:"ChannelID" validate:"required"`
+	Offset    string `query:"Page" validate:"required"`
+	Limit     string `query:"Limit" validate:"required"`
 }

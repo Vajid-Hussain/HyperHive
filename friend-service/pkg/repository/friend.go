@@ -178,4 +178,4 @@ func (d *FriendRepository) UpdateReadAsMessage(userID, friendID string) error{
 		return responsemodel_friend_server.ErrInternalServer
 	}
 	return nil
-}
+}	

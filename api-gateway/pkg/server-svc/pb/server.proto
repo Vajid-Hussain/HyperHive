@@ -13,7 +13,7 @@ service Server {
     rpc GetChannelsOfServer (GetChannelsOfServerRequest) returns (GetChannelsOfServerResponse);
     rpc GetUserServer (GetUserServerRequest) returns (GetUserServerResponse);
     rpc GetServer (GetServerRequest) returns (GetServerResponse);
-
+    rpc GetChannelMessage (GetChannelMessageRequest) returns (GetChannelMessageResponse);
 }
 
 message CreateServerRequest {
@@ -92,4 +92,23 @@ message GetServerResponse {
     string description = 3;
     string icon = 4;
     string cover_photo = 5;
+}
+
+message GetChannelMessageRequest {
+    string ChannelID =1;
+    string OffSet =2;
+    string Limit=3;
+}
+
+message ChannelMessage {
+    string ID = 1;
+    string UserID = 2;
+    string ChannelID = 3;
+    string ServerID = 4;
+    string Content = 5;
+    string TimeStamp = 6;
+    string Type = 7;
+}
+message GetChannelMessageResponse {
+    repeated ChannelMessage messages =1;
 }

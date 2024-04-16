@@ -3,8 +3,10 @@ package utils_server_service
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 
 	config_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/config"
+	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -50,5 +52,22 @@ func UploadImageToS3(file []byte, sess *session.Session) (string, error) {
 	}
 	// fmt.Println("----", upload.Location)
 	return upload.Location, nil
-	
+
+}
+
+func Pagination(limit, offset string) (string, error) {
+	offsetInt, err := strconv.Atoi(offset)
+	if err != nil {
+		return "", err
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		return "", err
+	}
+
+	if limitInt < 1 || offsetInt < 1 {
+		return "", responsemodel_server_service.ErrPaginationWrongValue
+	}
+
+	return strconv.Itoa((offsetInt * limitInt) - limitInt), nil
 }

@@ -18,4 +18,7 @@ type IRepositoryServer interface {
 	UpdateServerCoverPhoto(string, string) error
 	UpdateServerIcon(string, string) error
 	GetUserServers(string) ([]*responsemodel_server_service.UserServerList, error)
+	KeepMessageInDB(requestmodel_server_service.ServerMessage) error
+
+	GetChannelMessages(string, requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMessage, error)
 }

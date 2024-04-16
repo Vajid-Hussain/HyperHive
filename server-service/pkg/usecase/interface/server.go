@@ -15,5 +15,6 @@ type IServerUseCase interface {
 	GetUserServers(string) ([]*responsemodel_server_service.UserServerList, error)
 	GetServer(string) (*responsemodel_server_service.Server, error)
 	KafkaConsumerServerMessage() error 
+	GetChannelMessages( string, requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMessage, error)
 
 }

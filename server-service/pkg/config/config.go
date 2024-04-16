@@ -18,6 +18,16 @@ type S3Bucket struct {
 	BucketName      string `mapstructure:"BucketName"`
 }
 
+type MongodDb struct {
+	MongodbURL           string `mapstructure:"MONGODBURL"`
+	DataBase             string `mapstructure:"MONOGODBDATABASE"`
+	ServerChatCollection string `mapstructure:"MONGODBCOLLECTION"`
+}
+
+type Auth_service struct {
+	Auth_Service_port string `mapstructure:"AUTH_SERVICE_PORT"`
+}
+
 type ServerCredential struct {
 	ServerPort string `mapstructure:"PORT_SERVER_SERVICE"`
 }
@@ -32,6 +42,8 @@ type Config struct {
 	ServerCredential ServerCredential
 	S3               S3Bucket
 	KafkaConsumer    Kafka
+	MongoDB          MongodDb
+	Auth   Auth_service
 }
 
 func ConfigInit() (*Config, error) {
@@ -64,6 +76,17 @@ func ConfigInit() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = viper.Unmarshal(&config.MongoDB)
+	if err != nil {
+		return nil, err
+	}
+
+	err = viper.Unmarshal(&config.Auth)
+	if err != nil {
+		return nil, err
+	}
+
 
 	return &config, nil
 }

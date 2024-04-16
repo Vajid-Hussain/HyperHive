@@ -84,7 +84,7 @@ func (h *FriendSvc) GetReceivedFriendRequest(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
 func (h *FriendSvc) GetSendFriendRequest(ctx echo.Context) error {
@@ -100,7 +100,7 @@ func (h *FriendSvc) GetSendFriendRequest(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
 func (h *FriendSvc) GetBlockFriendRequest(ctx echo.Context) error {
@@ -116,7 +116,7 @@ func (h *FriendSvc) GetBlockFriendRequest(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
 func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
@@ -138,7 +138,7 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "succesfully updated as "+ctx.QueryParam("action"), "", nil))
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "succesfully updated as "+ctx.QueryParam("action"), "", nil))
 }
 
 func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
@@ -184,7 +184,7 @@ func (h *FriendSvc) GetChat(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
-	return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
+	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
 //nginx config

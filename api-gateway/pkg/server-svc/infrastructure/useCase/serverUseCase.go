@@ -11,7 +11,6 @@ import (
 	auth "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
-	resonsemodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/resonseModel"
 	interface_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/useCase/interface"
 	server "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/pb"
 	socketio "github.com/googollee/go-socket.io"
@@ -63,21 +62,11 @@ func (s *serverServiceUseCase) BroadcastMessage(msg []byte, socker *socketio.Ser
 	message.TimeStamp = time.Now().In(s.Location)
 	socker.BroadcastToRoom("/", strconv.Itoa(message.ServerID), "broadcast server chat", message)
 
+	fmt.Println("==", message)
 	err := s.addMessageIntoKafa(message)
 	if err != nil {
 		fmt.Println("error on kafka producer ", err)
 	}
-}
-
-func (s *serverServiceUseCase) EmitErrorMessage(conn socketio.Conn, err string) {
-	errMessage := s.JsonMarshelErrorMessage([]byte(err))
-	conn.Emit("error", errMessage)
-}
-
-func (s *serverServiceUseCase) JsonMarshelErrorMessage(data []byte) resonsemodel_server_svc.ErrorMessage {
-	var errMessage resonsemodel_server_svc.ErrorMessage
-	json.Unmarshal(data, &errMessage)
-	return errMessage
 }
 
 func (s *serverServiceUseCase) JsonMarshelServerMessage(data []byte) requestmodel_server_svc.ServerMessage {
@@ -91,7 +80,11 @@ func (s *serverServiceUseCase) addMessageIntoKafa(msg requestmodel_server_svc.Se
 	config.Producer.Return.Successes = true
 	config.Producer.Retry.Max = 5
 
+	msg.UserProfilePhoto = ""
+	msg.UserName = ""
 	message := s.marshelStruct(msg)
+
+	fmt.Println("kafka message ", msg)
 
 	producer, err := sarama.NewSyncProducer([]string{s.config.KafkaPort}, config)
 	if err != nil {

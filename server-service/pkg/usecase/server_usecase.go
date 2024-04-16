@@ -1,6 +1,7 @@
 package usecase_server_service
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/IBM/sarama"
@@ -9,18 +10,22 @@ import (
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	interface_Repository_Server_Service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/repository/interface"
 	interface_useCase_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/usecase/interface"
+	utils_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/utils"
+	"github.com/Vajid-Hussain/HyperHive/server-service/pkg/pb"
 )
 
 type ServerUsecase struct {
 	repository interface_Repository_Server_Service.IRepositoryServer
 	s3         config_server_service.S3Bucket
 	kafka      config_server_service.Kafka
+	authClind pb.AuthServiceClient
 }
 
-func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer, kafka config_server_service.Kafka) interface_useCase_server_service.IServerUseCase {
+func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer, kafka config_server_service.Kafka,authClind pb.AuthServiceClient) interface_useCase_server_service.IServerUseCase {
 	return &ServerUsecase{
 		repository: repo,
 		kafka:      kafka,
+		authClind: authClind,
 	}
 }
 
@@ -100,24 +105,38 @@ func (r *ServerUsecase) GetServer(serverID string) (*responsemodel_server_servic
 // }
 
 func (r *ServerUsecase) KafkaConsumerServerMessage() error {
+	var messageModel requestmodel_server_service.ServerMessage
 	fmt.Println("Kafka started ")
 
 	config := sarama.NewConfig()
 
 	consumer, err := sarama.NewConsumer([]string{r.kafka.KafkaPort}, config)
 	if err != nil {
-		return err
+		fmt.Println("error from kafka ", err)
 	}
 	defer consumer.Close()
 
 	consumerPartioshion, err := consumer.ConsumePartition(r.kafka.KafkaTopic, 0, sarama.OffsetNewest)
 	if err != nil {
-		return err
+		fmt.Println("error from kafka ", err)
 	}
 	defer consumerPartioshion.Close()
 
 	for {
 		message := <-consumerPartioshion.Messages()
-		fmt.Println("message from kafka ", string(message.Value))
+		json.Unmarshal(message.Value, &messageModel)
+		err := r.repository.KeepMessageInDB(messageModel)
+		if err != nil {
+			fmt.Println("err on adding message in db ", err)
+		}
 	}
+}
+
+func (r *ServerUsecase) GetChannelMessages(channelID string, pagination requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMessage, error) {
+	var err error
+	pagination.OffSet, err = utils_server_service.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
+		return nil, err
+	}
+	return r.repository.GetChannelMessages(channelID, pagination)
 }
