@@ -3,17 +3,18 @@ package router_server_svc
 import (
 	middlewire_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/infrastructure/middlewire"
 	handler_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/handler"
+	socketio "github.com/googollee/go-socket.io"
 	"github.com/labstack/echo/v4"
 )
 
-func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, authMiddleWire *middlewire_auth_svc.Middlewire) {
+func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, authMiddleWire *middlewire_auth_svc.Middlewire, soketioServer *socketio.Server) {
 	engin.Use(authMiddleWire.UserAuthMiddlewire)
 	{
 		engin.POST("", handler.CreateServer)
 		engin.GET("/:id", handler.GetServer)
 		engin.POST("/join", handler.JoinToServer)
 		engin.GET("/userserver", handler.GetUserServer)
-		engin.GET("/", handler.SoketIO)
+		engin.GET("/", echo.WrapHandler(soketioServer))
 
 		categoryManagement := engin.Group("/category")
 		{

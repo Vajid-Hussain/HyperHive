@@ -2,7 +2,6 @@ package handler_server_svc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -16,11 +15,15 @@ import (
 )
 
 type ServerService struct {
-	Clind pb.ServerClient
+	Clind         pb.ServerClient
+	SoketioServer *socketio.Server
 }
 
-func NewServerService(clind pb.ServerClient) *ServerService {
-	return &ServerService{Clind: clind}
+func NewServerService(clind pb.ServerClient, soketioServer *socketio.Server) *ServerService {
+	return &ServerService{
+		Clind:         clind,
+		SoketioServer: soketioServer,
+	}
 }
 
 func (c *ServerService) CreateServer(ctx echo.Context) error {
@@ -188,46 +191,30 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
-func (c *ServerService) SoketIO(ctx echo.Context) error {
-	fmt.Println("called=====================", ctx.Request())
-	server := socketio.NewServer(nil)
+func (c *ServerService) SoketIO()  *socketio.Server{
+	fmt.Println("called=====================")
 
-	server.OnConnect("/", func(s socketio.Conn) error {
+	c.SoketioServer.OnConnect("/", func(s socketio.Conn) error {
 		s.SetContext("")
-		fmt.Println("connected:", s.ID())
+		fmt.Println("connected:=", s.ID())
 		return nil
 	})
 
-	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
+	c.SoketioServer.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
 		fmt.Println("notice:", msg)
 		s.Emit("reply", "have "+msg)
 	})
 
-	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
-		return "recv " + msg
-	})
-
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
-
-	server.OnError("/", func(s socketio.Conn, e error) {
-		// server.Remove(s.ID())
-		fmt.Println("meet error:", e)
-	})
-
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-
-		// Add the Remove session id. Fixed the connection & mem leak
-		// server.Remove(s.ID())
+	c.SoketioServer.OnDisconnect("/", func(s socketio.Conn, reason string) {
 		fmt.Println("closed =>", reason)
 	})
 
-	return errors.New("i dont know what is the errro")
+	// go c.SoketioServer.Serve()
+	// defer c.SoketioServer.Close()
+	fmt.Println("==serving")
+
+	// c.SoketioServer.ServeHTTP(ctx.Response(), ctx.Request())
+	return  c.SoketioServer
 }
 
 // server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
