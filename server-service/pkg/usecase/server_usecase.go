@@ -1,6 +1,9 @@
 package usecase_server_service
 
 import (
+	"fmt"
+
+	"github.com/IBM/sarama"
 	config_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/config"
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
@@ -11,10 +14,14 @@ import (
 type ServerUsecase struct {
 	repository interface_Repository_Server_Service.IRepositoryServer
 	s3         config_server_service.S3Bucket
+	kafka      config_server_service.Kafka
 }
 
-func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer) interface_useCase_server_service.IServerUseCase {
-	return &ServerUsecase{repository: repo}
+func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer, kafka config_server_service.Kafka) interface_useCase_server_service.IServerUseCase {
+	return &ServerUsecase{
+		repository: repo,
+		kafka:      kafka,
+	}
 }
 
 func (r *ServerUsecase) CreateServer(server *requestmodel_server_service.Server) (*responsemodel_server_service.Server, error) {
@@ -91,3 +98,26 @@ func (r *ServerUsecase) GetServer(serverID string) (*responsemodel_server_servic
 
 // 	return nil
 // }
+
+func (r *ServerUsecase) KafkaConsumerServerMessage() error {
+	fmt.Println("Kafka started ")
+
+	config := sarama.NewConfig()
+
+	consumer, err := sarama.NewConsumer([]string{r.kafka.KafkaPort}, config)
+	if err != nil {
+		return err
+	}
+	defer consumer.Close()
+
+	consumerPartioshion, err := consumer.ConsumePartition(r.kafka.KafkaTopic, 0, sarama.OffsetNewest)
+	if err != nil {
+		return err
+	}
+	defer consumerPartioshion.Close()
+
+	for {
+		message := <-consumerPartioshion.Messages()
+		fmt.Println("message from kafka ", string(message.Value))
+	}
+}

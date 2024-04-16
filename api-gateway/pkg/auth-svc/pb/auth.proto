@@ -5,31 +5,31 @@ option go_package= "./pkg/auth-svc/pb";
 import "google/protobuf/empty.proto";
 
 service AuthService{
-    rpc Signup(SignupRequest) returns (SignupResponse) {};
-    rpc VerifyUser (UserVerifyRequest) returns (google.protobuf.Empty) {};
-    rpc ConfirmSignup (ConfirmSignupRequest) returns (confirmSignupResponse){};
-    rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) {};
-    rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
-    rpc ReSendVerificationEmail (ReSendVerificationEmailRequest) returns (ReSendVerificationEmailResponse) {};
-    rpc SendOtp (SendOtpRequest) returns (SendOtpResponse) {};
-    rpc ForgotPassword (ForgotPasswordRequest) returns (google.protobuf.Empty) {};
+    rpc Signup(SignupRequest) returns (SignupResponse) ;
+    rpc VerifyUser (UserVerifyRequest) returns (google.protobuf.Empty) ;
+    rpc ConfirmSignup (ConfirmSignupRequest) returns (confirmSignupResponse);
+    rpc UserLogin (UserLoginRequest) returns (UserLoginResponse) ;
+    rpc ValidateUserToken (ValidateTokenRequest) returns (ValidateTokenResponse) ;
+    rpc ReSendVerificationEmail (ReSendVerificationEmailRequest) returns (ReSendVerificationEmailResponse) ;
+    rpc SendOtp (SendOtpRequest) returns (SendOtpResponse) ;
+    rpc ForgotPassword (ForgotPasswordRequest) returns (google.protobuf.Empty) ;
 
     // User Profile
-    rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) {};
-    rpc UpdateCoverPhoto ( UpdateCoverPhotoRequest) returns (UpdateCoverPhotoResponse) {};
+    rpc UpdateProfilePhoto ( UpdateprofilePhotoRequest) returns (UpdateProfilePhotoResponse) ;
+    rpc UpdateCoverPhoto ( UpdateCoverPhotoRequest) returns (UpdateCoverPhotoResponse) ;
     rpc DeletePhotoInProfile (DeletePhotoInProfileRequest) returns (google.protobuf.Empty);
-    rpc UpdateUserProfileStatus (UpdateUserProfileStatusRequest) returns (google.protobuf.Empty) {};
-    rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) {};
-    rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) {};
-    rpc DeleteAccount (DeleteAccountRequest) returns (google.protobuf.Empty){};
+    rpc UpdateUserProfileStatus (UpdateUserProfileStatusRequest) returns (google.protobuf.Empty) ;
+    rpc UpdateUserProfileDescription(UpdateUserProfileDescriptionRequest) returns (google.protobuf.Empty) ;
+    rpc UserProfile (UserProfileRequest) returns (UserProfileResponse) ;
+    rpc DeleteAccount (DeleteAccountRequest) returns (google.protobuf.Empty);
     rpc SerchUsers (SerchUsersRequest) returns (SerchUsersResponse);
 
 
     //admin
-    rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
-    rpc ValidateAdminToken (ValidateAdminTokenRequest) returns (google.protobuf.Empty){}
-    rpc BlockUse (BlockUseRequest) returns (BlockUseResponse) {};
-    rpc UnBlockUser (UnBlockUserRequest) returns (UnBlockUserResponse) {};
+    rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) ;
+    rpc ValidateAdminToken (ValidateAdminTokenRequest) returns (google.protobuf.Empty);
+    rpc BlockUse (BlockUseRequest) returns (BlockUseResponse) ;
+    rpc UnBlockUser (UnBlockUserRequest) returns (UnBlockUserResponse) ;
 }
 
 message SignupRequest{

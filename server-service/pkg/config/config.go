@@ -22,10 +22,16 @@ type ServerCredential struct {
 	ServerPort string `mapstructure:"PORT_SERVER_SERVICE"`
 }
 
+type Kafka struct {
+	KafkaPort  string `mapstructure:"KAFKAPORT"`
+	KafkaTopic string `mapstructure:"TOPIC"`
+}
+
 type Config struct {
 	DB               DataBasePostgres
 	ServerCredential ServerCredential
 	S3               S3Bucket
+	KafkaConsumer    Kafka
 }
 
 func ConfigInit() (*Config, error) {
@@ -50,6 +56,11 @@ func ConfigInit() (*Config, error) {
 	}
 
 	err = viper.Unmarshal(&config.S3)
+	if err != nil {
+		return nil, err
+	}
+
+	err = viper.Unmarshal(&config.KafkaConsumer)
 	if err != nil {
 		return nil, err
 	}

@@ -39,6 +39,6 @@ type MemberStatusUpdate struct{
 
 type ServerImages struct{
 	ServerID string
-	Image []bytes
+	Image []byte
 	Type string
 }

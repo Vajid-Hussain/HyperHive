@@ -28,7 +28,7 @@ service AuthService{
 
     //admin
     rpc AdminLogin (AdminLoginRequest) returns (AdminLoginResponse) {};
-    rpc ValidateAdminToken (ValidateAdminTokenRequest) returns (google.protobuf.Empty){}
+    rpc ValidateAdminToken (ValidateAdminTokenRequest) returns (google.protobuf.Empty){};
     rpc BlockUse (BlockUseRequest) returns (BlockUseResponse) {};
     rpc UnBlockUser (UnBlockUserRequest) returns (UnBlockUserResponse) {};
 }

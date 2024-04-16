@@ -1,5 +1,7 @@
 package requestmodel_server_svc
 
+import "time"
+
 type Server struct {
 	Name string `json:"Name" validate:"required"`
 }
@@ -25,4 +27,24 @@ type JoinToServer struct {
 
 type ServerReq struct {
 	ServerID string `json:"ServerID" param:"id" validate:"required"`
+}
+
+type ServerMessage struct {
+	UserProfilePhoto string `json:"UserProfilePhoto,omitempty"`
+	UserName         string `json:"UserName"`
+	UserID           int    `json:"UserID"`
+	ChannelID        int    `json:"ChannelID"`
+	ServerID         int    `json:"ServerID"`
+	Content          string `json:"content"`
+	TimeStamp        time.Time
+	Type             string `json:"type"`
+}
+
+type KafkaServerMessage struct {
+	UserID           int    `json:"UserID"`
+	ChannelID        int    `json:"ChannelID"`
+	ServerID         int    `json:"ServerID"`
+	Content          string `json:"content"`
+	TimeStamp        time.Time
+	Type             string `json:"type"`
 }

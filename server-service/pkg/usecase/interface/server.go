@@ -14,5 +14,6 @@ type IServerUseCase interface {
 	GetChannels(string) ([]*responsemodel_server_service.FullServerChannel, error)
 	GetUserServers(string) ([]*responsemodel_server_service.UserServerList, error)
 	GetServer(string) (*responsemodel_server_service.Server, error)
+	KafkaConsumerServerMessage() error 
 
 }

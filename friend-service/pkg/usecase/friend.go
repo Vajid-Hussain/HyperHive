@@ -256,7 +256,7 @@ func (u *FriendUseCase) MessageConsumer() {
 		u.friendRepo.StoreFriendsChat(*msg)
 	}
 }
-
+	
 func (u *FriendUseCase) UnmarshelChatMessage(data []byte) (*requestmodel_friend_server.Message, error) {
 	var message requestmodel_friend_server.Message
 	err := json.Unmarshal(data, &message)

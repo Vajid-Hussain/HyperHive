@@ -8,6 +8,7 @@ import (
 
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
 	resonsemodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/resonseModel"
+	interface_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/useCase/interface"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/pb"
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	socketio "github.com/googollee/go-socket.io"
@@ -17,12 +18,14 @@ import (
 type ServerService struct {
 	Clind         pb.ServerClient
 	SoketioServer *socketio.Server
+	serverUseCase interface_server_svc.IserverServiceUseCase
 }
 
-func NewServerService(clind pb.ServerClient, soketioServer *socketio.Server) *ServerService {
+func NewServerService(clind pb.ServerClient, soketioServer *socketio.Server, serverUseCase interface_server_svc.IserverServiceUseCase) *ServerService {
 	return &ServerService{
 		Clind:         clind,
 		SoketioServer: soketioServer,
+		serverUseCase: serverUseCase,
 	}
 }
 
@@ -191,57 +194,25 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
-func (c *ServerService) SoketIO()  *socketio.Server{
-	fmt.Println("called=====================")
+func (c *ServerService) InitSoketio(ctx echo.Context) {
 
-	c.SoketioServer.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		fmt.Println("connected:=", s.ID())
+	c.SoketioServer.OnConnect("/", func(conn socketio.Conn) error {
+		conn.SetContext("")
+		fmt.Println("connected:=", conn.ID())
+		err := c.serverUseCase.JoinToServerRoom(ctx.Get("userID").(string), c.SoketioServer, conn)
+		if err != nil {
+			c.serverUseCase.EmitErrorMessage(conn, err.Error())
+		}
 		return nil
 	})
 
-	c.SoketioServer.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
+	c.SoketioServer.OnEvent("/", "server chat", func(s socketio.Conn, msg string) {
+		fmt.Println(msg)
+		c.serverUseCase.BroadcastMessage([]byte(msg), c.SoketioServer)
 	})
 
-	c.SoketioServer.OnDisconnect("/", func(s socketio.Conn, reason string) {
+	c.SoketioServer.OnDisconnect("/", func(conn socketio.Conn, reason string) {
 		fmt.Println("closed =>", reason)
+		c.SoketioServer.LeaveAllRooms("/", conn)
 	})
-
-	// go c.SoketioServer.Serve()
-	// defer c.SoketioServer.Close()
-	fmt.Println("==serving")
-
-	// c.SoketioServer.ServeHTTP(ctx.Response(), ctx.Request())
-	return  c.SoketioServer
 }
-
-// server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-// 	log.Println("notice:", msg)
-// 	s.Emit("reply", "have "+msg)
-// })
-
-// server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-// 	s.SetContext(msg)
-// 	return "recv " + msg
-// })
-
-// server.OnEvent("/", "echo", func(s socketio.Conn, msg interface{}) {
-// 	s.Emit("echo", msg)
-// })
-
-// server.OnEvent("/", "bye", func(s socketio.Conn) string {
-// 	last := s.Context().(string)
-// 	s.Emit("bye", last)
-// 	s.Close()
-// 	return last
-// })
-
-// server.OnError("/", func(s socketio.Conn, e error) {
-// 	log.Println("meet error:", e)
-// })
-
-// server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-// 	log.Println("closed", reason)
-// })

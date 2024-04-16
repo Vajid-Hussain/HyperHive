@@ -13,6 +13,7 @@ service Server {
     rpc GetChannelsOfServer (GetChannelsOfServerRequest) returns (GetChannelsOfServerResponse);
     rpc GetUserServer (GetUserServerRequest) returns (GetUserServerResponse);
     rpc GetServer (GetServerRequest) returns (GetServerResponse);
+
 }
 
 message CreateServerRequest {
