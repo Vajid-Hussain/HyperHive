@@ -21,7 +21,7 @@ func InitServerClind(engin *echo.Echo, config *config.Config, middleWire *middle
 	soketioServer := InitSoketio()
 	serverHandler := handler_server_svc.NewServerService(serverClind.Clind, soketioServer)
 
-	router_server_svc.ServerRouter(engin.Group("/server"), serverHandler, middleWire,soketioServer)
+	router_server_svc.ServerRouter(engin.Group("/server"), serverHandler, middleWire, soketioServer)
 
 	return nil
 }
@@ -33,7 +33,13 @@ func InitSoketio() *socketio.Server {
 	server.OnConnect("/", func(s socketio.Conn) error {
 		s.SetContext("")
 		fmt.Println("connected:=", s.ID())
+		s.Join("gopher")
 		return nil
+	})
+
+	server.OnEvent("/", "group chat", func(s socketio.Conn, msg string) {
+		fmt.Println("group chat message ", msg)
+		server.BroadcastToRoom("/", "gopher", "servername", msg)
 	})
 
 	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
