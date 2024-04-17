@@ -13,7 +13,7 @@ var (
 	ErrChannelNameAlradyExist       = errors.New("channel name alrady exist in server")
 	ErrChannelExistOrNotSuperAdmin  = errors.New("only superAdmin can create non exist channel")
 	ErrcategoryExistOrNotSuperAdmin = errors.New("only superAdmin can create non exist category")
-	ErrExistMemberJoin              = errors.New("the user is already a member of this server")
+	ErrExistMemberJoin              = errors.New("you are alrady a member")
 	ErrNotAnAdmin                   = errors.New("you are not a admin")
 	ErrNotSuperAdmin                = errors.New("you are not a super admin")
 	ErrRemoveMember                 = errors.New("you can't remove the member from server because of the role")

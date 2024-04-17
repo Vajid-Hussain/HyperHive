@@ -191,8 +191,16 @@ func (u *ServerServer) UpdateMemberRole(ctx context.Context, req *pb.UpdateMembe
 
 func (u *ServerServer) RemoveUserFromServer(ctx context.Context, req *pb.RemoveUserFromServerRequest) (*emptypb.Empty, error) {
 	return new(emptypb.Empty), u.useCase.RemoveUserFromServer(&requestmodel_server_service.RemoveUser{
-		UserID: req.UserID,
+		UserID:    req.UserID,
 		RemoverID: req.RemoverID,
-		ServerID: req.ServerID,
+		ServerID:  req.ServerID,
 	})
+}
+
+func (u *ServerServer) DeleteServer(ctx context.Context, req *pb.DeleteServerRequest) (*emptypb.Empty, error) {
+	return new(emptypb.Empty), u.useCase.DeleteServer(req.UserID, req.ServerID)
+}
+
+func (u *ServerServer) LeftFromServer(ctx context.Context, req *pb.LeftFromServerRequest) (*emptypb.Empty, error) {
+	return new(emptypb.Empty) , u.useCase.LeftFromServer(req.UserID, req.ServerID)
 }

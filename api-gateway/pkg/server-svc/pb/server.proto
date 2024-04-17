@@ -19,6 +19,8 @@ service Server {
     rpc GetServerMembers (GetServerMembersRequest) returns (GetServerMembersResponse);
     rpc RemoveUserFromServer (RemoveUserFromServerRequest) returns (google.protobuf.Empty);
     rpc UpdateMemberRole (UpdateMemberRoleRequest) returns (google.protobuf.Empty);
+    rpc LeftFromServer (LeftFromServerRequest) returns (google.protobuf.Empty);
+    rpc DeleteServer (DeleteServerRequest) returns (google.protobuf.Empty);
 }
 
 message CreateServerRequest {
@@ -160,4 +162,14 @@ message UpdateMemberRoleRequest {
     string TargetUserID =2;
     string TargetRole =3;
     string ServerID =4;
+}
+
+message LeftFromServerRequest {
+    string UserID =1;
+    string ServerID =2;
+}
+
+message DeleteServerRequest {
+    string UserID =1;
+    string ServerID=2;
 }

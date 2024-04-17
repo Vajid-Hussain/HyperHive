@@ -37,6 +37,8 @@ type ServerClient interface {
 	GetServerMembers(ctx context.Context, in *GetServerMembersRequest, opts ...grpc.CallOption) (*GetServerMembersResponse, error)
 	RemoveUserFromServer(ctx context.Context, in *RemoveUserFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	LeftFromServer(ctx context.Context, in *LeftFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteServer(ctx context.Context, in *DeleteServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type serverClient struct {
@@ -173,6 +175,24 @@ func (c *serverClient) UpdateMemberRole(ctx context.Context, in *UpdateMemberRol
 	return out, nil
 }
 
+func (c *serverClient) LeftFromServer(ctx context.Context, in *LeftFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/Server/LeftFromServer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) DeleteServer(ctx context.Context, in *DeleteServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/Server/DeleteServer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServerServer is the server API for Server service.
 // All implementations must embed UnimplementedServerServer
 // for forward compatibility
@@ -191,6 +211,8 @@ type ServerServer interface {
 	GetServerMembers(context.Context, *GetServerMembersRequest) (*GetServerMembersResponse, error)
 	RemoveUserFromServer(context.Context, *RemoveUserFromServerRequest) (*emptypb.Empty, error)
 	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*emptypb.Empty, error)
+	LeftFromServer(context.Context, *LeftFromServerRequest) (*emptypb.Empty, error)
+	DeleteServer(context.Context, *DeleteServerRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -239,6 +261,12 @@ func (UnimplementedServerServer) RemoveUserFromServer(context.Context, *RemoveUs
 }
 func (UnimplementedServerServer) UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberRole not implemented")
+}
+func (UnimplementedServerServer) LeftFromServer(context.Context, *LeftFromServerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeftFromServer not implemented")
+}
+func (UnimplementedServerServer) DeleteServer(context.Context, *DeleteServerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteServer not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 
@@ -505,6 +533,42 @@ func _Server_UpdateMemberRole_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Server_LeftFromServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeftFromServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).LeftFromServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/LeftFromServer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).LeftFromServer(ctx, req.(*LeftFromServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_DeleteServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).DeleteServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/DeleteServer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).DeleteServer(ctx, req.(*DeleteServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Server_ServiceDesc is the grpc.ServiceDesc for Server service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -567,6 +631,14 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateMemberRole",
 			Handler:    _Server_UpdateMemberRole_Handler,
+		},
+		{
+			MethodName: "LeftFromServer",
+			Handler:    _Server_LeftFromServer_Handler,
+		},
+		{
+			MethodName: "DeleteServer",
+			Handler:    _Server_DeleteServer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

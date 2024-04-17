@@ -21,7 +21,8 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 
 		engin.PATCH("/role", handler.UpdateMemberRole)
 		engin.DELETE("/remove", handler.RemoveUserFromServer)
-		// engin.PATCH("/left", handler.)
+		engin.DELETE("/left", handler.LeftFromServer)
+		engin.DELETE("/destroy", handler.DeleteServer)
 
 		engin.GET("/", func(ctx echo.Context) error {
 			handler.InitSoketio(ctx)

@@ -335,7 +335,12 @@ func (c *ServerService) RemoveUserFromServer(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	_, err := c.Clind.RemoveUserFromServer(context, &pb.RemoveUserFromServerRequest{UserID: ctx.Get("userID").(string), RemoverID: req.RemoveUserID, ServerID: req.ServerID})
+
+	_, err := c.Clind.RemoveUserFromServer(context, &pb.RemoveUserFromServerRequest{
+		UserID:    ctx.Get("userID").(string),
+		RemoverID: req.RemoveUserID,
+		ServerID:  req.ServerID},
+	)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
@@ -352,9 +357,51 @@ func (c *ServerService) UpdateMemberRole(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	_, err := c.Clind.UpdateMemberRole(context, &pb.UpdateMemberRoleRequest{UserID: ctx.Get("userID").(string), TargetUserID: req.TargetUserID, TargetRole: req.TargetUserID, ServerID: req.ServerID})
+
+	_, err := c.Clind.UpdateMemberRole(context, &pb.UpdateMemberRoleRequest{
+		UserID:       ctx.Get("userID").(string),
+		TargetUserID: req.TargetUserID,
+		TargetRole:   req.TargetRole,
+		ServerID:     req.ServerID,
+	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "update sussefully to "+req.TargetRole, nil))
+}
+
+func (c *ServerService) DeleteServer(ctx echo.Context) error {
+	var req requestmodel_server_svc.ServerReq
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, err := c.Clind.DeleteServer(context, &pb.DeleteServerRequest{UserID: ctx.Get("userID").(string), ServerID: req.ServerID})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "delete sussefully "+req.ServerID, nil))
+}
+
+func (c *ServerService) LeftFromServer(ctx echo.Context) error {
+	var req requestmodel_server_svc.ServerReq
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, err := c.Clind.LeftFromServer(context, &pb.LeftFromServerRequest{UserID: ctx.Get("userID").(string), ServerID: req.ServerID})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "left sussefully from "+req.ServerID, nil))
 }

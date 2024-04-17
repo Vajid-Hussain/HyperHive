@@ -25,4 +25,6 @@ type IRepositoryServer interface {
 	GetServerMembers(string, requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMembers, error)
 	ChangeMemberRole(*requestmodel_server_service.UpdateMemberRole) error
 	RemoveUserFromServer(*requestmodel_server_service.RemoveUser) error
+	LeftFromServer(string,  string) error
+	DeleteServer(string,  string) error 
 }

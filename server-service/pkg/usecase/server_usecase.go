@@ -191,3 +191,11 @@ func (r *ServerUsecase) UpdateMemberRole(req requestmodel_server_service.UpdateM
 func (r *ServerUsecase) RemoveUserFromServer(req *requestmodel_server_service.RemoveUser) error {
 	return r.repository.RemoveUserFromServer(req)
 }
+
+func (r *ServerUsecase) DeleteServer(userID, serverID string) error {
+	return r.repository.DeleteServer(userID, serverID)
+}
+
+func (r *ServerUsecase) LeftFromServer(userID, serverID string) error {
+	return r.repository.LeftFromServer(userID, serverID)
+}

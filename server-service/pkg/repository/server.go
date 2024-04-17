@@ -216,7 +216,7 @@ func (d *ServerRepository) GetServerMembers(serverID string, pagination requestm
 }
 
 func (d *ServerRepository) ChangeMemberRole(req *requestmodel_server_service.UpdateMemberRole) error {
-	query := "UPDATE server_members SET role=$3 WHERE user_id = $1 AND EXISTS (SELECT 1 FROM server_members WHERE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id= $3)"
+	query := "UPDATE server_members SET role=$3 WHERE user_id = $1 AND server_id=$4 AND EXISTS (SELECT 1 FROM server_members WHERE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id= $4) AND NOT EXISTS (SELECT 1 FROM server_members WHERE user_id= $1 AND role='SuperAdmin' AND server_id= $4)"
 	result := d.DB.Exec(query, req.TargetUserID, req.UserID, req.TargetRole, req.ServerID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
@@ -228,8 +228,9 @@ func (d *ServerRepository) ChangeMemberRole(req *requestmodel_server_service.Upd
 	return nil
 }
 
+///----------
 func (d *ServerRepository) RemoveUserFromServer(req *requestmodel_server_service.RemoveUser) error {
-	query := "UPDATE server_members SET status='remove' WEHRE user_id =$1 AND EXISTS (SELECT 1 FROM server_members WEHRE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id =$3) AND NOT EXISTS (SELECT 1 FORM server_members WHERE user_id= $1 AND status='SuperAdmin' AND server_id= $3)"
+	query := "UPDATE server_members SET status='remove' WHERE user_id =$1 AND server_id=$3 AND EXISTS (SELECT 1 FROM server_members WHERE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id =$3) AND NOT EXISTS (SELECT 1 FROM server_members WHERE user_id= $1 AND role='SuperAdmin' AND server_id= $3)"
 	result := d.DB.Exec(query, req.RemoverID, req.UserID, req.ServerID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
@@ -242,7 +243,7 @@ func (d *ServerRepository) RemoveUserFromServer(req *requestmodel_server_service
 }
 
 func (d *ServerRepository) LeftFromServer(userID, serveID string) error {
-	query := "UPDATE server_memebers SET status='left' WHERE server_id= $1 AND user_id =$2 AND NOT EXISTS (SELECT 1 FROM server_members WHERE user_id=$2 AND status='SuperAdmin' AND server_id =$1)"
+	query := "UPDATE server_members SET status='left' WHERE server_id= $1 AND user_id =$2 AND NOT EXISTS (SELECT 1 FROM server_members WHERE user_id=$2 AND role='SuperAdmin' AND server_id =$1)"
 	result := d.DB.Exec(query, serveID, userID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
@@ -255,7 +256,7 @@ func (d *ServerRepository) LeftFromServer(userID, serveID string) error {
 }
 
 func (d *ServerRepository) DeleteServer(userID, ServerID string) error {
-	query := "UPDATE servers SET status='delete' WHERE id = $1 AND EXISTS (SELECT 1 FROM server_members WEHRE user_id= $2 AND role='SuperAdmin')"
+	query := "UPDATE servers SET status='delete' WHERE id = $1 AND EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND role='SuperAdmin' AND server_id=$1)"
 	result := d.DB.Exec(query, ServerID, userID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
