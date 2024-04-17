@@ -15,6 +15,13 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 		engin.POST("/join", handler.JoinToServer)
 		engin.GET("/userserver", handler.GetUserServer)
 		engin.GET("/message", handler.GetChannelMessage)
+		engin.PATCH("/image", handler.UpdateServerPhoto)
+		engin.PATCH("/description", handler.UpdateServerDescription)
+		engin.GET("/members", handler.GetServerMembers)
+
+		engin.PATCH("/role", handler.UpdateMemberRole)
+		engin.DELETE("/remove", handler.RemoveUserFromServer)
+		// engin.PATCH("/left", handler.)
 
 		engin.GET("/", func(ctx echo.Context) error {
 			handler.InitSoketio(ctx)

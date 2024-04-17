@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	"github.com/labstack/echo/v4"
@@ -33,7 +34,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 			RefreshToken: refreshToken,
 		})
 		if err != nil {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
+			return c.JSON(http.StatusUnauthorized, map[string]string{"error": strings.TrimPrefix(err.Error(), "rpc error: code = Unknown desc =  ")})
 		}
 
 		// Set the "userID" in the context for downstream handlers to access
@@ -43,7 +44,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 		return next(c)
 	}
 }
-	
+
 func (m *Middlewire) AdminAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		token := c.Request().Header.Get("Token")
@@ -53,7 +54,7 @@ func (m *Middlewire) AdminAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc
 		})
 
 		if err != nil {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "token is not valid"})
+			return c.JSON(http.StatusUnauthorized, map[string]string{"error": strings.TrimPrefix(err.Error(), "rpc error: code = Unknown desc =  ")})
 		}
 
 		return next(c)

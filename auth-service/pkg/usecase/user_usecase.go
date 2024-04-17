@@ -349,7 +349,7 @@ func (d *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserPro
 	status.Expire = time.Now().Add(time.Hour * time.Duration(expire)).Format("2006-01-02 15:04:05")
 	// fmt.Println("-----", time.Now(), status.Expire)
 
-	if expire <= 24 {
+	if expire > 24 {
 		return responsemodel_auth_server.ErrStatuTimeLongExpireTime
 	}
 

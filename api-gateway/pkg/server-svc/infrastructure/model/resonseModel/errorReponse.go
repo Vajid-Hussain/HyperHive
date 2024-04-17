@@ -1,6 +1,8 @@
 package resonsemodel_server_svc
 
-import "strings"
+import (
+	"strings"
+)
 
 type Response struct {
 	StatusCode int         `json:"status_code"`

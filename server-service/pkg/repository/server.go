@@ -117,9 +117,9 @@ func (d *ServerRepository) GetServerCategory(serverID string) ([]*responsemodel_
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_server_service.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_server_service.ErrEmptyResponse
+	// }
 	return res, nil
 }
 
@@ -131,9 +131,9 @@ func (d *ServerRepository) GetChannelUnderCategory(categoryID string) ([]*respon
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_server_service.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_server_service.ErrEmptyResponse
+	// }
 	return res, nil
 }
 
@@ -145,36 +145,10 @@ func (d *ServerRepository) GetServer(serverID string) (*responsemodel_server_ser
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_server_service.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_server_service.ErrEmptyResponse
+	// }
 	return res, nil
-}
-
-func (d *ServerRepository) UpdateServerCoverPhoto(serverID, url string) error {
-	query := "UPDATE servers SET cover_photo=$1 WHERE id=$2 AND status='active' "
-	result := d.DB.Exec(query, serverID, url)
-	if result.Error != nil {
-		return responsemodel_server_service.ErrInternalServer
-	}
-
-	if result.RowsAffected == 0 {
-		return responsemodel_server_service.ErrEmptyResponse
-	}
-	return nil
-}
-
-func (d *ServerRepository) UpdateServerIcon(serverID, url string) error {
-	query := "UPDATE servers SET icon=$1 WHERE id=$2 AND status='active' "
-	result := d.DB.Exec(query, serverID, url)
-	if result.Error != nil {
-		return responsemodel_server_service.ErrInternalServer
-	}
-
-	if result.RowsAffected == 0 {
-		return responsemodel_server_service.ErrEmptyResponse
-	}
-	return nil
 }
 
 func (d *ServerRepository) GetUserServers(userID string) ([]*responsemodel_server_service.UserServerList, error) {
@@ -186,37 +160,112 @@ func (d *ServerRepository) GetUserServers(userID string) ([]*responsemodel_serve
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
 
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_server_service.ErrEmptyResponse
+	// }
+	return res, nil
+}
+
+func (d *ServerRepository) UpdateServerCoverPhoto(req *requestmodel_server_service.ServerImages) error {
+	query := "UPDATE servers SET cover_photo= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id =$2 AND role='SuperAdmin' AND server_id =$3)"
+	result := d.DB.Exec(query, req.Url, req.UserID, req.ServerID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
+
 	if result.RowsAffected == 0 {
-		return nil, responsemodel_server_service.ErrEmptyResponse
+		return responsemodel_server_service.ErrNotSuperAdmin
+	}
+	return nil
+}
+
+func (d *ServerRepository) UpdateServerIcon(req *requestmodel_server_service.ServerImages) error {
+	query := "UPDATE servers SET icon= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND role= 'SuperAdmin' AND server_id =$3)"
+	result := d.DB.Exec(query, req.Url, req.UserID, req.ServerID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrNotSuperAdmin
+	}
+	return nil
+}
+
+func (d *ServerRepository) UpdateServerDiscription(req *requestmodel_server_service.Description) error {
+	query := "UPDATE servers SET description= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND (role= 'SuperAdmin' OR role='Admin') AND server_id =$3)"
+	result := d.DB.Exec(query, req.Description, req.UserID, req.ServerID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrNotSuperAdmin
+	}
+	return nil
+}
+
+func (d *ServerRepository) GetServerMembers(serverID string, pagination requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMembers, error) {
+	var res []responsemodel_server_service.ServerMembers
+	query := "SELECT * FROM server_members WHERE server_id = $1 AND status='active' ORDER BY CASE role WHEN 'SuperAdmin' THEN 1 WHEN 'Admin' THEN 2 WHEN 'member' THEN 3 ELSE 4 END LIMIT $2 OFFSET $3"
+	result := d.DB.Raw(query, serverID, pagination.Limit, pagination.OffSet).Scan(&res)
+	if result.Error != nil {
+		return nil, responsemodel_server_service.ErrInternalServer
 	}
 	return res, nil
 }
 
-// func (d *ServerRepository) UpdateServerCoverPhoto(url string) error{
-// 	query:= "UPDATE servers SET cover_photo= $1"
-// 	result:=d.DB.Exec(query,url)
-// 	if result.Error != nil {
-// 		return responsemodel_server_service.ErrInternalServer
-// 	}
+func (d *ServerRepository) ChangeMemberRole(req *requestmodel_server_service.UpdateMemberRole) error {
+	query := "UPDATE server_members SET role=$3 WHERE user_id = $1 AND EXISTS (SELECT 1 FROM server_members WHERE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id= $3)"
+	result := d.DB.Exec(query, req.TargetUserID, req.UserID, req.TargetRole, req.ServerID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
 
-// 	if result.RowsAffected == 0 {
-// 		return responsemodel_server_service.ErrEmptyResponse
-// 	}
-// 	return nil
-// }
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrNotAnAdmin
+	}
+	return nil
+}
 
-// func (d *ServerRepository) UpdateServerIcon(url string) error{
-// 	query:= "UPDATE servers SET icon= $1"
-// 	result:=d.DB.Exec(query,url)
-// 	if result.Error != nil {
-// 		return responsemodel_server_service.ErrInternalServer
-// 	}
+func (d *ServerRepository) RemoveUserFromServer(req *requestmodel_server_service.RemoveUser) error {
+	query := "UPDATE server_members SET status='remove' WEHRE user_id =$1 AND EXISTS (SELECT 1 FROM server_members WEHRE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id =$3) AND NOT EXISTS (SELECT 1 FORM server_members WHERE user_id= $1 AND status='SuperAdmin' AND server_id= $3)"
+	result := d.DB.Exec(query, req.RemoverID, req.UserID, req.ServerID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
 
-// 	if result.RowsAffected == 0 {
-// 		return responsemodel_server_service.ErrEmptyResponse
-// 	}
-// 	return nil
-// }
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrRemoveMember
+	}
+	return nil
+}
+
+func (d *ServerRepository) LeftFromServer(userID, serveID string) error {
+	query := "UPDATE server_memebers SET status='left' WHERE server_id= $1 AND user_id =$2 AND NOT EXISTS (SELECT 1 FROM server_members WHERE user_id=$2 AND status='SuperAdmin' AND server_id =$1)"
+	result := d.DB.Exec(query, serveID, userID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrSuperAdminLeft
+	}
+	return nil
+}
+
+func (d *ServerRepository) DeleteServer(userID, ServerID string) error {
+	query := "UPDATE servers SET status='delete' WHERE id = $1 AND EXISTS (SELECT 1 FROM server_members WEHRE user_id= $2 AND role='SuperAdmin')"
+	result := d.DB.Exec(query, ServerID, userID)
+	if result.Error != nil {
+		return responsemodel_server_service.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return responsemodel_server_service.ErrNotAnAdmin
+	}
+	return nil
+}
 
 // Mongodb Queries
 
@@ -236,7 +285,7 @@ func (d *ServerRepository) GetChannelMessages(chanelID string, pagination reques
 	offset, _ := strconv.Atoi(pagination.OffSet)
 
 	option := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
-	channelIDInt, _:= strconv.Atoi(chanelID)
+	channelIDInt, _ := strconv.Atoi(chanelID)
 
 	cursor, err := d.mongoCollection.Find(context.TODO(), bson.M{"ChannelID": channelIDInt}, option, options.Find().SetSort(bson.D{{"TimeStamp", -1}}))
 	if err != nil {

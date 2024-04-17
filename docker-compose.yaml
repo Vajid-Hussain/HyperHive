@@ -80,6 +80,7 @@ services:
     depends_on:
       - postgres
       - mongodb
+      - kafka
     container_name: hyperhive_friend_service
     networks:
       - hyperhive_network
@@ -92,6 +93,7 @@ services:
     depends_on:
       - postgres
       - mongodb
+      - kafka
     container_name: hyperhive_server_service
     networks:
       - hyperhive_network

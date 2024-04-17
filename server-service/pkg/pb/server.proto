@@ -14,6 +14,11 @@ service Server {
     rpc GetUserServer (GetUserServerRequest) returns (GetUserServerResponse);
     rpc GetServer (GetServerRequest) returns (GetServerResponse);
     rpc GetChannelMessage (GetChannelMessageRequest) returns (GetChannelMessageResponse);
+    rpc UpdateServerPhoto (UpdateServerPhotoRequest) returns (google.protobuf.Empty);
+    rpc UpdateServerDiscription (UpdateServerDiscriptionRequest) returns (google.protobuf.Empty);
+    rpc GetServerMembers (GetServerMembersRequest) returns (GetServerMembersResponse);
+    rpc RemoveUserFromServer (RemoveUserFromServerRequest) returns (google.protobuf.Empty);
+    rpc UpdateMemberRole (UpdateMemberRoleRequest) returns (google.protobuf.Empty);
 }
 
 message CreateServerRequest {
@@ -112,4 +117,48 @@ message ChannelMessage {
 }
 message GetChannelMessageResponse {
     repeated ChannelMessage messages =1;
+}
+
+message UpdateServerPhotoRequest {
+    string ServerID = 1;
+    string UserID = 2;
+    bytes Image = 3;
+    string Type = 4;
+}
+
+message UpdateServerDiscriptionRequest {
+    string UserID=1;
+    string ServerID =2;
+    string Description =3;
+}
+
+message GetServerMembersRequest {
+    string ServerID =1;
+    string OffSet =2;
+    string Limit=3;
+}
+
+message ServerMemberModel {
+    string userId = 1;
+    string userProfile = 2;
+    string userName = 3;
+    string name = 4;
+    string role = 5;
+}
+
+message GetServerMembersResponse {
+    repeated ServerMemberModel List =1;
+}
+
+message RemoveUserFromServerRequest {
+    string UserID=1;
+    string RemoverID =2; 
+    string serverID =3;
+}
+
+message UpdateMemberRoleRequest {
+    string UserID =1;
+    string TargetUserID =2;
+    string TargetRole =3;
+    string ServerID =4;
 }

@@ -143,3 +143,56 @@ func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannel
 
 	return &pb.GetChannelMessageResponse{Messages: finalResult}, nil
 }
+
+func (u *ServerServer) UpdateServerPhoto(ctx context.Context, req *pb.UpdateServerPhotoRequest) (*emptypb.Empty, error) {
+	var request requestmodel_server_service.ServerImages
+	request.Image = req.Image
+	request.ServerID = req.ServerID
+	request.Type = req.Type
+	request.UserID = req.UserID
+
+	err := u.useCase.UpdateServerPhoto(&request)
+	if err != nil {
+		return new(emptypb.Empty), err
+	}
+	return new(emptypb.Empty), nil
+}
+
+func (u *ServerServer) UpdateServerDiscription(ctx context.Context, req *pb.UpdateServerDiscriptionRequest) (*emptypb.Empty, error) {
+	return new(emptypb.Empty), u.useCase.UpdateServerDiscription(&requestmodel_server_service.Description{UserID: req.UserID, Description: req.Description, ServerID: req.ServerID})
+}
+
+func (u *ServerServer) GetServerMembers(ctx context.Context, req *pb.GetServerMembersRequest) (*pb.GetServerMembersResponse, error) {
+	result, err := u.useCase.GetServerMembers(req.ServerID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.OffSet})
+	if err != nil {
+		return nil, err
+	}
+	var finalResult []*pb.ServerMemberModel
+	for _, member := range result {
+		var memberDetails pb.ServerMemberModel
+		memberDetails.Name = member.Name
+		memberDetails.Role = member.Role
+		memberDetails.UserId = member.UserID
+		memberDetails.UserName = member.UserName
+		memberDetails.UserProfile = member.UserProfile
+		finalResult = append(finalResult, &memberDetails)
+	}
+	return &pb.GetServerMembersResponse{List: finalResult}, nil
+}
+
+func (u *ServerServer) UpdateMemberRole(ctx context.Context, req *pb.UpdateMemberRoleRequest) (*emptypb.Empty, error) {
+	return new(emptypb.Empty), u.useCase.UpdateMemberRole(requestmodel_server_service.UpdateMemberRole{
+		UserID:       req.UserID,
+		TargetUserID: req.TargetUserID,
+		TargetRole:   req.TargetRole,
+		ServerID:     req.ServerID,
+	})
+}
+
+func (u *ServerServer) RemoveUserFromServer(ctx context.Context, req *pb.RemoveUserFromServerRequest) (*emptypb.Empty, error) {
+	return new(emptypb.Empty), u.useCase.RemoveUserFromServer(&requestmodel_server_service.RemoveUser{
+		UserID: req.UserID,
+		RemoverID: req.RemoverID,
+		ServerID: req.ServerID,
+	})
+}

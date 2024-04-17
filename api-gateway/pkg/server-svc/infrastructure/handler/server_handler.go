@@ -237,3 +237,124 @@ func (c *ServerService) GetChannelMessage(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 
 }
+
+func (c *ServerService) UpdateServerPhoto(ctx echo.Context) error {
+	var validImageExtention = map[string]struct{}{}
+
+	validImageExtention["image/jpb"] = struct{}{}
+	validImageExtention["image/png"] = struct{}{}
+	validImageExtention["image/gif"] = struct{}{}
+
+	file, err := ctx.FormFile("Image")
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, resonsemodel_server_svc.ErrNoImageInRequest.Error(), "", err.Error()))
+	}
+
+	if file.Size/(1024) > 1024 {
+		return ctx.JSON(http.StatusRequestEntityTooLarge, resonsemodel_server_svc.Responses(http.StatusRequestEntityTooLarge, "", "", resonsemodel_server_svc.ErrImageOverSize.Error()))
+	}
+
+	// if _, ok := validImageExtention[file.Header.Get("Content-Type")]; !ok {
+	// 	return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", resonsemodel_server_svc.ErrUnsupportImageType.Error()))
+	// }
+
+	image, err := file.Open()
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	buffer := make([]byte, file.Size)
+	image.Read(buffer)
+
+	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err = c.Clind.UpdateServerPhoto(context, &pb.UpdateServerPhotoRequest{
+		Image:    buffer,
+		UserID:   ctx.Get("userID").(string),
+		ServerID: ctx.FormValue("ServerID"),
+		Type:     ctx.FormValue("Type"),
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", ctx.FormValue("Type")+resonsemodel_server_svc.ServerImageUpdateSuccesFully, nil))
+}
+
+func (c *ServerService) UpdateServerDescription(ctx echo.Context) error {
+	var req requestmodel_server_svc.ServerDescription
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	_, err := c.Clind.UpdateServerDiscription(context, &pb.UpdateServerDiscriptionRequest{
+		UserID:      ctx.Get("userID").(string),
+		ServerID:    req.ServerID,
+		Description: req.Description,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, resonsemodel_server_svc.ServerDescriptionUpdate, "", nil))
+}
+
+func (c *ServerService) GetServerMembers(ctx echo.Context) error {
+	var req requestmodel_server_svc.ServerMember
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.GetServerMembers(context, &pb.GetServerMembersRequest{
+		ServerID: req.ServerID,
+		OffSet:   req.Offset,
+		Limit:    req.Limit,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+
+}
+
+func (c *ServerService) RemoveUserFromServer(ctx echo.Context) error {
+	var req requestmodel_server_svc.RemoveUser
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	_, err := c.Clind.RemoveUserFromServer(context, &pb.RemoveUserFromServerRequest{UserID: ctx.Get("userID").(string), RemoverID: req.RemoveUserID, ServerID: req.ServerID})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "succesfully remove user "+req.RemoveUserID, nil))
+}
+
+func (c *ServerService) UpdateMemberRole(ctx echo.Context) error {
+	var req requestmodel_server_svc.UpdateMemberRole
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	_, err := c.Clind.UpdateMemberRole(context, &pb.UpdateMemberRoleRequest{UserID: ctx.Get("userID").(string), TargetUserID: req.TargetUserID, TargetRole: req.TargetUserID, ServerID: req.ServerID})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "update sussefully to "+req.TargetRole, nil))
+}

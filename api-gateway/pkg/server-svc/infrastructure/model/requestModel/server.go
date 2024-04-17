@@ -54,3 +54,25 @@ type ChatRequest struct {
 	Offset    string `query:"Page" validate:"required"`
 	Limit     string `query:"Limit" validate:"required"`
 }
+
+type ServerDescription struct {
+	ServerID    string `json:"ServerID" validate:"required"`
+	Description string `json:"Description" validate:"max=20"`
+}
+
+type ServerMember struct {
+	ServerID string `query:"ServerID" validate:"required"`
+	Offset   string `query:"Page" validate:"required"`
+	Limit    string `query:"Limit" validate:"required"`
+}
+
+type RemoveUser struct {
+	RemoveUserID string `json:"RemoveUserID" validate:"required"`
+	ServerID     string `json:"ServerID" validate:"required"`
+}
+
+type UpdateMemberRole struct {
+	TargetUserID string `json:"TargetUserID" validate:"required"`
+	TargetRole   string `json:"TargetRole" validate:"required"`
+	ServerID     string `json:"ServerID" validate:"required"`
+}

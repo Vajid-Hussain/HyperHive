@@ -32,6 +32,11 @@ type ServerClient interface {
 	GetUserServer(ctx context.Context, in *GetUserServerRequest, opts ...grpc.CallOption) (*GetUserServerResponse, error)
 	GetServer(ctx context.Context, in *GetServerRequest, opts ...grpc.CallOption) (*GetServerResponse, error)
 	GetChannelMessage(ctx context.Context, in *GetChannelMessageRequest, opts ...grpc.CallOption) (*GetChannelMessageResponse, error)
+	UpdateServerPhoto(ctx context.Context, in *UpdateServerPhotoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateServerDiscription(ctx context.Context, in *UpdateServerDiscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetServerMembers(ctx context.Context, in *GetServerMembersRequest, opts ...grpc.CallOption) (*GetServerMembersResponse, error)
+	RemoveUserFromServer(ctx context.Context, in *RemoveUserFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type serverClient struct {
@@ -123,6 +128,51 @@ func (c *serverClient) GetChannelMessage(ctx context.Context, in *GetChannelMess
 	return out, nil
 }
 
+func (c *serverClient) UpdateServerPhoto(ctx context.Context, in *UpdateServerPhotoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/Server/UpdateServerPhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) UpdateServerDiscription(ctx context.Context, in *UpdateServerDiscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/Server/UpdateServerDiscription", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) GetServerMembers(ctx context.Context, in *GetServerMembersRequest, opts ...grpc.CallOption) (*GetServerMembersResponse, error) {
+	out := new(GetServerMembersResponse)
+	err := c.cc.Invoke(ctx, "/Server/GetServerMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) RemoveUserFromServer(ctx context.Context, in *RemoveUserFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/Server/RemoveUserFromServer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/Server/UpdateMemberRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServerServer is the server API for Server service.
 // All implementations must embed UnimplementedServerServer
 // for forward compatibility
@@ -136,6 +186,11 @@ type ServerServer interface {
 	GetUserServer(context.Context, *GetUserServerRequest) (*GetUserServerResponse, error)
 	GetServer(context.Context, *GetServerRequest) (*GetServerResponse, error)
 	GetChannelMessage(context.Context, *GetChannelMessageRequest) (*GetChannelMessageResponse, error)
+	UpdateServerPhoto(context.Context, *UpdateServerPhotoRequest) (*emptypb.Empty, error)
+	UpdateServerDiscription(context.Context, *UpdateServerDiscriptionRequest) (*emptypb.Empty, error)
+	GetServerMembers(context.Context, *GetServerMembersRequest) (*GetServerMembersResponse, error)
+	RemoveUserFromServer(context.Context, *RemoveUserFromServerRequest) (*emptypb.Empty, error)
+	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -169,6 +224,21 @@ func (UnimplementedServerServer) GetServer(context.Context, *GetServerRequest) (
 }
 func (UnimplementedServerServer) GetChannelMessage(context.Context, *GetChannelMessageRequest) (*GetChannelMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChannelMessage not implemented")
+}
+func (UnimplementedServerServer) UpdateServerPhoto(context.Context, *UpdateServerPhotoRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateServerPhoto not implemented")
+}
+func (UnimplementedServerServer) UpdateServerDiscription(context.Context, *UpdateServerDiscriptionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateServerDiscription not implemented")
+}
+func (UnimplementedServerServer) GetServerMembers(context.Context, *GetServerMembersRequest) (*GetServerMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServerMembers not implemented")
+}
+func (UnimplementedServerServer) RemoveUserFromServer(context.Context, *RemoveUserFromServerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveUserFromServer not implemented")
+}
+func (UnimplementedServerServer) UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberRole not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 
@@ -345,6 +415,96 @@ func _Server_GetChannelMessage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Server_UpdateServerPhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateServerPhotoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).UpdateServerPhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/UpdateServerPhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).UpdateServerPhoto(ctx, req.(*UpdateServerPhotoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_UpdateServerDiscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateServerDiscriptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).UpdateServerDiscription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/UpdateServerDiscription",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).UpdateServerDiscription(ctx, req.(*UpdateServerDiscriptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_GetServerMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServerMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).GetServerMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/GetServerMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).GetServerMembers(ctx, req.(*GetServerMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_RemoveUserFromServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveUserFromServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).RemoveUserFromServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/RemoveUserFromServer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).RemoveUserFromServer(ctx, req.(*RemoveUserFromServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_UpdateMemberRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMemberRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).UpdateMemberRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/UpdateMemberRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).UpdateMemberRole(ctx, req.(*UpdateMemberRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Server_ServiceDesc is the grpc.ServiceDesc for Server service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -387,6 +547,26 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChannelMessage",
 			Handler:    _Server_GetChannelMessage_Handler,
+		},
+		{
+			MethodName: "UpdateServerPhoto",
+			Handler:    _Server_UpdateServerPhoto_Handler,
+		},
+		{
+			MethodName: "UpdateServerDiscription",
+			Handler:    _Server_UpdateServerDiscription_Handler,
+		},
+		{
+			MethodName: "GetServerMembers",
+			Handler:    _Server_GetServerMembers_Handler,
+		},
+		{
+			MethodName: "RemoveUserFromServer",
+			Handler:    _Server_RemoveUserFromServer_Handler,
+		},
+		{
+			MethodName: "UpdateMemberRole",
+			Handler:    _Server_UpdateMemberRole_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

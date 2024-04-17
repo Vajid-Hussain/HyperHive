@@ -14,9 +14,16 @@ var (
 	ErrChannelExistOrNotSuperAdmin  = errors.New("only superAdmin can create non exist channel")
 	ErrcategoryExistOrNotSuperAdmin = errors.New("only superAdmin can create non exist category")
 	ErrExistMemberJoin              = errors.New("the user is already a member of this server")
+	ErrNotAnAdmin                   = errors.New("you are not a admin")
+	ErrNotSuperAdmin                = errors.New("you are not a super admin")
+	ErrRemoveMember                 = errors.New("you can't remove the member from server because of the role")
+	ErrSuperAdminLeft               = errors.New("super admin can't left")
 )
 
 // usecase
 var (
-	ErrChannelTypeIsNotMatch = errors.New("channel type is not mathing valid are text, forem, and voice")
+	ErrChannelTypeIsNotMatch   = errors.New("channel type is not mathing valid are text, forem, and voice")
+	ErrServerPhotoTypeNotMatch = errors.New("photo type is not matching")
+	ErrServerDescriptionLength = errors.New("description under under 20 letters")
+	ErrNotExpectedRole         = errors.New("undefine role, confirm role")
 )

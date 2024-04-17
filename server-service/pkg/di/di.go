@@ -21,10 +21,11 @@ func ServerInitialize(config *config_server_service.Config) (*server_server_serv
 	}
 
 	serverRepository := repository_server_service.NewServerRepository(gormDB, mongoCollection)
-	serverUseCase := usecase_server_service.NewServerUseCase(serverRepository, config.KafkaConsumer, authClind)
+	serverUseCase := usecase_server_service.NewServerUseCase(serverRepository, config.KafkaConsumer, authClind, config.S3)
 	serverServer := server_server_service.NewServerServer(serverUseCase)
 
 	go serverUseCase.KafkaConsumerServerMessage()
 
 	return serverServer, nil
 }
+

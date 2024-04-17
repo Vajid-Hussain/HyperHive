@@ -1,6 +1,7 @@
 package usecase_server_service
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -8,24 +9,25 @@ import (
 	config_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/config"
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
+	"github.com/Vajid-Hussain/HyperHive/server-service/pkg/pb"
 	interface_Repository_Server_Service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/repository/interface"
 	interface_useCase_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/usecase/interface"
 	utils_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/utils"
-	"github.com/Vajid-Hussain/HyperHive/server-service/pkg/pb"
 )
 
 type ServerUsecase struct {
 	repository interface_Repository_Server_Service.IRepositoryServer
 	s3         config_server_service.S3Bucket
 	kafka      config_server_service.Kafka
-	authClind pb.AuthServiceClient
+	authClind  pb.AuthServiceClient
 }
 
-func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer, kafka config_server_service.Kafka,authClind pb.AuthServiceClient) interface_useCase_server_service.IServerUseCase {
+func NewServerUseCase(repo interface_Repository_Server_Service.IRepositoryServer, kafka config_server_service.Kafka, authClind pb.AuthServiceClient, s3 config_server_service.S3Bucket) interface_useCase_server_service.IServerUseCase {
 	return &ServerUsecase{
 		repository: repo,
 		kafka:      kafka,
-		authClind: authClind,
+		authClind:  authClind,
+		s3:         s3,
 	}
 }
 
@@ -88,21 +90,40 @@ func (r *ServerUsecase) GetServer(serverID string) (*responsemodel_server_servic
 	return r.repository.GetServer(serverID)
 }
 
-// func (d *ServerUsecase) UpdateCoverPhoto(req requestmodel_server_service.ServerImages) (err error) {
-// 	s3Session := utils_server_service.CreateSession(d.s3)
+func (d *ServerUsecase) UpdateServerPhoto(req *requestmodel_server_service.ServerImages) (err error) {
+	s3Session := utils_server_service.CreateSession(d.s3)
 
-// 	url, err = utils_server_service.UploadImageToS3(image, s3Session)
-// 	if err != nil {
-// 		return err
-// 	}
+	req.Url, err = utils_server_service.UploadImageToS3(req.Image, s3Session)
+	if err != nil {
+		return err
+	}
 
-// 	err = d.repository.(userID, url)
-// 	if err != nil {
-// 		return err
-// 	}
+	if req.Type == "cover photo" {
+		err := d.repository.UpdateServerCoverPhoto(req)
+		if err != nil {
+			return err
+		}
+	} else if req.Type == "icon" {
+		err := d.repository.UpdateServerIcon(req)
+		if err != nil {
+			return err
+		}
+	} else {
+		return responsemodel_server_service.ErrServerPhotoTypeNotMatch
+	}
+	return nil
+}
 
-// 	return nil
-// }
+func (d *ServerUsecase) UpdateServerDiscription(req *requestmodel_server_service.Description) error {
+	if len(req.Description) > 20 {
+		return responsemodel_server_service.ErrServerDescriptionLength
+	}
+	err := d.repository.UpdateServerDiscription(req)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (r *ServerUsecase) KafkaConsumerServerMessage() error {
 	var messageModel requestmodel_server_service.ServerMessage
@@ -139,4 +160,34 @@ func (r *ServerUsecase) GetChannelMessages(channelID string, pagination requestm
 		return nil, err
 	}
 	return r.repository.GetChannelMessages(channelID, pagination)
+}
+
+func (r *ServerUsecase) GetServerMembers(serverID string, pagination requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMembers, error) {
+	var err error
+	pagination.OffSet, err = utils_server_service.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
+		return nil, err
+	}
+	members, err := r.repository.GetServerMembers(serverID, pagination)
+	if err != nil {
+		return nil, err
+	}
+	for i, user := range members {
+		userDetails, _ := r.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: user.UserID})
+		members[i].UserProfile = userDetails.ProfilePhoto
+		members[i].UserName = userDetails.UserName
+		members[i].Name = userDetails.Name
+	}
+	return members, nil
+}
+
+func (r *ServerUsecase) UpdateMemberRole(req requestmodel_server_service.UpdateMemberRole) error {
+	if req.TargetRole == "Admin" || req.TargetRole == "member" {
+		return r.repository.ChangeMemberRole(&req)
+	}
+	return responsemodel_server_service.ErrNotExpectedRole
+}
+
+func (r *ServerUsecase) RemoveUserFromServer(req *requestmodel_server_service.RemoveUser) error {
+	return r.repository.RemoveUserFromServer(req)
 }

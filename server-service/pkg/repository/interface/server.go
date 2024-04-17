@@ -15,10 +15,14 @@ type IRepositoryServer interface {
 	GetServerCategory(string) ([]*responsemodel_server_service.FullServerChannel, error)
 	GetChannelUnderCategory(string) ([]*responsemodel_server_service.Channel, error)
 	GetServer(string) (*responsemodel_server_service.Server, error)
-	UpdateServerCoverPhoto(string, string) error
-	UpdateServerIcon(string, string) error
+	UpdateServerCoverPhoto(*requestmodel_server_service.ServerImages) error
+	UpdateServerIcon(*requestmodel_server_service.ServerImages) error
 	GetUserServers(string) ([]*responsemodel_server_service.UserServerList, error)
 	KeepMessageInDB(requestmodel_server_service.ServerMessage) error
 
 	GetChannelMessages(string, requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMessage, error)
+	UpdateServerDiscription(*requestmodel_server_service.Description) error
+	GetServerMembers(string, requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMembers, error)
+	ChangeMemberRole(*requestmodel_server_service.UpdateMemberRole) error
+	RemoveUserFromServer(*requestmodel_server_service.RemoveUser) error
 }

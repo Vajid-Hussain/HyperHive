@@ -25,7 +25,7 @@ func trimPrefixOfRpcError(err interface{}) interface{} {
 	errMessage, ok := err.(string)
 	fmt.Println("---", errMessage, ok)
 	if ok {
-		return strings.TrimPrefix(errMessage, "rpc error: code = Unknown desc = ")
+		return strings.TrimPrefix(errMessage, "rpc error: code = Unknown desc =")
 	}
 	return err
 }

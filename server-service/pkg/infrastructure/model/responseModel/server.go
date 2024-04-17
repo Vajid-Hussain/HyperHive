@@ -51,3 +51,11 @@ type ServerMessage struct {
 	TimeStamp time.Time `bson:"TimeStamp"`
 	Type      string    `bson:"Type"`
 }
+
+type ServerMembers struct{
+	UserID string `gorm:"column:user_id"`
+	UserProfile string
+	UserName string
+	Name string
+	Role string `gorm:"column:role"`
+}

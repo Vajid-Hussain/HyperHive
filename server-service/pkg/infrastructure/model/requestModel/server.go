@@ -43,8 +43,10 @@ type MemberStatusUpdate struct {
 
 type ServerImages struct {
 	ServerID string
+	UserID   string
 	Image    []byte
 	Type     string
+	Url      string
 }
 
 type ServerMessage struct {
@@ -58,6 +60,25 @@ type ServerMessage struct {
 }
 
 type Pagination struct {
-    Limit  string
-    OffSet string
+	Limit  string
+	OffSet string
+}
+
+type Description struct {
+	UserID      string
+	Description string
+	ServerID    string
+}
+
+type UpdateMemberRole struct {
+	UserID       string
+	TargetUserID string
+	TargetRole   string
+	ServerID     string
+}
+
+type RemoveUser struct{
+	UserID string
+	RemoverID string
+	ServerID string
 }
