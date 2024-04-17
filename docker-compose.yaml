@@ -84,6 +84,18 @@ services:
     networks:
       - hyperhive_network
 
+  server-service:
+    image: hyperhive_server_service
+    build: ./server-service
+    restart:
+      always
+    depends_on:
+      - postgres
+      - mongodb
+    container_name: hyperhive_server_service
+    networks:
+      - hyperhive_network
+
 networks:
   hyperhive_network:
     driver: bridge
