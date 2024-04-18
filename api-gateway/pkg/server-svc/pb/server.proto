@@ -99,6 +99,7 @@ message GetServerResponse {
     string description = 3;
     string icon = 4;
     string cover_photo = 5;
+    string OnlineUsers=6;
 }
 
 message GetChannelMessageRequest {

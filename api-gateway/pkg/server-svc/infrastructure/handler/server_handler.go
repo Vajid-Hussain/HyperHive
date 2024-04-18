@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
@@ -191,6 +192,7 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
+	result.OnlineUsers = strconv.Itoa(c.SoketioServer.RoomLen("/", result.ServerId))
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
@@ -206,8 +208,12 @@ func (c *ServerService) InitSoketio(ctx echo.Context) {
 		return nil
 	})
 
+	c.SoketioServer.OnEvent("/", "friendly chat", func(conn socketio.Conn, msg string) {
+		c.serverUseCase.SendFriendChat(ctx.Get("userID").(string), []byte(msg), c.SoketioServer, conn)
+	})
+
 	c.SoketioServer.OnEvent("/", "server chat", func(s socketio.Conn, msg string) {
-		c.serverUseCase.BroadcastMessage([]byte(msg), c.SoketioServer)
+		c.serverUseCase.BroadcastMessage(ctx.Get("userID").(string),[]byte(msg), c.SoketioServer, s)
 	})
 
 	c.SoketioServer.OnDisconnect("/", func(conn socketio.Conn, reason string) {

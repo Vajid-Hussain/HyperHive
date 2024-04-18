@@ -196,7 +196,7 @@ func (r *Helper) SendMessage(message requestmodel_friend_svc.Message) error {
 // 	}
 // 	fmt.Println(connJson)
 
-// 	result, err := r.RedisDb.Set(ctx, userID, connJson, time.Hour).Result()
+	// result, err := r.RedisDb.Set(ctx, userID, connJson, time.Hour).Result()
 // 	if err != nil {
 // 		fmt.Println("===", err)
 // 		return err
