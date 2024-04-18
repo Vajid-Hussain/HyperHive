@@ -32,10 +32,10 @@ type ServerReq struct {
 type ServerMessage struct {
 	UserProfilePhoto string `json:"UserProfilePhoto,omitempty"`
 	UserName         string `json:"UserName"`
-	UserID           int    `json:"UserID"`
-	ChannelID        int    `json:"ChannelID"`
-	ServerID         int    `json:"ServerID"`
-	Content          string `json:"Content"`
+	UserID           int    `json:"UserID" validate:"required"`
+	ChannelID        int    `json:"ChannelID" validate:"required"`
+	ServerID         int    `json:"ServerID" validate:"required"`
+	Content          string `json:"Content" validate:"required"`
 	TimeStamp        time.Time
 	Type             string `json:"Type"`
 }
@@ -82,11 +82,11 @@ type MessageType struct {
 }
 
 type FriendlyMessage struct {
-	SenderID    string    `json:"SenderID" validate:"required"`
-	RecipientID string    `json:"RecipientID" validate:"required"`
-	Content     string    `json:"Content" validate:"required"`
-	Timestamp   time.Time 
-	Type        string    `json:"Type" validate:"required"`
-	Tag         string    `json:"Tag"`
-	Status      string    `json:"Status"`
+	SenderID    string `json:"SenderID" validate:"required"`
+	RecipientID string `json:"RecipientID" validate:"required"`
+	Content     string `json:"Content" validate:"required"`
+	Timestamp   time.Time
+	Type        string `json:"Type" validate:"required"`
+	Tag         string `json:"Tag"`
+	Status      string `json:"Status"`
 }

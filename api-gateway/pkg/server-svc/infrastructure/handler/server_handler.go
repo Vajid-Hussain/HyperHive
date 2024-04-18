@@ -209,11 +209,11 @@ func (c *ServerService) InitSoketio(ctx echo.Context) {
 	})
 
 	c.SoketioServer.OnEvent("/", "friendly chat", func(conn socketio.Conn, msg string) {
-		c.serverUseCase.SendFriendChat(ctx.Get("userID").(string), []byte(msg), c.SoketioServer, conn)
+		c.serverUseCase.SendFriendChat([]byte(msg), c.SoketioServer, conn)
 	})
 
 	c.SoketioServer.OnEvent("/", "server chat", func(s socketio.Conn, msg string) {
-		c.serverUseCase.BroadcastMessage(ctx.Get("userID").(string),[]byte(msg), c.SoketioServer, s)
+		c.serverUseCase.BroadcastMessage([]byte(msg), c.SoketioServer, s)
 	})
 
 	c.SoketioServer.OnDisconnect("/", func(conn socketio.Conn, reason string) {

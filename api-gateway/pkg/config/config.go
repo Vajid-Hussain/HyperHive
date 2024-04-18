@@ -13,6 +13,14 @@ type Config struct {
 	KafkaTopic          string `mapstructure:"TOPIC"`
 	KafkaServerTopic    string `mapstructure:"KAFKASERVERTOPIC"`
 	RedisDB             Redis
+	S3                  S3Bucket
+}
+
+type S3Bucket struct {
+	AccessKeyID     string `mapstructure:"AccessKeyID"`
+	AccessKeySecret string `mapstructure:"AccessKeySecret"`
+	Region          string `mapstructure:"Region"`
+	BucketName      string `mapstructure:"BucketName"`
 }
 
 type Redis struct {
@@ -32,5 +40,6 @@ func InitConfig() (c *Config, err error) {
 	}
 
 	viper.Unmarshal(&c)
+	viper.Unmarshal(&c.S3)
 	return
 }

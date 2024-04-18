@@ -2,6 +2,7 @@ package usecase_server_svc
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
 	interface_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/useCase/interface"
 	server "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/pb"
+	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/redis/go-redis/v9"
 )
@@ -24,6 +26,8 @@ type serverServiceUseCase struct {
 	config    *config.Config
 	redisDB   *redis.Client
 }
+
+const friendChatNameSpace = "/friend/"
 
 func NewServerServiceUseCase(clind server.ServerClient, authClind auth.AuthServiceClient, config *config.Config, redisDB *redis.Client) interface_server_svc.IserverServiceUseCase {
 	locationInd, _ := time.LoadLocation("Asia/Kolkata")
@@ -50,56 +54,100 @@ func (s *serverServiceUseCase) JoinToServerRoom(userID string, socket *socketio.
 		fmt.Println("join room ", ok, serverID)
 	}
 
-	ok := socket.JoinRoom("/", "/friend/"+userID, conn)
+	ok := socket.JoinRoom("/", friendChatNameSpace+userID, conn)
 	fmt.Println("user chat room ", ok, userID)
 
 	return nil
 }
 
-func (s *serverServiceUseCase) BroadcastMessage(userID string, msg []byte, socker *socketio.Server, conn socketio.Conn) {
-	message := s.JsonMarshelServerMessage(msg)
-	fmt.Println("message ", message)
+func (s *serverServiceUseCase) BroadcastMessage(msg []byte, socker *socketio.Server, conn socketio.Conn) {
+	message, err := s.JsonMarshelServerMessage(msg)
+	if err != nil {
+		conn.Emit("error", err.Error())
+		return
+	}
+
+	validateError := helper_api_gateway.Validator(message)
+	if len(validateError) > 0 {
+		conn.Emit("error", validateError)
+		return
+	}
+
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	userProfile, err := s.authClind.UserProfile(context, &auth.UserProfileRequest{UserID: strconv.Itoa(message.UserID)})
 	if err != nil {
-		fmt.Println("====---", err)
 		conn.Emit("error", err.Error())
+		return
 	}
 
 	message.UserProfilePhoto = userProfile.ProfilePhoto
 	message.UserName = userProfile.UserName
-	message.UserID, _ = strconv.Atoi(userID)
+
+	if message.Type != "text" {
+		message.Content, err = s.uploadMediaToS3(message.Content)
+		if err != nil {
+			conn.Emit("error", err.Error())
+			return
+		}
+	}
 
 	message.TimeStamp = time.Now().In(s.Location)
 	socker.BroadcastToRoom("/", strconv.Itoa(message.ServerID), "broadcast server chat", message)
 
-	fmt.Println("==", message)
 	message.TimeStamp = message.TimeStamp.UTC()
-	err = s.addMessageIntoKafa(message)
+
+	err = s.addServerMessageIntoKafa(message)
 	if err != nil {
 		conn.Emit("error", "error on kafka producer "+err.Error())
 	}
 }
 
-func (s *serverServiceUseCase) SendFriendChat(userID string, msg []byte, socket *socketio.Server, conn socketio.Conn) {
+func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Server, conn socketio.Conn) {
 	message, err := s.jsonUnmarshelFriendlyMessage(msg)
 	if err != nil {
 		conn.Emit("error", err.Error())
+		return
+	}
+
+	validateError := helper_api_gateway.Validator(message)
+	if len(validateError) > 0 {
+		conn.Emit("error", validateError)
+		return
+	}
+
+	if message.Type != "text" {
+		message.Content, err = s.uploadMediaToS3(message.Content)
+		if err != nil {
+			conn.Emit("error", err.Error())
+			return
+		}
 	}
 
 	fmt.Println("==-", message)
+
 	message.Timestamp = time.Now().In(s.Location)
-	message.SenderID = userID
-	ok := socket.BroadcastToRoom("/", "/friend/"+message.RecipientID, "receive friendly chat", message)
-	fmt.Println("=== friendly message", message, ok)
+	message.Status = "send"
+	if socket.RoomLen("/", friendChatNameSpace+message.RecipientID) == 0 {
+		message.Status = "pending"
+	} else {
+		socket.BroadcastToRoom("/", friendChatNameSpace+message.RecipientID, "receive friendly chat", message)
+	}
+
+	fmt.Println("----------user count in room", socket.RoomLen("/", friendChatNameSpace+message.RecipientID))
+	message.Timestamp = message.Timestamp.UTC()
+
+	err = s.addFriendMessageIntoKafka(message)
+	if err != nil {
+		conn.Emit("error", err.Error())
+	}
 }
 
-func (s *serverServiceUseCase) JsonMarshelServerMessage(data []byte) requestmodel_server_svc.ServerMessage {
+func (s *serverServiceUseCase) JsonMarshelServerMessage(data []byte) (requestmodel_server_svc.ServerMessage, error) {
 	var message requestmodel_server_svc.ServerMessage
-	json.Unmarshal(data, &message)
-	return message
+	err := json.Unmarshal(data, &message)
+	return message, err
 }
 
 func (s *serverServiceUseCase) jsonUnmarshelFriendlyMessage(data []byte) (requestmodel_server_svc.FriendlyMessage, error) {
@@ -108,11 +156,7 @@ func (s *serverServiceUseCase) jsonUnmarshelFriendlyMessage(data []byte) (reques
 	return msg, err
 }
 
-func (s *serverServiceUseCase) jsonMarshelFriendlyMessage(data requestmodel_server_svc.FriendlyMessage) ([]byte, error) {
-	return json.Marshal(data)
-}
-
-func (s *serverServiceUseCase) addMessageIntoKafa(msg requestmodel_server_svc.ServerMessage) error {
+func (s *serverServiceUseCase) addServerMessageIntoKafa(msg requestmodel_server_svc.ServerMessage) error {
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 	config.Producer.Retry.Max = 5
@@ -121,7 +165,7 @@ func (s *serverServiceUseCase) addMessageIntoKafa(msg requestmodel_server_svc.Se
 	msg.UserName = ""
 	message := s.marshelStruct(msg)
 
-	fmt.Println("kafka message ", msg)
+	fmt.Println("from kafka server message ", msg)
 
 	producer, err := sarama.NewSyncProducer([]string{s.config.KafkaPort}, config)
 	if err != nil {
@@ -136,24 +180,85 @@ func (s *serverServiceUseCase) addMessageIntoKafa(msg requestmodel_server_svc.Se
 	return nil
 }
 
+func (s *serverServiceUseCase) addFriendMessageIntoKafka(message requestmodel_server_svc.FriendlyMessage) error {
+	fmt.Println("from kafka friend message ", message)
+
+	configs := sarama.NewConfig()
+	configs.Producer.Return.Successes = true
+	configs.Producer.Retry.Max = 5
+
+	producer, err := sarama.NewSyncProducer([]string{s.config.KafkaPort}, configs)
+	if err != nil {
+		return err
+	}
+
+	result := s.marshelStruct(message)
+
+	msg := &sarama.ProducerMessage{Topic: s.config.KafkaTopic, Key: sarama.StringEncoder("Amigo Chat"), Value: sarama.StringEncoder(result)}
+	_, _, err = producer.SendMessage(msg)
+	if err != nil {
+		return err
+	}
+	// log.Printf("[producer] partition id: %d; offset:%d, value: %v\n", partition, offset, msg)
+	return nil
+}
+
 func (s *serverServiceUseCase) marshelStruct(msg interface{}) []byte {
 	message, _ := json.Marshal(msg)
 	return message
 }
 
-func (s *serverServiceUseCase) storeConnInRedis(conn socketio.Conn, userID string) error {
-	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	byteConn, err := json.Marshal(conn)
+func (s *serverServiceUseCase) uploadMediaToS3(media string) (string, error) {
+	data, err := base64.StdEncoding.DecodeString(media)
 	if err != nil {
-		return err
+		fmt.Println("=", err)
 	}
 
-	result := s.redisDB.Set(context, userID, byteConn, 4*time.Hour)
-	fmt.Println("==", result.Val(), result.Err(), conn)
+	s3Session := helper_api_gateway.CreateSession(s.config.S3)
+	url, err := helper_api_gateway.UploadImageToS3(data, s3Session)
+	if err != nil {
+		return "", err
+	}
 
-	fmt.Println("##", s.redisDB.Get(context, userID))
+	return url, nil
 
-	return nil
+	// reader := bytes.NewReader(data)
+	// img, format, err := image.Decode(reader)
+	// if err != nil {
+	// 	fmt.Println("==", err)
+	// 	return "", err
+	// }
+	// fmt.Println("Image format:", format)
+
+	// out, err := os.Create("decoded_image.jpg")
+	// if err != nil {
+	// 	fmt.Println("Error creating file:", err)
+	// 	return "", err
+	// }
+	// defer out.Close()
+
+	// err = jpeg.Encode(out, img, nil)
+	// if err != nil {
+	// 	fmt.Println("Error saving image:", err)
+	// 	return "", err
+	// }
+
+	// fmt.Println("Image saved as decoded_image.jpg")
 }
+
+// func (s *serverServiceUseCase) storeConnInRedis(conn socketio.Conn, userID string) error {
+// 	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 	defer cancel()
+
+// 	byteConn, err := json.Marshal(conn)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	result := s.redisDB.Set(context, userID, byteConn, 4*time.Hour)
+// 	fmt.Println("==", result.Val(), result.Err(), conn)
+
+// 	fmt.Println("##", s.redisDB.Get(context, userID))
+
+// 	return nil
+// }
