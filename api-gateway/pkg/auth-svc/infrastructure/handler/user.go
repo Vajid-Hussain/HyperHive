@@ -21,6 +21,15 @@ func NewAuthHandler(clind pb.AuthServiceClient) *AuthHanlder {
 	return &AuthHanlder{clind: clind}
 }
 
+// @Summary User Signup
+// @Description Create a new user account
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body requestmodel_auth_svc.UserSignup true "User details for signup"
+// @Success 201 {object} response_auth_svc.Response "User signup successful"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /signup [post]
 func (c AuthHanlder) Signup(ctx echo.Context) error {
 	var (
 		UserDetails requestmodel_auth_svc.UserSignup
@@ -56,6 +65,16 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "", result, nil))
 }
 
+// @Summary Resend verification email
+// @Description Resend verification email to the user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param ConfirmToken header string true "Confirmation token"
+// @Success 201 {object} response_auth_svc.Response "Email send successful"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /auth/verifyemailresend [post]
 func (c *AuthHanlder) ReSendVerificationEmail(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -160,6 +179,17 @@ func (c *AuthHanlder) ConfirmSignup(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "", result, nil))
 }
+
+// @Summary User Login
+// @Description Authenticate and log in a user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param loginRequest body LoginRequest true "User login credentials"
+// @Success 200 {object} LoginResponse "Login successful"
+// @Failure 400 {object} ErrorResponse "Bad request"
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Router /login [post]
 
 func (c *AuthHanlder) UserLogin(ctx echo.Context) error {
 	var loginReq requestmodel_auth_svc.UserLogin
@@ -317,8 +347,8 @@ func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 
 func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 	var descriptionReq requestmodel_auth_svc.UserProfileDescription
-	err:=ctx.Bind(&descriptionReq)
-	if err!=nil{
+	err := ctx.Bind(&descriptionReq)
+	if err != nil {
 		return ctx.JSON(http.StatusUnsupportedMediaType, response_auth_svc.Responses(http.StatusUnsupportedMediaType, "", "", err.Error()))
 	}
 	descriptionReq.UserID = ctx.Get("userID").(string)

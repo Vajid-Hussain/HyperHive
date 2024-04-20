@@ -1,0 +1,155 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server Petstore server.",
+        "title": "HyperHive",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "hyperhive.vajid.tech",
+    "basePath": "/",
+    "paths": {
+        "/auth/verifyemailresend": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Resend verification email to the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Resend verification email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Confirmation token",
+                        "name": "ConfirmToken",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Email send successful",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "Create a new user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User Signup",
+                "parameters": [
+                    {
+                        "description": "User details for signup",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.UserSignup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User signup successful",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "requestmodel_auth_svc.UserSignup": {
+            "type": "object",
+            "required": [
+                "Email",
+                "UserName"
+            ],
+            "properties": {
+                "ConfirmPassword": {
+                    "type": "string"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "Password": {
+                    "type": "string",
+                    "minLength": 5
+                },
+                "UserName": {
+                    "type": "string"
+                }
+            }
+        },
+        "response_auth_svc.Response": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "message": {
+                    "type": "string"
+                },
+                "result": {},
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "AdminAutherisation": {
+            "type": "apiKey",
+            "name": "AccessToken",
+            "in": "header"
+        },
+        "UserAuthentication": {
+            "type": "apiKey",
+            "name": "AccessToken",
+            "in": "header"
+        },
+        "UserRefreshtoken": {
+            "type": "apiKey",
+            "name": "Refreshtoken",
+            "in": "header"
+        }
+    }
+}

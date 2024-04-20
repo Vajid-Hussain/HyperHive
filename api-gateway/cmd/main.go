@@ -3,15 +3,37 @@ package main
 import (
 	"log"
 
+	"github.com/Vajid-Hussain/HiperHive/api-gateway/docs"
 	di_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/di"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	di_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/di"
 	di_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/di"
 	di_websocket_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/webSocket/di"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
+	
 )
 
+// @title          HyperHive
+// @version        1.0
+// @description    This is a sample server Petstore server.
+// @termsOfService http://swagger.io/terms/
+
+// @host     hyperhive.vajid.tech
+// @BasePath /
+
+// @securityDefinitions.apikey UserAuthentication
+// @in                         header
+// @name                       AccessToken
+// @securityDefinitions.apikey UserRefreshtoken
+// @in                         header
+// @name                       Refreshtoken
+// @securityDefinitions.apikey AdminAutherisation
+// @in                         header
+// @name                       AccessToken
+
 func main() {
+	docs.SwaggerInfo.Host = "dev.hyperhive.vajid.tech"
 	serverError := "error at initial setup "
 
 	config, err := config.InitConfig()
@@ -20,6 +42,7 @@ func main() {
 	}
 
 	engin := echo.New()
+	engin.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	middlewire, err := di_auth_svc.InitAuthClind(engin, config)
 	if err != nil {

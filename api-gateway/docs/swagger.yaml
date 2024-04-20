@@ -1,0 +1,104 @@
+basePath: /
+definitions:
+  requestmodel_auth_svc.UserSignup:
+    properties:
+      ConfirmPassword:
+        type: string
+      Email:
+        type: string
+      Name:
+        minLength: 1
+        type: string
+      Password:
+        minLength: 5
+        type: string
+      UserName:
+        type: string
+    required:
+    - Email
+    - UserName
+    type: object
+  response_auth_svc.Response:
+    properties:
+      error: {}
+      message:
+        type: string
+      result: {}
+      status_code:
+        type: integer
+    type: object
+host: hyperhive.vajid.tech
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  termsOfService: http://swagger.io/terms/
+  title: HyperHive
+  version: "1.0"
+paths:
+  /auth/verifyemailresend:
+    post:
+      consumes:
+      - application/json
+      description: Resend verification email to the user
+      parameters:
+      - description: Confirmation token
+        in: header
+        name: ConfirmToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Email send successful
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Resend verification email
+      tags:
+      - User
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: User details for signup
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.UserSignup'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User signup successful
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      summary: User Signup
+      tags:
+      - User
+securityDefinitions:
+  AdminAutherisation:
+    in: header
+    name: AccessToken
+    type: apiKey
+  UserAuthentication:
+    in: header
+    name: AccessToken
+    type: apiKey
+  UserRefreshtoken:
+    in: header
+    name: Refreshtoken
+    type: apiKey
+swagger: "2.0"

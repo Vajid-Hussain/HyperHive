@@ -1,113 +1,44 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socket.IO Example</title>
-    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
-</head>
-
-<body>
-    <div id="messages"></div>
-    <form id="messageForm">
-        <input type="text" id="messageInput" placeholder="Enter message">
-        <button type="submit">Send</button>
-    </form>
-
-    <script>
-        document.addEventListener('load', () => {
-            const headers = new Headers();
-            headers.append('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTI0NzU1MjYsImlkIjoiOSJ9.K0lqzYgCrsTLPF1u20BDmAZyvcnXb1iCiQuKPG3oUzc');
-
-            const requestOptions = {
-                method: 'GET',
-                mode: 'cors', 
-
-                headers: headers,
-            };
-
-            fetch('http://dev.hyperhive.vajid.tech/server/', requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data received:', data);
-                    // Process the data here
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
-                });
-        });
-
-        const headers = new Headers();
-        headers.set("AccessToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTI0NzU1MjYsImlkIjoiOSJ9.K0lqzYgCrsTLPF1u20BDmAZyvcnXb1iCiQuKPG3oUzc")
-        headers.set("RefreshToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDgwNjk4Mzl9.NvapXCIRDZixBwJ8WWnffQGM2qARhpM4rjume50T5Qg")
-    </script>
-
-    <script>
-
-        const socket = io('http://dev.hyperhive.vajid.tech', {
-            path: '/server/'
-        });
-
-        socket.on('connect', () => {
-            console.log('Socket.IO connection established.');
-        });
-
-        socket.on('message', (data) => {
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = data;
-            document.getElementById('messages').appendChild(messageDiv);
-        });
-
-        document.getElementById('messageForm').addEventListener('submit', (event) => {
-            event.preventDefault();
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-            if (message) {
-                socket.emit('message', message);
-                messageInput.value = '';
-            }
-        });
-    </script>
-</body>
-
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Socket.IO Client</title>
 </head>
+
 <body>
-    <input type="text" id="messageInput" placeholder="Type your message...">
-    <button onclick="sendMessage()">Send</button>
-    <ul id="chatMessages"></ul>
-
+    <h1>Socket.IO Client</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
     <script>
-        const socket = new WebSocket("http://hyperhive.vajid.tech/friend/chat");
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io('http://dev.hyperhive.vajid.tech', {
+                path: '/server',
+                transports: ['websocket'], // Use WebSocket transport
+                transportOptions: {
+                    polling: {
+                        extraHeaders: { Authorization: 'Bearer YOUR_ACCESS_TOKEN' } // Send the access token in the header
+                    }
+                }
+            });
+            xhr.setRequestHeader('custom-header', 'value');
 
-        socket.onmessage = function(event) {
-            const messages = document.getElementById("chatMessages");
-            const li = document.createElement("li");
-            li.textContent = event.data;
-            messages.appendChild(li);
-        };
+            socket.on('connect', () => {
+                console.log('Connected to Socket.IO server');
+                // Example: Send a message to the server
+                socket.emit('chat message', 'Hello, server!');
+            });
 
-        function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const message = input.value.trim();
-            if (message !== "") {
-                socket.send(message);
-                input.value = "";
-            }
-        }
+            socket.on('disconnect', () => {
+                console.log('Disconnected from Socket.IO server');
+            });
+
+            socket.on('chat message', (msg) => {
+                console.log('Received message from server:', msg);
+                // Update the UI or handle the message as needed
+            });
+        });
     </script>
 </body>
+
 </html>
