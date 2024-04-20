@@ -85,7 +85,7 @@ func (d *FriendRepository) GetSendFriendRequest(req *requestmodel_friend_server.
 }
 
 func (d *FriendRepository) GetBlockFriendRequest(req *requestmodel_friend_server.GetFriendRequest) (response []*responsemodel_friend_server.FriendList, err error) {
-	query := "SELECT * FROM friends WHERE users= $1 AND status= 'block' ORDER BY update_at DESC LIMIT $2 OFFSET $3"
+	query := "SELECT * FROM friends WHERE users= $1 AND status= 'block' AND action_by=$1 ORDER BY update_at DESC LIMIT $2 OFFSET $3"
 	result := d.DB.Raw(query, req.UserID, req.Limit, req.OffSet).Scan(&response)
 	if result.Error != nil {
 		return nil, responsemodel_friend_server.ErrInternalServer
@@ -98,9 +98,9 @@ func (d *FriendRepository) GetBlockFriendRequest(req *requestmodel_friend_server
 	return response, nil
 }
 
-func (d *FriendRepository) FriendShipStatusUpdate(friendShipID, status string) error {
-	query := "UPDATE friends SET status= $1 WHERE friend_ship_id =$2"
-	result := d.DB.Exec(query, status, friendShipID)
+func (d *FriendRepository) FriendShipStatusUpdate(req requestmodel_friend_server.FriendShipStatus) error {
+	query := "UPDATE friends SET status= $1, action_by= $3 WHERE friend_ship_id =$2"
+	result := d.DB.Exec(query, req.Status, req.FriendShipID, req.UserId)
 	if result.Error != nil {
 		return responsemodel_friend_server.ErrInternalServer
 	}
@@ -171,11 +171,11 @@ func (d *FriendRepository) GetFriendChat(userID, friendID string, pagination req
 	return messages, nil
 }
 
-func (d *FriendRepository) UpdateReadAsMessage(userID, friendID string) error{
+func (d *FriendRepository) UpdateReadAsMessage(userID, friendID string) error {
 
-	_,err:= d.mongoCollection.FriendChatCollection.UpdateMany(context.TODO(), bson.M{"senderid": bson.M{"$in": bson.A{ friendID}} , "recipientid": bson.M{"$in":bson.A{userID}}}, bson.D{{ "$set", bson.D{{ "status", "send"}}  } } )
-	if err!=nil{
+	_, err := d.mongoCollection.FriendChatCollection.UpdateMany(context.TODO(), bson.M{"senderid": bson.M{"$in": bson.A{friendID}}, "recipientid": bson.M{"$in": bson.A{userID}}}, bson.D{{"$set", bson.D{{"status", "send"}}}})
+	if err != nil {
 		return responsemodel_friend_server.ErrInternalServer
 	}
 	return nil
-}	
+}

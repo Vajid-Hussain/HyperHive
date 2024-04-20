@@ -28,3 +28,9 @@ type Pagination struct {
 	Limit  string
 	OffSet string
 }
+
+type FriendShipStatus struct{
+	UserId string
+	FriendShipID string
+	Status string
+}

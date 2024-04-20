@@ -13,15 +13,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const socket = io('http://dev.hyperhive.vajid.tech', {
-                path: '/server',
+                extraHeaders: {
+                    'Authorization': 'Bearer authorization_token_here'
+                },
+                path: '/server/',
                 transports: ['websocket'], // Use WebSocket transport
-                transportOptions: {
-                    polling: {
-                        extraHeaders: { Authorization: 'Bearer YOUR_ACCESS_TOKEN' } // Send the access token in the header
-                    }
-                }
+                extraHeaders: {
+                    'Authorization': 'Bearer authorization_token_here'
+                },
+
             });
-            xhr.setRequestHeader('custom-header', 'value');
 
             socket.on('connect', () => {
                 console.log('Connected to Socket.IO server');

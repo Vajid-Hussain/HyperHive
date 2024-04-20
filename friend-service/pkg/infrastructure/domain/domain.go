@@ -8,4 +8,5 @@ type Friends struct {
 	Friend       string
 	UpdateAt     time.Time
 	Status       string `gorm:"default:pending"`
+	ActionBy     string
 }

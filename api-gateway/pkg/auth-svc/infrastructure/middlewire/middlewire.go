@@ -23,7 +23,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 		accessToken := c.Request().Header.Get("AccessToken")
 		refreshToken := c.Request().Header.Get("RefreshToken")
 		// fmt.Println("---------", accessToken, refreshToken)
-		fmt.Println("user middlwire called")
+		fmt.Println("user middlwire called", accessToken)
 
 		if accessToken == "" || len(accessToken) < 20 {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "there is no access token"})

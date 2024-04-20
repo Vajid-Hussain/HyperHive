@@ -80,6 +80,7 @@ message GetBlockFriendRequestResponse {
 message UpdateFriendshipStatusRequest {
     string FriendShipID =1;
     string Status =2;
+    string UserID =3;
 }
 
 message GetFriendChatRequest {

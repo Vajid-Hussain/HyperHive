@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
+	_ "time/tzdata"
+
 	requestmodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/requestModel"
 	"github.com/Vajid-Hussain/HyperHive/friend-service/pkg/pb"
 	interface_usecase_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/usecase/interface"
 	"google.golang.org/protobuf/types/known/emptypb"
-	_ "time/tzdata"
 )
 
 type FriendServer struct {
@@ -159,7 +160,11 @@ func (u *FriendServer) GetBlockFriendRequest(ctx context.Context, req *pb.GetBlo
 }
 
 func (u *FriendServer) UpdateFriendshipStatus(ctx context.Context, req *pb.UpdateFriendshipStatusRequest) (*emptypb.Empty, error) {
-	err := u.useCase.FriendShipStatusUpdate(req.FriendShipID, req.Status)
+	err := u.useCase.FriendShipStatusUpdate(requestmodel_friend_server.FriendShipStatus{
+		UserId:       req.UserID,
+		FriendShipID: req.FriendShipID,
+		Status:       req.Status,
+	})
 	if err != nil {
 		return new(emptypb.Empty), err
 	}

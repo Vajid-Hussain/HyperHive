@@ -10,7 +10,7 @@ type IFriendUseCase interface {
 	GetFriends(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	GetReceivedFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	GetSendFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
-	FriendShipStatusUpdate(string, string) error
+	FriendShipStatusUpdate(requestmodel_friend_server.FriendShipStatus) error
 	GetBlockFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	MessageConsumer()
 	GetFriendChat(string, string, requestmodel_friend_server.Pagination) ([]responsemodel_friend_server.Message, error)

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	_ "time/tzdata"
+
 	"github.com/IBM/sarama"
 	config_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/config"
 	requestmodel_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/infrastructure/model/requestModel"
@@ -14,7 +16,6 @@ import (
 	interface_repository_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/repository/interface"
 	interface_usecase_friend_server "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/usecase/interface"
 	utils_friend_service "github.com/Vajid-Hussain/HyperHive/friend-service/pkg/utils"
-	_ "time/tzdata"
 )
 
 type FriendUseCase struct {
@@ -36,6 +37,10 @@ func NewFriendUseCase(repo interface_repository_friend_server.IFriendRepository,
 }
 
 func (r *FriendUseCase) FriendRequest(req *requestmodel_friend_server.FriendRequest) (*responsemodel_friend_server.FriendRequest, error) {
+	if req.User == req.Friend {
+		return nil, responsemodel_friend_server.ErrFriendRequestUserAndFriendIsSame
+	}
+
 	req.UpdateAt = time.Now()
 	response, err := r.friendRepo.CreateFriend(req)
 	if err != nil {
@@ -217,13 +222,13 @@ func (r *FriendUseCase) UserProfile(userID string, ch chan *responsemodel_friend
 	}
 }
 
-func (r *FriendUseCase) FriendShipStatusUpdate(friendShipID, status string) error {
-	if status == "block" || status == "unblock" || status == "accept" || status == "reject" || status == "revoke" {
-		if status == "accept" || status == "unblock" {
-			status = "active"
+func (r *FriendUseCase) FriendShipStatusUpdate(req requestmodel_friend_server.FriendShipStatus) error {
+	if req.Status == "block" || req.Status == "unblock" || req.Status == "accept" || req.Status == "reject" || req.Status == "revoke" {
+		if req.Status == "accept" || req.Status == "unblock" {
+			req.Status = "active"
 		}
 
-		err := r.friendRepo.FriendShipStatusUpdate(friendShipID, status)
+		err := r.friendRepo.FriendShipStatusUpdate(req)
 		if err != nil {
 			return err
 		}
@@ -256,7 +261,7 @@ func (u *FriendUseCase) MessageConsumer() {
 		u.friendRepo.StoreFriendsChat(*msg)
 	}
 }
-	
+
 func (u *FriendUseCase) UnmarshelChatMessage(data []byte) (*requestmodel_friend_server.Message, error) {
 	var message requestmodel_friend_server.Message
 	err := json.Unmarshal(data, &message)
@@ -274,6 +279,6 @@ func (u *FriendUseCase) GetFriendChat(userID, friendID string, pagination reques
 	if err != nil {
 		return nil, err
 	}
-	_=u.friendRepo.UpdateReadAsMessage(userID, friendID)
+	_ = u.friendRepo.UpdateReadAsMessage(userID, friendID)
 	return u.friendRepo.GetFriendChat(userID, friendID, pagination)
 }

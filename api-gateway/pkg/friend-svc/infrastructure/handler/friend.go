@@ -134,6 +134,7 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 
 		FriendShipID: req.FrendShipID,
 		Status:       ctx.QueryParam("action"),
+		UserID: ctx.Get("userID").(string),
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
