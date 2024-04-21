@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"strconv"
 
+	db_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/db"
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	interface_Repository_Server_Service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/repository/interface"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 )
 
 type ServerRepository struct {
 	DB              *gorm.DB
-	mongoCollection *mongo.Collection
+	mongoCollection *db_server_service.MongoCollection
 }
 
-func NewServerRepository(db *gorm.DB, mongoCollection *mongo.Collection) interface_Repository_Server_Service.IRepositoryServer {
+func NewServerRepository(db *gorm.DB, mongoCollection *db_server_service.MongoCollection) interface_Repository_Server_Service.IRepositoryServer {
 	return &ServerRepository{
 		DB:              db,
 		mongoCollection: mongoCollection,
@@ -228,7 +228,7 @@ func (d *ServerRepository) ChangeMemberRole(req *requestmodel_server_service.Upd
 	return nil
 }
 
-///----------
+// /----------
 func (d *ServerRepository) RemoveUserFromServer(req *requestmodel_server_service.RemoveUser) error {
 	query := "UPDATE server_members SET status='remove' WHERE user_id =$1 AND server_id=$3 AND EXISTS (SELECT 1 FROM server_members WHERE (role='SuperAdmin' OR role= 'Admin') AND user_id= $2 AND server_id =$3) AND NOT EXISTS (SELECT 1 FROM server_members WHERE user_id= $1 AND role='SuperAdmin' AND server_id= $3)"
 	result := d.DB.Exec(query, req.RemoverID, req.UserID, req.ServerID)
@@ -272,7 +272,7 @@ func (d *ServerRepository) DeleteServer(userID, ServerID string) error {
 
 func (d *ServerRepository) KeepMessageInDB(message requestmodel_server_service.ServerMessage) error {
 	fmt.Println("message before store ", message)
-	_, err := d.mongoCollection.InsertOne(context.TODO(), message)
+	_, err := d.mongoCollection.ServerChat.InsertOne(context.TODO(), message)
 	if err != nil {
 		return err
 	}
@@ -288,7 +288,7 @@ func (d *ServerRepository) GetChannelMessages(chanelID string, pagination reques
 	option := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
 	channelIDInt, _ := strconv.Atoi(chanelID)
 
-	cursor, err := d.mongoCollection.Find(context.TODO(), bson.M{"ChannelID": channelIDInt}, option, options.Find().SetSort(bson.D{{"TimeStamp", -1}}))
+	cursor, err := d.mongoCollection.ServerChat.Find(context.TODO(), bson.M{"ChannelID": channelIDInt}, option, options.Find().SetSort(bson.D{{"TimeStamp", -1}}))
 	if err != nil {
 		return nil, err
 	}
@@ -298,4 +298,14 @@ func (d *ServerRepository) GetChannelMessages(chanelID string, pagination reques
 
 	fmt.Println("==", messages)
 	return messages, nil
+}
+
+func (d *ServerRepository) InsertForumPost(post requestmodel_server_service.ForumPost) error {
+	fmt.Println("post ", post)
+	_,err:=d.mongoCollection.ForunPost.InsertOne(context.TODO(), post)
+	if err != nil {
+		fmt.Println("===",err)
+		return err
+	}
+	return nil
 }

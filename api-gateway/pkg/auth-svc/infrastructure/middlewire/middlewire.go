@@ -23,7 +23,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 		accessToken := c.Request().Header.Get("AccessToken")
 		refreshToken := c.Request().Header.Get("RefreshToken")
 		// fmt.Println("---------", accessToken, refreshToken)
-		fmt.Println("user middlwire called", accessToken)
+		fmt.Println("user middlwire called")
 
 		if accessToken == "" || len(accessToken) < 20 {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "there is no access token"})
@@ -39,7 +39,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 
 		// Set the "userID" in the context for downstream handlers to access
 		c.Set("userID", result.UserID)
-		// fmt.Println("----", result.UserID)
+
 		// Call the next handler in the chain
 		return next(c)
 	}

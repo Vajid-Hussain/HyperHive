@@ -85,7 +85,7 @@ func (d *FriendRepository) GetSendFriendRequest(req *requestmodel_friend_server.
 }
 
 func (d *FriendRepository) GetBlockFriendRequest(req *requestmodel_friend_server.GetFriendRequest) (response []*responsemodel_friend_server.FriendList, err error) {
-	query := "SELECT * FROM friends WHERE users= $1 AND status= 'block' AND action_by=$1 ORDER BY update_at DESC LIMIT $2 OFFSET $3"
+	query := "SELECT * FROM friends WHERE (users= $1 OR friend=$1) AND status= 'block' AND action_by=$1 ORDER BY update_at DESC LIMIT $2 OFFSET $3"
 	result := d.DB.Raw(query, req.UserID, req.Limit, req.OffSet).Scan(&response)
 	if result.Error != nil {
 		return nil, responsemodel_friend_server.ErrInternalServer
@@ -109,6 +109,17 @@ func (d *FriendRepository) FriendShipStatusUpdate(req requestmodel_friend_server
 		return responsemodel_friend_server.ErrEmptyResponse
 	}
 
+	return nil
+}
+
+func (d *FriendRepository) DeleteFriendShipOfStatusRejectRevoke() error {
+	query := "DELETE FROM friends WHERE AGE( NOW() , update_at) > INTERVAL '24 hours'" 
+	result:= d.DB.Exec(query)
+	if result.Error != nil {
+		return responsemodel_friend_server.ErrInternalServer
+	}
+
+	fmt.Println("cound of delete reject request ",result.RowsAffected)
 	return nil
 }
 

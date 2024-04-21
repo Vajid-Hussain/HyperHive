@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"github.com/IBM/sarama"
+	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	auth "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
+	resonsemodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/resonseModel"
 	interface_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/useCase/interface"
 	server "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/pb"
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
@@ -85,12 +87,15 @@ func (s *serverServiceUseCase) BroadcastMessage(msg []byte, socker *socketio.Ser
 	message.UserProfilePhoto = userProfile.ProfilePhoto
 	message.UserName = userProfile.UserName
 
-	if message.Type != "text" {
+	if message.Type == "file" {
 		message.Content, err = s.uploadMediaToS3(message.Content)
 		if err != nil {
 			conn.Emit("error", err.Error())
 			return
 		}
+	} else if message.Type != "text" && message.Type != "file" {
+		conn.Emit("error", resonsemodel_server_svc.ErrServerMessageType.Error())
+		return
 	}
 
 	message.TimeStamp = time.Now().In(s.Location)
@@ -117,7 +122,7 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 		return
 	}
 
-	if message.Type != "text" {
+	if message.Type == "image" {
 		message.Content, err = s.uploadMediaToS3(message.Content)
 		if err != nil {
 			conn.Emit("error", err.Error())
@@ -144,6 +149,62 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 	}
 }
 
+func (s *serverServiceUseCase) BroadcastForum(msg []byte, soket socketio.Server, conn socketio.Conn) {
+	types, err := s.jsonUnmarshelFormType(msg)
+	if err != nil {
+		conn.Emit("error", err.Error())
+	}
+
+	if types.Type == "post" {
+		s.broadCastForumPost(msg, soket, conn)
+	} else {
+		conn.Emit("error", resonsemodel_server_svc.ErrForumUnexpectedType.Error())
+	}
+
+	// fmt.Println(types)
+}
+
+func (s *serverServiceUseCase) broadCastForumPost(msg []byte, soket socketio.Server, conn socketio.Conn) {
+	post, err := s.jsonUnmarshelForumPost(msg)
+	if err != nil {
+		conn.Emit("error", err.Error())
+	}
+
+	validateError := helper_api_gateway.Validator(post)
+	if len(validateError) > 0 {
+		conn.Emit("error", validateError)
+		return
+	}
+
+	userProfile, err := s.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(post.UserID)})
+	if err != nil {
+		conn.Emit("error", err.Error())
+	}
+
+	post.UserName = userProfile.UserName
+	post.UserProfilePhoto = userProfile.ProfilePhoto
+	post.TimeStamp = time.Now().In(s.Location)
+
+	if post.MainContentType == "image" {
+		post.Content, err = s.uploadMediaToS3(post.Content)
+		if err != nil {
+			conn.Emit("error", err.Error())
+			return
+		}
+	} else if post.MainContentType != "text" {
+		conn.Emit("error", resonsemodel_server_svc.ErrForumPostUnexpectedContent.Error())
+	}
+
+	soket.BroadcastToRoom("/", strconv.Itoa(post.ServerID), "broadcast forum", post)
+
+	post.TimeStamp = post.TimeStamp.UTC()
+
+	err = s.addForunPostIntoKafka(post)
+	if err != nil {
+		conn.Emit("error", err.Error())
+	}
+}
+
 func (s *serverServiceUseCase) JsonMarshelServerMessage(data []byte) (requestmodel_server_svc.ServerMessage, error) {
 	var message requestmodel_server_svc.ServerMessage
 	err := json.Unmarshal(data, &message)
@@ -154,6 +215,16 @@ func (s *serverServiceUseCase) jsonUnmarshelFriendlyMessage(data []byte) (reques
 	var msg requestmodel_server_svc.FriendlyMessage
 	err := json.Unmarshal(data, &msg)
 	return msg, err
+}
+
+func (s *serverServiceUseCase) jsonUnmarshelFormType(data []byte) (requestmodel_server_svc.FormType, error) {
+	var types requestmodel_server_svc.FormType
+	return types, json.Unmarshal(data, &types)
+}
+
+func (s *serverServiceUseCase) jsonUnmarshelForumPost(data []byte) (requestmodel_server_svc.ForumPost, error) {
+	var msg requestmodel_server_svc.ForumPost
+	return msg, json.Unmarshal(data, &msg)
 }
 
 func (s *serverServiceUseCase) addServerMessageIntoKafa(msg requestmodel_server_svc.ServerMessage) error {
@@ -195,6 +266,32 @@ func (s *serverServiceUseCase) addFriendMessageIntoKafka(message requestmodel_se
 	result := s.marshelStruct(message)
 
 	msg := &sarama.ProducerMessage{Topic: s.config.KafkaTopic, Key: sarama.StringEncoder("Amigo Chat"), Value: sarama.StringEncoder(result)}
+	_, _, err = producer.SendMessage(msg)
+	if err != nil {
+		return err
+	}
+	// log.Printf("[producer] partition id: %d; offset:%d, value: %v\n", partition, offset, msg)
+	return nil
+}
+
+func (s *serverServiceUseCase) addForunPostIntoKafka(message requestmodel_server_svc.ForumPost) error {
+	fmt.Println("from kafka forum ", message)
+
+	configs := sarama.NewConfig()
+	configs.Producer.Return.Successes = true
+	configs.Producer.Retry.Max = 5
+
+	producer, err := sarama.NewSyncProducer([]string{s.config.KafkaPort}, configs)
+	if err != nil {
+		return err
+	}
+
+	message.UserProfilePhoto = ""
+	message.UserName = ""
+	result := s.marshelStruct(message)
+	fmt.Println(string(result))
+
+	msg := &sarama.ProducerMessage{Topic: s.config.KafkaServerTopic, Key: sarama.StringEncoder("forum " + message.Type), Value: sarama.StringEncoder(result)}
 	_, _, err = producer.SendMessage(msg)
 	if err != nil {
 		return err

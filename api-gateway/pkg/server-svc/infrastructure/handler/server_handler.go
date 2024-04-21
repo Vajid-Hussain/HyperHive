@@ -216,6 +216,10 @@ func (c *ServerService) InitSoketio(ctx echo.Context) {
 		c.serverUseCase.BroadcastMessage([]byte(msg), c.SoketioServer, s)
 	})
 
+	c.SoketioServer.OnEvent("/", "forum", func(conn socketio.Conn, msg string) {
+		c.serverUseCase.BroadcastForum([]byte(msg), *c.SoketioServer, conn)
+	})
+
 	c.SoketioServer.OnDisconnect("/", func(conn socketio.Conn, reason string) {
 		fmt.Println("closed =>", reason)
 		c.SoketioServer.LeaveAllRooms("/", conn)

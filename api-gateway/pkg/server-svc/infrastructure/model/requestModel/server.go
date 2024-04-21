@@ -90,3 +90,20 @@ type FriendlyMessage struct {
 	Tag         string `json:"Tag"`
 	Status      string `json:"Status"`
 }
+
+type ForumPost struct {
+	UserProfilePhoto string `json:"UserProfilePhoto,omitempty"`
+	UserName         string `json:"UserName"`
+	UserID           int    `json:"UserID" validate:"required"`
+	ChannelID        int    `json:"ChannelID" validate:"required"`
+	ServerID         int    `json:"ServerID" validate:"required"`
+	Content          string `json:"Content" validate:"required"`
+	MainContentType  string `json:"MainContentType" validate:"required"`
+	SubContent       string `json:"SubContent"`
+	TimeStamp        time.Time
+	Type             string `json:"Type"`
+}
+
+type FormType struct {
+	Type string `json:"Type"`
+}

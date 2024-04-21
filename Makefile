@@ -14,3 +14,9 @@ dockerPostgres:
 
 swaggo:
 	swag init -g ./api-gateway/cmd/main.go
+
+
+dockerall:
+	docker compose down
+	docker compose build
+	docker compose up

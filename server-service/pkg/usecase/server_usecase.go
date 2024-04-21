@@ -54,7 +54,7 @@ func (r *ServerUsecase) CreateCategory(req *requestmodel_server_service.CreateCa
 }
 
 func (r *ServerUsecase) CreateChannel(req *requestmodel_server_service.CreateChannel) error {
-	if req.Type != "voice" && req.Type != "text" && req.Type != "forum" {
+	if req.Type != "voice" && req.Type != "text" && req.Type != "guild forum" {
 		return responsemodel_server_service.ErrChannelTypeIsNotMatch
 	}
 
@@ -127,6 +127,7 @@ func (d *ServerUsecase) UpdateServerDiscription(req *requestmodel_server_service
 
 func (r *ServerUsecase) KafkaConsumerServerMessage() error {
 	var messageModel requestmodel_server_service.ServerMessage
+	var formPost requestmodel_server_service.ForumPost
 	fmt.Println("Kafka started ")
 
 	config := sarama.NewConfig()
@@ -145,10 +146,17 @@ func (r *ServerUsecase) KafkaConsumerServerMessage() error {
 
 	for {
 		message := <-consumerPartioshion.Messages()
-		json.Unmarshal(message.Value, &messageModel)
-		err := r.repository.KeepMessageInDB(messageModel)
-		if err != nil {
-			fmt.Println("err on adding message in db ", err)
+		switch string(message.Key) {
+		case "server message":
+			json.Unmarshal(message.Value, &messageModel)
+			fmt.Println("==", messageModel)
+			err := r.repository.KeepMessageInDB(messageModel)
+			if err != nil {
+				fmt.Println("err on adding message in db ", err)
+			}
+		case "forum post":
+			json.Unmarshal(message.Value, &formPost)
+			r.repository.InsertForumPost(formPost)
 		}
 	}
 }

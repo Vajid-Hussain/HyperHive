@@ -14,7 +14,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func DbInit(DbConfig config_server_service.DataBasePostgres, mongodb config_server_service.MongodDb) (*gorm.DB, *mongo.Collection, error) {
+type MongoCollection struct {
+	ServerChat *mongo.Collection
+	ForunPost  *mongo.Collection
+}
+
+func DbInit(DbConfig config_server_service.DataBasePostgres, mongodb config_server_service.MongodDb) (*gorm.DB, *MongoCollection, error) {
 	connectionString := fmt.Sprintf("user=%s password=%s host=%s sslmode=disable", DbConfig.User, DbConfig.UserPassword, DbConfig.Host)
 	sql, err := sql.Open("postgres", connectionString)
 	if err != nil {
@@ -59,6 +64,9 @@ func DbInit(DbConfig config_server_service.DataBasePostgres, mongodb config_serv
 		return nil, nil, err
 	}
 
-	collection := client.Database(mongodb.DataBase).Collection(mongodb.ServerChatCollection)
-	return DB, collection, nil
+	var collection MongoCollection
+
+	collection.ServerChat = client.Database(mongodb.DataBase).Collection(mongodb.ServerChatCollection)
+	collection.ForunPost = client.Database(mongodb.DataBase).Collection(mongodb.ServerForunPost)
+	return DB, &collection, nil
 }

@@ -21,7 +21,8 @@ type S3Bucket struct {
 type MongodDb struct {
 	MongodbURL           string `mapstructure:"MONGODBURL"`
 	DataBase             string `mapstructure:"MONOGODBDATABASE"`
-	ServerChatCollection string `mapstructure:"MONGODBCOLLECTION"`
+	ServerChatCollection string `mapstructure:"SERVERCHATMONGODBCOLLECTION"`
+	ServerForunPost      string `mapstructure:"SERVERFORUMMONGODBCOLLECTION"`
 }
 
 type Auth_service struct {
@@ -43,7 +44,7 @@ type Config struct {
 	S3               S3Bucket
 	KafkaConsumer    Kafka
 	MongoDB          MongodDb
-	Auth   Auth_service
+	Auth             Auth_service
 }
 
 func ConfigInit() (*Config, error) {
@@ -86,7 +87,6 @@ func ConfigInit() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
 
 	return &config, nil
 }

@@ -6,4 +6,5 @@ type IserverServiceUseCase interface {
 	JoinToServerRoom(string, *socketio.Server, socketio.Conn) error
 	BroadcastMessage( []byte, *socketio.Server, socketio.Conn)
 	SendFriendChat( []byte, *socketio.Server, socketio.Conn)
+	BroadcastForum( []byte,  socketio.Server,  socketio.Conn)
 }

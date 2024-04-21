@@ -12,6 +12,7 @@ type IFriendRepository interface {
 	GetSendFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
 	FriendShipStatusUpdate(requestmodel_friend_server.FriendShipStatus) error
 	GetBlockFriendRequest(*requestmodel_friend_server.GetFriendRequest) ([]*responsemodel_friend_server.FriendList, error)
+	DeleteFriendShipOfStatusRejectRevoke() error 
 
 	//------- mongo
 	StoreFriendsChat(requestmodel_friend_server.Message) error

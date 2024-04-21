@@ -77,8 +77,19 @@ type UpdateMemberRole struct {
 	ServerID     string
 }
 
-type RemoveUser struct{
-	UserID string
+type RemoveUser struct {
+	UserID    string
 	RemoverID string
-	ServerID string
+	ServerID  string
+}
+
+type ForumPost struct {
+	UserID          int       `json:"UserID" bson:"UserID"`
+	ChannelID       int       `json:"ChannelID" bson:"ChannelID"`
+	ServerID        int       `json:"ServerID" bson:"ServerID"`
+	Content         string    `json:"Content" bson:"Content"`
+	MainContentType string    `json:"MainContentType" bson:"MainContentType"`
+	SubContent      string    `json:"SubContent" bson:"SubContent"`
+	TimeStamp       time.Time `bson:"TimeStamp" json:"TimeStamp"`
+	Type            string    `json:"Type" bson:"Type"`
 }
