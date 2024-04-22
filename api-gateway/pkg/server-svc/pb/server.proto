@@ -25,7 +25,7 @@ service Server {
     //forum
     rpc GetForumPost (GetForumPostRequest) returns (GetForumPostResponse);
     rpc GetSingleForumPost (GetSingleForumPostRequest) returns (GetSingleForumPostResponse);
-    rpc GetAllCoommand (GetAllCoommandRequest) returns (GetAllCoommandResponse);
+    rpc GetPostCommand (GetPostCommandRequest) returns (GetPostCommandResponse);
 }
 
 message CreateServerRequest {
@@ -200,6 +200,20 @@ message GetForumPostModel {
     string command_content = 11;
 }
 
+message ForumCommandModel {
+    string ID = 1;
+    string user_profile = 2;
+    string user_name = 3;
+    int32 user_id = 4;
+    int32 channel_id = 5;
+    int32 server_id = 6;
+    string parent_id = 7;
+    string content = 8;
+    string time_stamp = 9;
+    string type = 10;
+    repeated ForumCommandModel thread = 11;
+}
+
 message GetForumPostResponse {
     repeated GetForumPostModel post =1;
 }
@@ -212,11 +226,12 @@ message  GetSingleForumPostResponse {
     GetForumPostModel post = 1;
 }
 
-message GetAllCoommandRequest {
+message GetPostCommandRequest {
     string PostID =1;
     string Limit = 2;
     string Offset= 3;
 }
 
-message GetAllCoommandResponse {
+message GetPostCommandResponse {
+    repeated ForumCommandModel command=1; 
 }

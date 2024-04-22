@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
+	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	"github.com/Vajid-Hussain/HyperHive/server-service/pkg/pb"
 	interface_useCase_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/usecase/interface"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -252,4 +253,57 @@ func (u *ServerServer) GetSingleForumPost(ctx context.Context, req *pb.GetSingle
 			Type:            value.Type,
 		},
 	}, nil
+}
+
+func (u *ServerServer) GetPostCommand(ctx context.Context, req *pb.GetPostCommandRequest) (*pb.GetPostCommandResponse, error) {
+	result, err := u.useCase.GetPostCommand(req.PostID, requestmodel_server_service.Pagination{
+		Limit:  req.Limit,
+		OffSet: req.Offset,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// limitInt, _ := strconv.Atoi(req.Limit)
+
+	var finalResult []*pb.ForumCommandModel
+	// for _, val := range result.Commands {
+	// 	finalResult = append(finalResult, &pb.ForumCommandModel{
+	// 		ID:          val.ID,
+	// 		UserProfile: val.UserProfile,
+	// 		UserName:    val.UserName,
+	// 		UserId:      int32(val.UserID),
+	// 		ChannelId:   int32(val.ChannelID),
+	// 		ServerId:    int32(val.ServerID),
+	// 		ParentId:    val.ParentID,
+	// 		Content:     val.Content,
+	// 		TimeStamp:   val.TimeStamp.String(),
+	// 		Type:        val.Type,
+	// 		Thread:      val.Thread,
+	// 	})
+	// }
+
+	finalResult = u.arrageAllCommand(result.Commands, finalResult)
+
+	return &pb.GetPostCommandResponse{Command: finalResult}, err
+}
+
+func (u *ServerServer) arrageAllCommand(command []*responsemodel_server_service.ForumCommand, finalResult []*pb.ForumCommandModel) []*pb.ForumCommandModel {
+	for i, val := range command {
+		finalResult = append(finalResult, &pb.ForumCommandModel{
+			ID:          val.ID,
+			UserProfile: val.UserProfile,
+			UserName:    val.UserName,
+			UserId:      int32(val.UserID),
+			ChannelId:   int32(val.ChannelID),
+			ServerId:    int32(val.ServerID),
+			ParentId:    val.ParentID,
+			Content:     val.Content,
+			TimeStamp:   val.TimeStamp.String(),
+			Type:        val.Type,
+		})
+		finalResult[i].Thread = u.arrageAllCommand(command[i].Thread, finalResult[i].Thread)
+	}
+
+	return finalResult
 }

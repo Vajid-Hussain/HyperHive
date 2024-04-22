@@ -275,7 +275,11 @@ func (r *ServerUsecase) GetPostCommand(postID string, pagination requestmodel_se
 	}
 
 	r.fetchAllCommands(commands.Commands)
-	fmt.Println("command ", commands)
+	// for _, val := range commands.Commands {
+	// 	fmt.Println("==",val)
+	// 	fmt.Println("==", val.Thread[0])
+	// 	fmt.Println("===",val.Thread[0].Thread[0])
+	// }
 	return &commands, nil
 }
 
@@ -290,6 +294,9 @@ func (r *ServerUsecase) GetPostCommand(postID string, pagination requestmodel_se
 
 func (r *ServerUsecase) fetchAllCommands(command []*responsemodel_server_service.ForumCommand) {
 	for i, value := range command {
+		userProfile, _ := r.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(value.UserID)})
+		command[i].UserProfile = userProfile.ProfilePhoto
+		command[i].UserName = userProfile.UserName
 		command[i].Thread, _ = r.repository.GetForumCommands(value.ID, requestmodel_server_service.Pagination{Limit: "100", OffSet: "0"})
 		r.fetchAllCommands(command[i].Thread)
 	}

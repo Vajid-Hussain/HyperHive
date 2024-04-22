@@ -125,3 +125,9 @@ type ReqGetForumPost struct {
 	Offset    string `query:"page"`
 	ChannelID string `query:"channelID"`
 }
+
+type ReqGetForumCommand struct {
+	Limit  string `query:"limit"`
+	Offset string `query:"page"`
+	PostID string `query:"PostID"`
+}

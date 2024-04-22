@@ -44,8 +44,8 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 			{
 				forumManagement.GET("", handler.GetForumPost)
 				forumManagement.GET("/:postid", handler.GetSinglePost)
+				forumManagement.GET("/command", handler.GetPostCommand)
 			}
 		}
 	}
 }
-

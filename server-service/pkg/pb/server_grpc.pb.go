@@ -42,7 +42,7 @@ type ServerClient interface {
 	// forum
 	GetForumPost(ctx context.Context, in *GetForumPostRequest, opts ...grpc.CallOption) (*GetForumPostResponse, error)
 	GetSingleForumPost(ctx context.Context, in *GetSingleForumPostRequest, opts ...grpc.CallOption) (*GetSingleForumPostResponse, error)
-	GetAllCoommand(ctx context.Context, in *GetAllCoommandRequest, opts ...grpc.CallOption) (*GetAllCoommandResponse, error)
+	GetPostCommand(ctx context.Context, in *GetPostCommandRequest, opts ...grpc.CallOption) (*GetPostCommandResponse, error)
 }
 
 type serverClient struct {
@@ -215,9 +215,9 @@ func (c *serverClient) GetSingleForumPost(ctx context.Context, in *GetSingleForu
 	return out, nil
 }
 
-func (c *serverClient) GetAllCoommand(ctx context.Context, in *GetAllCoommandRequest, opts ...grpc.CallOption) (*GetAllCoommandResponse, error) {
-	out := new(GetAllCoommandResponse)
-	err := c.cc.Invoke(ctx, "/Server/GetAllCoommand", in, out, opts...)
+func (c *serverClient) GetPostCommand(ctx context.Context, in *GetPostCommandRequest, opts ...grpc.CallOption) (*GetPostCommandResponse, error) {
+	out := new(GetPostCommandResponse)
+	err := c.cc.Invoke(ctx, "/Server/GetPostCommand", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ type ServerServer interface {
 	// forum
 	GetForumPost(context.Context, *GetForumPostRequest) (*GetForumPostResponse, error)
 	GetSingleForumPost(context.Context, *GetSingleForumPostRequest) (*GetSingleForumPostResponse, error)
-	GetAllCoommand(context.Context, *GetAllCoommandRequest) (*GetAllCoommandResponse, error)
+	GetPostCommand(context.Context, *GetPostCommandRequest) (*GetPostCommandResponse, error)
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -309,8 +309,8 @@ func (UnimplementedServerServer) GetForumPost(context.Context, *GetForumPostRequ
 func (UnimplementedServerServer) GetSingleForumPost(context.Context, *GetSingleForumPostRequest) (*GetSingleForumPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSingleForumPost not implemented")
 }
-func (UnimplementedServerServer) GetAllCoommand(context.Context, *GetAllCoommandRequest) (*GetAllCoommandResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllCoommand not implemented")
+func (UnimplementedServerServer) GetPostCommand(context.Context, *GetPostCommandRequest) (*GetPostCommandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostCommand not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 
@@ -649,20 +649,20 @@ func _Server_GetSingleForumPost_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Server_GetAllCoommand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllCoommandRequest)
+func _Server_GetPostCommand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostCommandRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServerServer).GetAllCoommand(ctx, in)
+		return srv.(ServerServer).GetPostCommand(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Server/GetAllCoommand",
+		FullMethod: "/Server/GetPostCommand",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerServer).GetAllCoommand(ctx, req.(*GetAllCoommandRequest))
+		return srv.(ServerServer).GetPostCommand(ctx, req.(*GetPostCommandRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -747,8 +747,8 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Server_GetSingleForumPost_Handler,
 		},
 		{
-			MethodName: "GetAllCoommand",
-			Handler:    _Server_GetAllCoommand_Handler,
+			MethodName: "GetPostCommand",
+			Handler:    _Server_GetPostCommand_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

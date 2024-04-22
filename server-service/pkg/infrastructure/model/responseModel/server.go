@@ -84,7 +84,7 @@ type ForumCommand struct {
 	ServerID    int       `json:"ServerID" validate:"required"`
 	ParentID    string    `json:"parentID" validate:"required"`
 	Content     string    `json:"Content" validate:"required"`
-	TimeStamp   time.Time `bson:"TimeStamp"`
+	TimeStamp   time.Time `bson:"timestamp"`
 	Type        string    `json:"Type"`
 	Thread      []*ForumCommand
 }

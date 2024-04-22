@@ -335,7 +335,6 @@ func (d *ServerRepository) GetForumPost(channelID string, pagination requestmode
 }
 
 func (d *ServerRepository) GetForumCommands(parentID string, pagination requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumCommand, error) {
-	fmt.Print("-----------:", parentID, pagination)
 	var command []*responsemodel_server_service.ForumCommand
 
 	limit, _ := strconv.Atoi(pagination.Limit)
@@ -348,7 +347,6 @@ func (d *ServerRepository) GetForumCommands(parentID string, pagination requestm
 		return nil, err
 	}
 	err = cursor.All(context.TODO(), &command)
-	fmt.Println("-&&&&", command)
 	return command, err
 }
 

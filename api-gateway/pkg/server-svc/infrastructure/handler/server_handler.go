@@ -454,3 +454,24 @@ func (c *ServerService) GetSinglePost(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+func (c *ServerService) GetPostCommand(ctx echo.Context) error {
+	var req requestmodel_server_svc.ReqGetForumCommand
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.GetPostCommand(context, &pb.GetPostCommandRequest{
+		PostID: req.PostID,
+		Limit:  req.Limit,
+		Offset: req.Offset,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+}
