@@ -10,6 +10,7 @@ import (
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
 	interface_Repository_Server_Service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/repository/interface"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 )
@@ -302,10 +303,64 @@ func (d *ServerRepository) GetChannelMessages(chanelID string, pagination reques
 
 func (d *ServerRepository) InsertForumPost(post requestmodel_server_service.ForumPost) error {
 	fmt.Println("post ", post)
-	_,err:=d.mongoCollection.ForunPost.InsertOne(context.TODO(), post)
+	_, err := d.mongoCollection.ForunPost.InsertOne(context.TODO(), post)
+	return err
+}
+
+func (d *ServerRepository) InsertForumCommand(command requestmodel_server_service.FormCommand) error {
+
+	fmt.Println("command ", command)
+	_, err := d.mongoCollection.ForumCommand.InsertOne(context.TODO(), command)
+	return err
+}
+
+func (d *ServerRepository) GetForumPost(channelID string, pagination requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumPost, error) {
+	fmt.Println(pagination, channelID)
+	var post []*responsemodel_server_service.ForumPost
+	limit, _ := strconv.Atoi(pagination.Limit)
+	offset, _ := strconv.Atoi(pagination.OffSet)
+
+	option := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
+	channelIDInt, _ := strconv.Atoi(channelID)
+
+	filter := bson.M{"ChannelID": channelIDInt}
+
+	cursor, err := d.mongoCollection.ForunPost.Find(context.TODO(), filter, option)
 	if err != nil {
-		fmt.Println("===",err)
-		return err
+		return nil, err
 	}
-	return nil
+
+	err = cursor.All(context.TODO(), &post)
+	return post, err
+}
+
+func (d *ServerRepository) GetForumCommands(parentID string, pagination requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumCommand, error) {
+	fmt.Print("-----------:", parentID, pagination)
+	var command []*responsemodel_server_service.ForumCommand
+
+	limit, _ := strconv.Atoi(pagination.Limit)
+	offset, _ := strconv.Atoi(pagination.OffSet)
+
+	option := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset)).SetSort(bson.D{{"timestamp", -1}})
+	filter := bson.M{"parentid": parentID}
+	cursor, err := d.mongoCollection.ForumCommand.Find(context.TODO(), filter, option)
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(context.TODO(), &command)
+	fmt.Println("-&&&&", command)
+	return command, err
+}
+
+func (d *ServerRepository) GetFormSinglePost(PostID string) (*responsemodel_server_service.ForumPost, error) {
+	var res *responsemodel_server_service.ForumPost
+	objectID, err := primitive.ObjectIDFromHex(PostID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("==-9", objectID)
+
+	filter := bson.M{"_id": objectID}
+	err = d.mongoCollection.ForunPost.FindOne(context.TODO(), filter).Decode(&res)
+	return res, err
 }

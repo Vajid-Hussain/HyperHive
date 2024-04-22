@@ -15,8 +15,9 @@ import (
 )
 
 type MongoCollection struct {
-	ServerChat *mongo.Collection
-	ForunPost  *mongo.Collection
+	ServerChat   *mongo.Collection
+	ForunPost    *mongo.Collection
+	ForumCommand *mongo.Collection
 }
 
 func DbInit(DbConfig config_server_service.DataBasePostgres, mongodb config_server_service.MongodDb) (*gorm.DB, *MongoCollection, error) {
@@ -68,5 +69,6 @@ func DbInit(DbConfig config_server_service.DataBasePostgres, mongodb config_serv
 
 	collection.ServerChat = client.Database(mongodb.DataBase).Collection(mongodb.ServerChatCollection)
 	collection.ForunPost = client.Database(mongodb.DataBase).Collection(mongodb.ServerForunPost)
+	collection.ForumCommand = client.Database(mongodb.DataBase).Collection(mongodb.ServerForumCommand)
 	return DB, &collection, nil
 }

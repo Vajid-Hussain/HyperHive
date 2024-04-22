@@ -415,3 +415,42 @@ func (c *ServerService) LeftFromServer(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "left sussefully from "+req.ServerID, nil))
 }
+
+func (c *ServerService) GetForumPost(ctx echo.Context) error {
+	var req requestmodel_server_svc.ReqGetForumPost
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.GetForumPost(context, &pb.GetForumPostRequest{
+		ChannelID: req.ChannelID,
+		Limit:     req.Limit,
+		Offset:    req.Offset,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (c *ServerService) GetSinglePost(ctx echo.Context) error {
+	postID := ctx.Param("postid")
+	if postID == "" {
+		return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", "", resonsemodel_server_svc.ErrNoPostIDINQueryParams))
+	}
+	fmt.Println("===", postID)
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.GetSingleForumPost(context, &pb.GetSingleForumPostRequest{
+		PostID: postID,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+}

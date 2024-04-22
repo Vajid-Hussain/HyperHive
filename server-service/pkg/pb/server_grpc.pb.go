@@ -39,6 +39,10 @@ type ServerClient interface {
 	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	LeftFromServer(ctx context.Context, in *LeftFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteServer(ctx context.Context, in *DeleteServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// forum
+	GetForumPost(ctx context.Context, in *GetForumPostRequest, opts ...grpc.CallOption) (*GetForumPostResponse, error)
+	GetSingleForumPost(ctx context.Context, in *GetSingleForumPostRequest, opts ...grpc.CallOption) (*GetSingleForumPostResponse, error)
+	GetAllCoommand(ctx context.Context, in *GetAllCoommandRequest, opts ...grpc.CallOption) (*GetAllCoommandResponse, error)
 }
 
 type serverClient struct {
@@ -193,6 +197,33 @@ func (c *serverClient) DeleteServer(ctx context.Context, in *DeleteServerRequest
 	return out, nil
 }
 
+func (c *serverClient) GetForumPost(ctx context.Context, in *GetForumPostRequest, opts ...grpc.CallOption) (*GetForumPostResponse, error) {
+	out := new(GetForumPostResponse)
+	err := c.cc.Invoke(ctx, "/Server/GetForumPost", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) GetSingleForumPost(ctx context.Context, in *GetSingleForumPostRequest, opts ...grpc.CallOption) (*GetSingleForumPostResponse, error) {
+	out := new(GetSingleForumPostResponse)
+	err := c.cc.Invoke(ctx, "/Server/GetSingleForumPost", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverClient) GetAllCoommand(ctx context.Context, in *GetAllCoommandRequest, opts ...grpc.CallOption) (*GetAllCoommandResponse, error) {
+	out := new(GetAllCoommandResponse)
+	err := c.cc.Invoke(ctx, "/Server/GetAllCoommand", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServerServer is the server API for Server service.
 // All implementations must embed UnimplementedServerServer
 // for forward compatibility
@@ -213,6 +244,10 @@ type ServerServer interface {
 	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*emptypb.Empty, error)
 	LeftFromServer(context.Context, *LeftFromServerRequest) (*emptypb.Empty, error)
 	DeleteServer(context.Context, *DeleteServerRequest) (*emptypb.Empty, error)
+	// forum
+	GetForumPost(context.Context, *GetForumPostRequest) (*GetForumPostResponse, error)
+	GetSingleForumPost(context.Context, *GetSingleForumPostRequest) (*GetSingleForumPostResponse, error)
+	GetAllCoommand(context.Context, *GetAllCoommandRequest) (*GetAllCoommandResponse, error)
 	mustEmbedUnimplementedServerServer()
 }
 
@@ -267,6 +302,15 @@ func (UnimplementedServerServer) LeftFromServer(context.Context, *LeftFromServer
 }
 func (UnimplementedServerServer) DeleteServer(context.Context, *DeleteServerRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteServer not implemented")
+}
+func (UnimplementedServerServer) GetForumPost(context.Context, *GetForumPostRequest) (*GetForumPostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetForumPost not implemented")
+}
+func (UnimplementedServerServer) GetSingleForumPost(context.Context, *GetSingleForumPostRequest) (*GetSingleForumPostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSingleForumPost not implemented")
+}
+func (UnimplementedServerServer) GetAllCoommand(context.Context, *GetAllCoommandRequest) (*GetAllCoommandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCoommand not implemented")
 }
 func (UnimplementedServerServer) mustEmbedUnimplementedServerServer() {}
 
@@ -569,6 +613,60 @@ func _Server_DeleteServer_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Server_GetForumPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetForumPostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).GetForumPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/GetForumPost",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).GetForumPost(ctx, req.(*GetForumPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_GetSingleForumPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSingleForumPostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).GetSingleForumPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/GetSingleForumPost",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).GetSingleForumPost(ctx, req.(*GetSingleForumPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Server_GetAllCoommand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllCoommandRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).GetAllCoommand(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/GetAllCoommand",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).GetAllCoommand(ctx, req.(*GetAllCoommandRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Server_ServiceDesc is the grpc.ServiceDesc for Server service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -639,6 +737,18 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteServer",
 			Handler:    _Server_DeleteServer_Handler,
+		},
+		{
+			MethodName: "GetForumPost",
+			Handler:    _Server_GetForumPost_Handler,
+		},
+		{
+			MethodName: "GetSingleForumPost",
+			Handler:    _Server_GetSingleForumPost_Handler,
+		},
+		{
+			MethodName: "GetAllCoommand",
+			Handler:    _Server_GetAllCoommand_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

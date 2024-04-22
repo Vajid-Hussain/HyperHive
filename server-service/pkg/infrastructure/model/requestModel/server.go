@@ -93,3 +93,14 @@ type ForumPost struct {
 	TimeStamp       time.Time `bson:"TimeStamp" json:"TimeStamp"`
 	Type            string    `json:"Type" bson:"Type"`
 }
+
+type FormCommand struct {
+	UserID           int    `json:"UserID" validate:"required"`
+	ChannelID        int    `json:"ChannelID" validate:"required"`
+	ServerID         int    `json:"ServerID" validate:"required"`
+	ParentID         string `json:"parentID" validate:"required"`
+	Content          string `json:"Content" validate:"required"`
+	TimeStamp        time.Time
+	Type             string `json:"Type"`
+}
+

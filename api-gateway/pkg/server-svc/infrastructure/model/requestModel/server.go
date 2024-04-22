@@ -107,3 +107,21 @@ type ForumPost struct {
 type FormType struct {
 	Type string `json:"Type"`
 }
+
+type FormCommand struct {
+	UserProfilePhoto string `json:"UserProfilePhoto,omitempty"`
+	UserName         string `json:"UserName"`
+	UserID           int    `json:"UserID" validate:"required"`
+	ChannelID        int    `json:"ChannelID" validate:"required"`
+	ServerID         int    `json:"ServerID" validate:"required"`
+	ParentID         string `json:"parentID" validate:"required"`
+	Content          string `json:"Content" validate:"required"`
+	TimeStamp        time.Time
+	Type             string `json:"Type"`
+}
+
+type ReqGetForumPost struct {
+	Limit     string `query:"limit"`
+	Offset    string `query:"page"`
+	ChannelID string `query:"channelID"`
+}

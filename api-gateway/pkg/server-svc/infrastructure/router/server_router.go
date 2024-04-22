@@ -39,6 +39,13 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 		{
 			channelManagement.POST("", handler.CreateChannel)
 			channelManagement.GET("", handler.GetChannelsOfServer)
+
+			forumManagement := channelManagement.Group("/forum")
+			{
+				forumManagement.GET("", handler.GetForumPost)
+				forumManagement.GET("/:postid", handler.GetSinglePost)
+			}
 		}
 	}
 }
+

@@ -202,5 +202,54 @@ func (u *ServerServer) DeleteServer(ctx context.Context, req *pb.DeleteServerReq
 }
 
 func (u *ServerServer) LeftFromServer(ctx context.Context, req *pb.LeftFromServerRequest) (*emptypb.Empty, error) {
-	return new(emptypb.Empty) , u.useCase.LeftFromServer(req.UserID, req.ServerID)
+	return new(emptypb.Empty), u.useCase.LeftFromServer(req.UserID, req.ServerID)
+}
+
+func (u *ServerServer) GetForumPost(ctx context.Context, req *pb.GetForumPostRequest) (*pb.GetForumPostResponse, error) {
+	result, err := u.useCase.GetForumPost(req.ChannelID, requestmodel_server_service.Pagination{
+		Limit:  req.Limit,
+		OffSet: req.Offset,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var post []*pb.GetForumPostModel
+	for _, value := range result {
+		post = append(post, &pb.GetForumPostModel{
+			UserProfile:     value.UserProfile,
+			UserName:        value.UserName,
+			UserId:          int32(value.UserID),
+			ChannelId:       int32(value.ChannelID),
+			ServerId:        int32(value.ServerID),
+			Content:         value.Content,
+			MainContentType: value.MainContentType,
+			SubContent:      value.SubContent,
+			TimeStamp:       value.TimeStamp.String(),
+			Type:            value.Type,
+			CommandContent:  value.CommandContent,
+		})
+	}
+	return &pb.GetForumPostResponse{Post: post}, nil
+}
+
+func (u *ServerServer) GetSingleForumPost(ctx context.Context, req *pb.GetSingleForumPostRequest) (*pb.GetSingleForumPostResponse, error) {
+	value, err := u.useCase.GetFormSinglePost(req.PostID)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetSingleForumPostResponse{
+		Post: &pb.GetForumPostModel{
+			UserProfile:     value.UserProfile,
+			UserName:        value.UserName,
+			UserId:          int32(value.UserID),
+			ChannelId:       int32(value.ChannelID),
+			ServerId:        int32(value.ServerID),
+			Content:         value.Content,
+			MainContentType: value.MainContentType,
+			SubContent:      value.SubContent,
+			TimeStamp:       value.TimeStamp.String(),
+			Type:            value.Type,
+		},
+	}, nil
 }

@@ -27,5 +27,11 @@ type IRepositoryServer interface {
 	RemoveUserFromServer(*requestmodel_server_service.RemoveUser) error
 	LeftFromServer(string, string) error
 	DeleteServer(string, string) error
-	InsertForumPost( requestmodel_server_service.ForumPost) error
+
+	// forum channel
+	InsertForumPost(requestmodel_server_service.ForumPost) error
+	InsertForumCommand(requestmodel_server_service.FormCommand) error
+	GetForumPost(string, requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumPost, error)
+	GetForumCommands(string, requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumCommand, error)
+	GetFormSinglePost(string) (*responsemodel_server_service.ForumPost, error)
 }

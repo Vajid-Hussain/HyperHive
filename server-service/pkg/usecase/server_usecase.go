@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/IBM/sarama"
 	config_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/config"
@@ -128,6 +129,7 @@ func (d *ServerUsecase) UpdateServerDiscription(req *requestmodel_server_service
 func (r *ServerUsecase) KafkaConsumerServerMessage() error {
 	var messageModel requestmodel_server_service.ServerMessage
 	var formPost requestmodel_server_service.ForumPost
+	var formCommand requestmodel_server_service.FormCommand
 	fmt.Println("Kafka started ")
 
 	config := sarama.NewConfig()
@@ -157,6 +159,9 @@ func (r *ServerUsecase) KafkaConsumerServerMessage() error {
 		case "forum post":
 			json.Unmarshal(message.Value, &formPost)
 			r.repository.InsertForumPost(formPost)
+		case "forum command":
+			json.Unmarshal(message.Value, &formCommand)
+			r.repository.InsertForumCommand(formCommand)
 		}
 	}
 }
@@ -206,4 +211,86 @@ func (r *ServerUsecase) DeleteServer(userID, serverID string) error {
 
 func (r *ServerUsecase) LeftFromServer(userID, serverID string) error {
 	return r.repository.LeftFromServer(userID, serverID)
+}
+
+func (r *ServerUsecase) GetForumPost(channelID string, pagination requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumPost, error) {
+	var err error
+	pagination.OffSet, err = utils_server_service.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
+		return nil, err
+	}
+	post, err := r.repository.GetForumPost(channelID, pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, singlePost := range post {
+		userProfile, err := r.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(singlePost.UserID)})
+		if err != nil {
+			return nil, err
+		}
+
+		post[i].UserProfile = userProfile.ProfilePhoto
+		post[i].UserName = userProfile.UserName
+
+		command, err := r.repository.GetForumCommands(singlePost.ID, requestmodel_server_service.Pagination{Limit: "1", OffSet: "0"})
+		if err != nil {
+			return nil, err
+		}
+
+		if len(command) == 1 {
+			post[i].CommandContent = command[0].Content
+		}
+	}
+
+	return post, nil
+}
+
+func (r *ServerUsecase) GetFormSinglePost(postID string) (*responsemodel_server_service.ForumPost, error) {
+	post, err := r.repository.GetFormSinglePost(postID)
+	if err != nil {
+		return nil, err
+	}
+	userProfile, err := r.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(post.UserID)})
+	if err != nil {
+		return nil, err
+	}
+
+	post.UserName = userProfile.UserName
+	post.UserProfile = userProfile.ProfilePhoto
+
+	return post, nil
+}
+
+func (r *ServerUsecase) GetPostCommand(postID string, pagination requestmodel_server_service.Pagination) (*responsemodel_server_service.PostCommands, error) {
+	var err error
+	pagination.OffSet, err = utils_server_service.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
+		return nil, err
+	}
+	var commands responsemodel_server_service.PostCommands
+	commands.Commands, err = r.repository.GetForumCommands(postID, pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	r.fetchAllCommands(commands.Commands)
+	fmt.Println("command ", commands)
+	return &commands, nil
+}
+
+// func (r *ServerUsecase) fetchAllCommands(command []*responsemodel_server_service.ForumCommand, lenght, pos int) {
+// 	if lenght-1 == pos {
+// 		return
+// 	}
+
+// 	command[pos].Thread, _ = r.repository.GetForumCommands(command[pos].ID, requestmodel_server_service.Pagination{Limit: "100", OffSet: "0"})
+// 	r.fetchAllCommands(command[pos].Thread, len(command[pos].Thread), pos)
+// }
+
+func (r *ServerUsecase) fetchAllCommands(command []*responsemodel_server_service.ForumCommand) {
+	for i, value := range command {
+		command[i].Thread, _ = r.repository.GetForumCommands(value.ID, requestmodel_server_service.Pagination{Limit: "100", OffSet: "0"})
+		r.fetchAllCommands(command[i].Thread)
+	}
 }

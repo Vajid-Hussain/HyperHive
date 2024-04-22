@@ -21,6 +21,11 @@ service Server {
     rpc UpdateMemberRole (UpdateMemberRoleRequest) returns (google.protobuf.Empty);
     rpc LeftFromServer (LeftFromServerRequest) returns (google.protobuf.Empty);
     rpc DeleteServer (DeleteServerRequest) returns (google.protobuf.Empty);
+
+    //forum
+    rpc GetForumPost (GetForumPostRequest) returns (GetForumPostResponse);
+    rpc GetSingleForumPost (GetSingleForumPostRequest) returns (GetSingleForumPostResponse);
+    rpc GetAllCoommand (GetAllCoommandRequest) returns (GetAllCoommandResponse);
 }
 
 message CreateServerRequest {
@@ -173,4 +178,45 @@ message LeftFromServerRequest {
 message DeleteServerRequest {
     string UserID =1;
     string ServerID=2;
+}
+
+message GetForumPostRequest {
+    string channelID =1;
+    string limit=2;
+    string offset =3;
+}
+
+message GetForumPostModel {
+    string user_profile = 1;
+    string user_name = 2;
+    int32 user_id = 3;
+    int32 channel_id = 4;
+    int32 server_id = 5;
+    string content = 6;
+    string main_content_type = 7;
+    string sub_content = 8;
+    string time_stamp = 9;
+    string type = 10;
+    string command_content = 11;
+}
+
+message GetForumPostResponse {
+    repeated GetForumPostModel post =1;
+}
+
+message GetSingleForumPostRequest {
+    string PostID =1;
+}
+
+message  GetSingleForumPostResponse {
+    GetForumPostModel post = 1;
+}
+
+message GetAllCoommandRequest {
+    string PostID =1;
+    string Limit = 2;
+    string Offset= 3;
+}
+
+message GetAllCoommandResponse {
 }

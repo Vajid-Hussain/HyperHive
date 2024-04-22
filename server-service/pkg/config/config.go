@@ -23,6 +23,7 @@ type MongodDb struct {
 	DataBase             string `mapstructure:"MONOGODBDATABASE"`
 	ServerChatCollection string `mapstructure:"SERVERCHATMONGODBCOLLECTION"`
 	ServerForunPost      string `mapstructure:"SERVERFORUMMONGODBCOLLECTION"`
+	ServerForumCommand   string `mapstructure:"SERVERFORUMCOMMENTMONGODBCOLLECTION"`
 }
 
 type Auth_service struct {
