@@ -19,6 +19,7 @@ import (
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/redis/go-redis/v9"
+	_ "time/tzdata"
 )
 
 type serverServiceUseCase struct {
@@ -139,6 +140,7 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 
 	message.Timestamp = time.Now().In(s.Location)
 	message.Status = "send"
+
 	if socket.RoomLen("/", friendChatNameSpace+message.RecipientID) == 0 {
 		message.Status = "pending"
 	} else {

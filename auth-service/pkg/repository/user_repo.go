@@ -274,6 +274,12 @@ func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_serve
 	return nil
 }
 
+func (d *UserRepository) DeletePendingUsers() {
+	query := "DELETE FROM users WHERE AGE(NOW() - created_at) > INTERVAL '1 days' AND status='pending'"
+	result := d.DB.Exec(query)
+	fmt.Println("errr", result.Error)
+}
+
 func (d *UserRepository) DeleteExpiredStatus(now time.Time) {
 	query := "DELETE FROM user_profile_statuses WHERE status_till < $1"
 	d.DB.Raw(query, now)

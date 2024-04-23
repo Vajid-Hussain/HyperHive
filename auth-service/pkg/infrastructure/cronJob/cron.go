@@ -29,6 +29,6 @@ func (c *CronJob) StartCronInAuthService() {
 		c.userRepository.DeleteExpiredStatus(time.Now())
 	})
 
-	newCron.AddFunc("0 0 */2 * *", c.userRepository.DeleteUnverifiedUsers)
+	newCron.AddFunc("0 0 */2 * *", c.userRepository.DeletePendingUsers)
 	newCron.Start()
 }

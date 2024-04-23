@@ -21,6 +21,7 @@ type IUserRepository interface {
 	FetchOtp(string, time.Time) (string, error)
 	ForgotPassword(string, string) error
 	DeleteUnverifiedUsers()
+	DeletePendingUsers() 
 
 	//profile
 	UpdateUserProfilePhoto(string, string) error
