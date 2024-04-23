@@ -99,7 +99,7 @@ func TemperveryTokenForUserAuthenticaiton(securityKey string, email string) (str
 func GenerateAcessToken(securityKey string, id string) (string, error) {
 	key := []byte(securityKey)
 	claims := jwt.MapClaims{
-		"exp": time.Now().Unix() + 300,
+		"exp": time.Now().Unix() + 36000000,
 		"id":  id,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -110,9 +110,10 @@ func GenerateAcessToken(securityKey string, id string) (string, error) {
 	return tokenString, err
 }
 
-func GenerateRefreshToken(securityKey string) (string, error) {
+func GenerateRefreshToken(securityKey, userID string) (string, error) {
 	key := []byte(securityKey)
 	clamis := jwt.MapClaims{
+		"id":  userID,
 		"exp": time.Now().Unix() + 36000000,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, clamis)
@@ -131,12 +132,16 @@ func VerifyAcessToken(token string, secretkey string) (string, error) {
 		return key, nil
 	})
 
-	if len(parsedToken.Header) == 0 {
-		return "", errors.New("token tamberd include header")
+	if parsedToken==nil{
+		return "", errors.New("invalid access token")
 	}
 
-	if parsedToken == nil {
+	if err != nil {
 		return "", err
+	}
+
+	if len(parsedToken.Header) == 0 {
+		return "", errors.New("token tamberd include header")
 	}
 
 	claims := parsedToken.Claims.(jwt.MapClaims)
@@ -159,6 +164,34 @@ func VerifyRefreshToken(token string, securityKey string) error {
 	}
 
 	return nil
+}
+
+func GettingIDClimeFromToken(token, secret string) (string, error) {
+	key := []byte(secret)
+	parsedToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+
+	if parsedToken==nil{
+		return "", errors.New("invalid access token")
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	if len(parsedToken.Header) == 0 {
+		return "", errors.New("token tamberd include header")
+	}
+
+
+	claims := parsedToken.Claims.(jwt.MapClaims)
+	id, ok := claims["id"].(string)
+
+	if !ok {
+		return "", errors.New("id is not in accessToken. access denied")
+	}
+	return id, nil
 }
 
 func FetchUserIDFromToken(tokenString string, secretkey string) (string, error) {

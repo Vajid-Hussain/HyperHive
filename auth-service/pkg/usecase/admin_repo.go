@@ -28,7 +28,7 @@ func (d *AdminUseCase) AdminLogin(email, password string) (token string, err err
 		return "", err
 	}
 
-	token, err = utils_auth_server.GenerateRefreshToken(d.token.AdminSecurityKey)
+	token, err = utils_auth_server.GenerateRefreshToken(d.token.AdminSecurityKey, "")
 	if err != nil {
 		return "", err
 	}

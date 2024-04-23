@@ -152,7 +152,7 @@ func (d *UserUseCase) ConfirmSignup(token string) (*responsemodel_auth_server.Au
 		return nil, err
 	}
 
-	verifyRes.RefreshToken, err = utils_auth_server.GenerateRefreshToken(d.tokenSecret.UserSecurityKey)
+	verifyRes.RefreshToken, err = utils_auth_server.GenerateRefreshToken(d.tokenSecret.UserSecurityKey, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_ser
 		return nil, err
 	}
 
-	loginRes.RefreshToken, err = utils_auth_server.GenerateRefreshToken(d.tokenSecret.UserSecurityKey)
+	loginRes.RefreshToken, err = utils_auth_server.GenerateRefreshToken(d.tokenSecret.UserSecurityKey, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -271,17 +271,17 @@ func (d *UserUseCase) UserLogin(email, password string) (*responsemodel_auth_ser
 }
 
 // -----------User auth middlewire
-func (d *UserUseCase) VerifyUserToken(accessToken, refreshToken string) (string, error) {
+func (d *UserUseCase) VerifyUserToken(accessToken string) (string, error) {
 
 	id, err := utils_auth_server.VerifyAcessToken(accessToken, d.tokenSecret.UserSecurityKey)
 	if err != nil {
 		return "", err
 	}
 
-	err = utils_auth_server.VerifyRefreshToken(refreshToken, d.tokenSecret.UserSecurityKey)
-	if err != nil {
-		return "", err
-	}
+	// err = utils_auth_server.VerifyRefreshToken(refreshToken, d.tokenSecret.UserSecurityKey)
+	// if err != nil {
+	// 	return "", err
+	// }
 	return id, nil
 }
 
@@ -394,4 +394,22 @@ func (d *UserUseCase) SerchUsers(userName string, pagination requestmodel_auth_s
 		return nil, err
 	}
 	return d.userRepo.SerchUsers(userName, pagination)
+}
+
+func (d *UserUseCase) SeperateUserIDFromAccessToken(token string) (string, error) {
+	return utils_auth_server.GettingIDClimeFromToken(token, d.tokenSecret.UserSecurityKey)
+}
+
+func (d *UserUseCase) CreateAcceesTokenByValidatingRefreshToken(refreshToken string) (string, error) {
+	err := utils_auth_server.VerifyRefreshToken(refreshToken, d.tokenSecret.UserSecurityKey)
+	if err != nil {
+		return "", err
+	}
+
+	userID, err := utils_auth_server.GettingIDClimeFromToken(refreshToken, d.tokenSecret.UserSecurityKey)
+	if err != nil {
+		return "", err
+	}
+
+	return utils_auth_server.GenerateAcessToken(d.tokenSecret.UserSecurityKey, userID)
 }

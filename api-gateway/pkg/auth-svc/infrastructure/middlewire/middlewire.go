@@ -21,7 +21,7 @@ func NewAuthMiddlewire(clind pb.AuthServiceClient) *Middlewire {
 func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		accessToken := c.Request().Header.Get("AccessToken")
-		refreshToken := c.Request().Header.Get("RefreshToken")
+		// refreshToken := c.Request().Header.Get("RefreshToken")
 		// fmt.Println("---------", accessToken, refreshToken)
 		fmt.Println("user middlwire called")
 
@@ -31,7 +31,7 @@ func (m *Middlewire) UserAuthMiddlewire(next echo.HandlerFunc) echo.HandlerFunc 
 
 		result, err := m.Clind.ValidateUserToken(context.Background(), &pb.ValidateTokenRequest{
 			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
+			RefreshToken: "",
 		})
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"error": strings.TrimPrefix(err.Error(), "rpc error: code = Unknown desc =  ")})

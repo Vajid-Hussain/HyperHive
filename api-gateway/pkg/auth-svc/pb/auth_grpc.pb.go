@@ -31,6 +31,8 @@ type AuthServiceClient interface {
 	ReSendVerificationEmail(ctx context.Context, in *ReSendVerificationEmailRequest, opts ...grpc.CallOption) (*ReSendVerificationEmailResponse, error)
 	SendOtp(ctx context.Context, in *SendOtpRequest, opts ...grpc.CallOption) (*SendOtpResponse, error)
 	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SeperateUserIDFromAccessToken(ctx context.Context, in *SeperateUserIDFromAccessTokenRequest, opts ...grpc.CallOption) (*SeperateUserIDFromAccessTokenResponse, error)
+	CreateAcceesTokenByValidatingRefreshToken(ctx context.Context, in *CreateAcceesTokenByValidatingRefreshTokenRequest, opts ...grpc.CallOption) (*CreateAcceesTokenByValidatingRefreshTokenResponse, error)
 	// User Profile
 	UpdateProfilePhoto(ctx context.Context, in *UpdateprofilePhotoRequest, opts ...grpc.CallOption) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(ctx context.Context, in *UpdateCoverPhotoRequest, opts ...grpc.CallOption) (*UpdateCoverPhotoResponse, error)
@@ -121,6 +123,24 @@ func (c *authServiceClient) SendOtp(ctx context.Context, in *SendOtpRequest, opt
 func (c *authServiceClient) ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/auth.AuthService/ForgotPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) SeperateUserIDFromAccessToken(ctx context.Context, in *SeperateUserIDFromAccessTokenRequest, opts ...grpc.CallOption) (*SeperateUserIDFromAccessTokenResponse, error) {
+	out := new(SeperateUserIDFromAccessTokenResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/SeperateUserIDFromAccessToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) CreateAcceesTokenByValidatingRefreshToken(ctx context.Context, in *CreateAcceesTokenByValidatingRefreshTokenRequest, opts ...grpc.CallOption) (*CreateAcceesTokenByValidatingRefreshTokenResponse, error) {
+	out := new(CreateAcceesTokenByValidatingRefreshTokenResponse)
+	err := c.cc.Invoke(ctx, "/auth.AuthService/CreateAcceesTokenByValidatingRefreshToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -247,6 +267,8 @@ type AuthServiceServer interface {
 	ReSendVerificationEmail(context.Context, *ReSendVerificationEmailRequest) (*ReSendVerificationEmailResponse, error)
 	SendOtp(context.Context, *SendOtpRequest) (*SendOtpResponse, error)
 	ForgotPassword(context.Context, *ForgotPasswordRequest) (*emptypb.Empty, error)
+	SeperateUserIDFromAccessToken(context.Context, *SeperateUserIDFromAccessTokenRequest) (*SeperateUserIDFromAccessTokenResponse, error)
+	CreateAcceesTokenByValidatingRefreshToken(context.Context, *CreateAcceesTokenByValidatingRefreshTokenRequest) (*CreateAcceesTokenByValidatingRefreshTokenResponse, error)
 	// User Profile
 	UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error)
 	UpdateCoverPhoto(context.Context, *UpdateCoverPhotoRequest) (*UpdateCoverPhotoResponse, error)
@@ -291,6 +313,12 @@ func (UnimplementedAuthServiceServer) SendOtp(context.Context, *SendOtpRequest) 
 }
 func (UnimplementedAuthServiceServer) ForgotPassword(context.Context, *ForgotPasswordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForgotPassword not implemented")
+}
+func (UnimplementedAuthServiceServer) SeperateUserIDFromAccessToken(context.Context, *SeperateUserIDFromAccessTokenRequest) (*SeperateUserIDFromAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SeperateUserIDFromAccessToken not implemented")
+}
+func (UnimplementedAuthServiceServer) CreateAcceesTokenByValidatingRefreshToken(context.Context, *CreateAcceesTokenByValidatingRefreshTokenRequest) (*CreateAcceesTokenByValidatingRefreshTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAcceesTokenByValidatingRefreshToken not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateProfilePhoto(context.Context, *UpdateprofilePhotoRequest) (*UpdateProfilePhotoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfilePhoto not implemented")
@@ -481,6 +509,42 @@ func _AuthService_ForgotPassword_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).ForgotPassword(ctx, req.(*ForgotPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_SeperateUserIDFromAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SeperateUserIDFromAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SeperateUserIDFromAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/SeperateUserIDFromAccessToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SeperateUserIDFromAccessToken(ctx, req.(*SeperateUserIDFromAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_CreateAcceesTokenByValidatingRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAcceesTokenByValidatingRefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CreateAcceesTokenByValidatingRefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthService/CreateAcceesTokenByValidatingRefreshToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CreateAcceesTokenByValidatingRefreshToken(ctx, req.(*CreateAcceesTokenByValidatingRefreshTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -739,6 +803,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ForgotPassword",
 			Handler:    _AuthService_ForgotPassword_Handler,
+		},
+		{
+			MethodName: "SeperateUserIDFromAccessToken",
+			Handler:    _AuthService_SeperateUserIDFromAccessToken_Handler,
+		},
+		{
+			MethodName: "CreateAcceesTokenByValidatingRefreshToken",
+			Handler:    _AuthService_CreateAcceesTokenByValidatingRefreshToken_Handler,
 		},
 		{
 			MethodName: "UpdateProfilePhoto",

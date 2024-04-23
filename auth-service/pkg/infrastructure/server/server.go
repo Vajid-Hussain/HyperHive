@@ -239,8 +239,8 @@ func (u *AuthServer) UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest
 func (u *AuthServer) ValidateUserToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
 
 	accessToken := req.AccessToken
-	refreshToken := req.RefreshToken
-	id, err := u.userUseCase.VerifyUserToken(accessToken, refreshToken)
+	// refreshToken := req.RefreshToken
+	id, err := u.userUseCase.VerifyUserToken(accessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -267,4 +267,14 @@ func (u *AuthServer) SerchUsers(ctx context.Context, req *pb.SerchUsersRequest) 
 	}
 
 	return &pb.SerchUsersResponse{Users: finalResult}, nil
+}
+
+func (u *AuthServer) SeperateUserIDFromAccessToken(ctx context.Context, req *pb.SeperateUserIDFromAccessTokenRequest) (*pb.SeperateUserIDFromAccessTokenResponse, error) {
+	userID, err := u.userUseCase.SeperateUserIDFromAccessToken(req.AccessToken)
+	return &pb.SeperateUserIDFromAccessTokenResponse{UserID: userID}, err
+}
+
+func (u *AuthServer) CreateAcceesTokenByValidatingRefreshToken(ctx context.Context, req *pb.CreateAcceesTokenByValidatingRefreshTokenRequest) (*pb.CreateAcceesTokenByValidatingRefreshTokenResponse, error) {
+	accesstoken, err:= u.userUseCase.CreateAcceesTokenByValidatingRefreshToken(req.RefreshToken)
+	return &pb.CreateAcceesTokenByValidatingRefreshTokenResponse{AccessToken: accesstoken}, err
 }

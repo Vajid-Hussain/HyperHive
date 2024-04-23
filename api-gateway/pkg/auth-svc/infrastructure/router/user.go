@@ -15,6 +15,12 @@ func UserRoutes(engin *echo.Group, userHandler *handler_auth_svc.AuthHanlder, mi
 	engin.POST("/sendotp", userHandler.SendOtp)
 	engin.POST("/forgotpassword", userHandler.ForgotPassword)
 
+	token := engin.Group("token")
+	{
+		token.GET("", userHandler.SeperateUserIDFromAccessToken)
+		token.POST("/accesstoken", userHandler.CreateAcceesTokenByValidatingRefreshToken)
+	}
+
 	engin.Use(middlewire.UserAuthMiddlewire)
 	{
 		account := engin.Group("/account")

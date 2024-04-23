@@ -427,3 +427,31 @@ func (c *AuthHanlder) SerchUsers(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+func (c *AuthHanlder) CreateAcceesTokenByValidatingRefreshToken(ctx echo.Context) error {
+	var req requestmodel_auth_svc.RefreshToken
+	ctx.Bind(&req)
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	result, err := c.clind.CreateAcceesTokenByValidatingRefreshToken(context, &pb.CreateAcceesTokenByValidatingRefreshTokenRequest{RefreshToken: req.RefreshToken})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}
+
+func (c *AuthHanlder) SeperateUserIDFromAccessToken(ctx echo.Context) error {
+	// var req requestmodel_auth_svc.AccessToken
+	// ctx.Bind(&req)
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	result, err := c.clind.SeperateUserIDFromAccessToken(context, &pb.SeperateUserIDFromAccessTokenRequest{AccessToken: ctx.Request().Header.Get("AccessToken")})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
+}

@@ -47,3 +47,11 @@ type DeleteUserProfilePhotoType struct {
 // 	Limit  string `json:"Limit"`
 // 	OffSet string `json:"Offset"`
 // }
+
+type RefreshToken struct{
+	RefreshToken string `json:"RefreshToken"`
+}
+
+// type AccessToken struct{
+// 	AccessToken string `json:"AccessToken"`
+// }

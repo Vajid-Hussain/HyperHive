@@ -13,6 +13,8 @@ service AuthService{
     rpc ReSendVerificationEmail (ReSendVerificationEmailRequest) returns (ReSendVerificationEmailResponse) {};
     rpc SendOtp (SendOtpRequest) returns (SendOtpResponse) {};
     rpc ForgotPassword (ForgotPasswordRequest) returns (google.protobuf.Empty) {};
+    rpc SeperateUserIDFromAccessToken (SeperateUserIDFromAccessTokenRequest) returns (SeperateUserIDFromAccessTokenResponse);
+    rpc CreateAcceesTokenByValidatingRefreshToken (CreateAcceesTokenByValidatingRefreshTokenRequest) returns (CreateAcceesTokenByValidatingRefreshTokenResponse);
 
     
     //User Profile 
@@ -207,4 +209,20 @@ message SerchUsersRequest {
 
 message SerchUsersResponse {
     repeated UserProfileResponse users =1;
+}
+
+message SeperateUserIDFromAccessTokenRequest {
+    string AccessToken =1;
+}
+
+message SeperateUserIDFromAccessTokenResponse {
+    string UserID =1;
+}
+
+message CreateAcceesTokenByValidatingRefreshTokenRequest {
+    string RefreshToken =1;
+}
+
+message  CreateAcceesTokenByValidatingRefreshTokenResponse {
+    string AccessToken =1;
 }
