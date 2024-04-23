@@ -10,6 +10,7 @@ var (
 	ErrForumPostUnexpectedContent = errors.New("unexpected forum post content type")
 	ErrServerMessageType          = errors.New("message type must be file or test")
 	ErrNoPostIDINQueryParams      = errors.New("no postid in qeury param")
+	ErrUserMessageSupportType =errors.New("user message only support file and text")
 )
 
 var (

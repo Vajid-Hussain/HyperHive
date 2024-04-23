@@ -43,13 +43,15 @@ type UserServerList struct {
 }
 
 type ServerMessage struct {
-	ID        string    `bson:"_id,omitempty"`
-	UserID    int       `bson:"UserID"`
-	ChannelID int       `bson:"ChannelID"`
-	ServerID  int       `bson:"ServerID"`
-	Content   string    `bson:"Content"`
-	TimeStamp time.Time `bson:"TimeStamp"`
-	Type      string    `bson:"Type"`
+	ID          string `bson:"_id,omitempty"`
+	UserProfile string
+	UserName    string
+	UserID      int       `bson:"UserID"`
+	ChannelID   int       `bson:"ChannelID"`
+	ServerID    int       `bson:"ServerID"`
+	Content     string    `bson:"Content"`
+	TimeStamp   time.Time `bson:"TimeStamp"`
+	Type        string    `bson:"Type"`
 }
 
 type ServerMembers struct {

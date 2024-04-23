@@ -124,12 +124,15 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 		return
 	}
 
-	if message.Type == "image" {
+	if message.Type == "file" {
 		message.Content, err = s.uploadMediaToS3(message.Content)
 		if err != nil {
 			conn.Emit("error", err.Error())
 			return
 		}
+	} else if message.Type != "text" {
+		conn.Emit("error", resonsemodel_server_svc.ErrUserMessageSupportType)
+		return
 	}
 
 	fmt.Println("==-", message)
@@ -287,7 +290,7 @@ func (s *serverServiceUseCase) addServerMessageIntoKafa(data interface{}) error 
 	case requestmodel_server_svc.ForumPost:
 		kafkaKey = "forum post"
 	}
-	
+
 	message := s.marshelStruct(data)
 
 	fmt.Println("from kafka server message ", data)

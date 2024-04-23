@@ -121,6 +121,8 @@ message ChannelMessage {
     string Content = 5;
     string TimeStamp = 6;
     string Type = 7;
+    string UserName =8;
+    string UserProfile =9;
 }
 message GetChannelMessageResponse {
     repeated ChannelMessage messages =1;
@@ -198,6 +200,7 @@ message GetForumPostModel {
     string time_stamp = 9;
     string type = 10;
     string command_content = 11;
+    string PostID =12;
 }
 
 message ForumCommandModel {

@@ -172,7 +172,17 @@ func (r *ServerUsecase) GetChannelMessages(channelID string, pagination requestm
 	if err != nil {
 		return nil, err
 	}
-	return r.repository.GetChannelMessages(channelID, pagination)
+	message, err := r.repository.GetChannelMessages(channelID, pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, val := range message {
+		userProfile, _ := r.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(val.UserID)})
+		message[i].UserProfile = userProfile.ProfilePhoto
+		message[i].UserName = userProfile.UserName
+	}
+	return message, nil
 }
 
 func (r *ServerUsecase) GetServerMembers(serverID string, pagination requestmodel_server_service.Pagination) ([]responsemodel_server_service.ServerMembers, error) {

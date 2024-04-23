@@ -132,6 +132,8 @@ func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannel
 	var finalResult []*pb.ChannelMessage
 	for _, val := range result {
 		var msg pb.ChannelMessage
+		msg.UserProfile= val.UserProfile
+		msg.UserName= val.UserName
 		msg.ChannelID = strconv.Itoa(val.ChannelID)
 		msg.Content = val.Content
 		msg.ID = val.ID
@@ -218,6 +220,7 @@ func (u *ServerServer) GetForumPost(ctx context.Context, req *pb.GetForumPostReq
 	var post []*pb.GetForumPostModel
 	for _, value := range result {
 		post = append(post, &pb.GetForumPostModel{
+			PostID:          value.ID,
 			UserProfile:     value.UserProfile,
 			UserName:        value.UserName,
 			UserId:          int32(value.UserID),
@@ -241,6 +244,7 @@ func (u *ServerServer) GetSingleForumPost(ctx context.Context, req *pb.GetSingle
 	}
 	return &pb.GetSingleForumPostResponse{
 		Post: &pb.GetForumPostModel{
+			PostID:          value.ID,
 			UserProfile:     value.UserProfile,
 			UserName:        value.UserName,
 			UserId:          int32(value.UserID),
