@@ -34,3 +34,7 @@ type IAdminUseCase interface {
 	UnBlockUserAccount(string) (*responsemodel_auth_server.AbstractUserDetails, error)
 	BlockUserAccount(string) (*responsemodel_auth_server.AbstractUserDetails, error)
 }
+
+type IAuthCache interface {
+	UpdateUserProfile(string) error
+}

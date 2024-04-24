@@ -2,6 +2,7 @@ package server_server_service
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
@@ -109,6 +110,7 @@ func (u *ServerServer) GetUserServer(ctx context.Context, req *pb.GetUserServerR
 }
 
 func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) (*pb.GetServerResponse, error) {
+	fmt.Println("=====called ")
 	result, err := u.useCase.GetServer(req.ServerID)
 	if err != nil {
 		return nil, err
@@ -132,8 +134,8 @@ func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannel
 	var finalResult []*pb.ChannelMessage
 	for _, val := range result {
 		var msg pb.ChannelMessage
-		msg.UserProfile= val.UserProfile
-		msg.UserName= val.UserName
+		msg.UserProfile = val.UserProfile
+		msg.UserName = val.UserName
 		msg.ChannelID = strconv.Itoa(val.ChannelID)
 		msg.Content = val.Content
 		msg.ID = val.ID

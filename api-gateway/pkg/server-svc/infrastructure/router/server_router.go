@@ -48,4 +48,6 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 			}
 		}
 	}
+
+	engin.GET("/redis", handler.CheckReddis)
 }

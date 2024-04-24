@@ -8,8 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	_ "time/tzdata"
+
 	"github.com/IBM/sarama"
-	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
+	di_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/di"
 	auth "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/pb"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	requestmodel_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/infrastructure/model/requestModel"
@@ -19,7 +21,6 @@ import (
 	helper_api_gateway "github.com/Vajid-Hussain/HiperHive/api-gateway/utils"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/redis/go-redis/v9"
-	_ "time/tzdata"
 )
 
 type serverServiceUseCase struct {
@@ -28,6 +29,7 @@ type serverServiceUseCase struct {
 	authClind auth.AuthServiceClient
 	config    *config.Config
 	redisDB   *redis.Client
+	authCache *helper_api_gateway.RedisCaching
 }
 
 const friendChatNameSpace = "/friend/"
@@ -40,6 +42,7 @@ func NewServerServiceUseCase(clind server.ServerClient, authClind auth.AuthServi
 		authClind: authClind,
 		config:    config,
 		redisDB:   redisDB,
+		authCache: di_auth_svc.AuthCache(),
 	}
 }
 
@@ -76,10 +79,11 @@ func (s *serverServiceUseCase) BroadcastMessage(msg []byte, socker *socketio.Ser
 		return
 	}
 
-	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
+	// context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// defer cancel()
 
-	userProfile, err := s.authClind.UserProfile(context, &auth.UserProfileRequest{UserID: strconv.Itoa(message.UserID)})
+	// userProfile, err := s.authClind.UserProfile(context, &auth.UserProfileRequest{UserID: strconv.Itoa(message.UserID)})
+	userProfile, err := s.authCache.GetUserProfile(strconv.Itoa(message.UserID))
 	if err != nil {
 		conn.Emit("error", err.Error())
 		return
@@ -185,7 +189,8 @@ func (s *serverServiceUseCase) broadCastForumPost(msg []byte, soket socketio.Ser
 		return
 	}
 
-	userProfile, err := s.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(post.UserID)})
+	// userProfile, err := s.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(post.UserID)})
+	userProfile, err := s.authCache.GetUserProfile(strconv.Itoa(post.UserID))
 	if err != nil {
 		conn.Emit("error", err.Error())
 		return
@@ -231,7 +236,8 @@ func (s *serverServiceUseCase) broadcastForumCommands(data []byte, soket socketi
 		return
 	}
 
-	userProfile, err := s.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(command.UserID)})
+	// userProfile, err := s.authClind.UserProfile(context.Background(), &pb.UserProfileRequest{UserID: strconv.Itoa(command.UserID)})
+	userProfile, err := s.authCache.GetUserProfile(strconv.Itoa(command.UserID))
 	if err != nil {
 		conn.Emit("error", err.Error())
 		return
@@ -327,30 +333,6 @@ func (s *serverServiceUseCase) addFriendMessageIntoKafka(message requestmodel_se
 	return err
 }
 
-// func (s *serverServiceUseCase) addForunDataIntoKafka(message interface{}) error {
-// 	fmt.Println("from kafka forum ", message)
-
-// 	configs := sarama.NewConfig()
-// 	configs.Producer.Return.Successes = true
-// 	configs.Producer.Retry.Max = 5
-
-// 	producer, err := sarama.NewSyncProducer([]string{s.config.KafkaPort}, configs)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	result := s.marshelStruct(message)
-// 	fmt.Println(string(result))
-
-// 	msg := &sarama.ProducerMessage{Topic: s.config.KafkaServerTopic, Key: sarama.StringEncoder("forum " + message.Type), Value: sarama.StringEncoder(result)}
-// 	_, _, err = producer.SendMessage(msg)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	// log.Printf("[producer] partition id: %d; offset:%d, value: %v\n", partition, offset, msg)
-// 	return nil
-// }
-
 func (s *serverServiceUseCase) marshelStruct(msg interface{}) []byte {
 	message, _ := json.Marshal(msg)
 	return message
@@ -369,4 +351,13 @@ func (s *serverServiceUseCase) uploadMediaToS3(media string) (string, error) {
 	}
 
 	return url, nil
+}
+
+func (s *serverServiceUseCase) SetDataInReddis() {
+	// result := s.redisDB.Set(context.TODO(), "bismilla", "muhammad", time.Hour)
+	// fmt.Println("===", result.Val())
+
+	value := s.redisDB.Get(context.TODO(), "bismilla")
+	fmt.Println("0000", value.Val())
+
 }

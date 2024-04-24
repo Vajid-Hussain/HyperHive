@@ -475,3 +475,8 @@ func (c *ServerService) GetPostCommand(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
+
+func (c *ServerService) CheckReddis(ctx echo.Context) error{
+	c.serverUseCase.SetDataInReddis()
+	return ctx.String(200, "all perfect")
+}

@@ -29,14 +29,21 @@ type S3Bucket struct {
 type Mail struct {
 	SecretKey string `mapstructure:"SECRETKEY"`
 	From      string `mapstructure:"FROM"`
-	URL string `mapstructure:"URL"`
+	URL       string `mapstructure:"URL"`
+}
+
+type Redis struct {
+	RedisPort     string `mapstructure:"REDIS_PORT"`
+	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
+	RedisURL      string `mapstructure:"REDIS_URL"`
 }
 
 type Config struct {
-	DB    DataBase
-	S3    S3Bucket
-	Token Token
-	Mail  Mail
+	DB      DataBase
+	S3      S3Bucket
+	Token   Token
+	Mail    Mail
+	RedisDB Redis
 }
 
 func InitServer() (*Config, error) {
@@ -55,6 +62,7 @@ func InitServer() (*Config, error) {
 	viper.Unmarshal(&config.S3)
 	viper.Unmarshal(&config.Token)
 	viper.Unmarshal(&config.Mail)
+	viper.Unmarshal(&config.RedisDB)
 
 	return &config, nil
 }

@@ -23,9 +23,10 @@ type UserUseCase struct {
 	mailConstrains configl_auth_server.Mail
 	tokenSecret    configl_auth_server.Token
 	Location       *time.Location
+	redisCache     interface_usecase_auth_server.IAuthCache
 }
 
-func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_auth_server.S3Bucket, mailConstrains configl_auth_server.Mail, tokenSecret configl_auth_server.Token) interface_usecase_auth_server.IUserUseCase {
+func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_auth_server.S3Bucket, mailConstrains configl_auth_server.Mail, tokenSecret configl_auth_server.Token, redisCache interface_usecase_auth_server.IAuthCache) interface_usecase_auth_server.IUserUseCase {
 	locationInd, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		fmt.Println("error at exct place", err)
@@ -34,7 +35,9 @@ func NewUserUseCase(repo interface_repo_auth_server.IUserRepository, s3 configl_
 		s3:             s3,
 		mailConstrains: mailConstrains,
 		tokenSecret:    tokenSecret,
-		Location:       locationInd}
+		Location:       locationInd,
+		redisCache:     redisCache,
+	}
 }
 
 func (d *UserUseCase) Signup(userDetails requestmodel_auth_server.UserSignup) (*responsemodel_auth_server.UserSignup, error) {
@@ -304,6 +307,11 @@ func (d *UserUseCase) UpdateProfilePhoto(userID string, image []byte) (url strin
 		return "", err
 	}
 
+	err = d.redisCache.UpdateUserProfile(userID)
+	if err != nil {
+		return "",err
+	}
+
 	return url, nil
 }
 
@@ -322,6 +330,11 @@ func (d *UserUseCase) UpdateCoverPhoto(userID string, image []byte) (url string,
 	err = d.userRepo.UpdateCoverPhoto(userID, url)
 	if err != nil {
 		return "", err
+	}
+
+	err = d.redisCache.UpdateUserProfile(userID)
+	if err != nil {
+		return "",err
 	}
 
 	return url, nil
@@ -358,6 +371,11 @@ func (d *UserUseCase) UpdateStatusOfUser(status requestmodel_auth_server.UserPro
 		return err
 	}
 
+	err = d.redisCache.UpdateUserProfile(status.UserID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -365,6 +383,11 @@ func (d *UserUseCase) UpdateDescriptionOfUser(userID, description string) error 
 	err := d.userRepo.UpdateOrCreateUserDescription(userID, description)
 	if err != nil {
 		return nil
+	}
+
+	err = d.redisCache.UpdateUserProfile(userID)
+	if err != nil {
+		return err
 	}
 
 	return nil

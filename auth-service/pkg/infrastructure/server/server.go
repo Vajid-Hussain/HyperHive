@@ -176,19 +176,6 @@ func (u *AuthServer) DeleteAccount(ctx context.Context, req *pb.DeleteAccountReq
 	return new(emptypb.Empty), nil
 }
 
-//Admin
-
-func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb.AdminLoginResponse, error) {
-	token, err := u.adminUseCase.AdminLogin(req.Email, req.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.AdminLoginResponse{
-		AdminToken: token,
-	}, nil
-}
-
 func (u *AuthServer) UserProfile(ctx context.Context, req *pb.UserProfileRequest) (*pb.UserProfileResponse, error) {
 	result, err := u.userUseCase.GetUserProfile(req.UserID)
 	if err != nil {
@@ -205,6 +192,19 @@ func (u *AuthServer) UserProfile(ctx context.Context, req *pb.UserProfileRequest
 		Description:  result.Description,
 		Status:       result.Status,
 		UserSince:    result.UserSince.String(),
+	}, nil
+}
+
+//Admin
+
+func (u *AuthServer) AdminLogin(ctx context.Context, req *pb.AdminLoginRequest) (*pb.AdminLoginResponse, error) {
+	token, err := u.adminUseCase.AdminLogin(req.Email, req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AdminLoginResponse{
+		AdminToken: token,
 	}, nil
 }
 
@@ -275,6 +275,6 @@ func (u *AuthServer) SeperateUserIDFromAccessToken(ctx context.Context, req *pb.
 }
 
 func (u *AuthServer) CreateAcceesTokenByValidatingRefreshToken(ctx context.Context, req *pb.CreateAcceesTokenByValidatingRefreshTokenRequest) (*pb.CreateAcceesTokenByValidatingRefreshTokenResponse, error) {
-	accesstoken, err:= u.userUseCase.CreateAcceesTokenByValidatingRefreshToken(req.RefreshToken)
+	accesstoken, err := u.userUseCase.CreateAcceesTokenByValidatingRefreshToken(req.RefreshToken)
 	return &pb.CreateAcceesTokenByValidatingRefreshTokenResponse{AccessToken: accesstoken}, err
 }

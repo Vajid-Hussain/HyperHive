@@ -7,4 +7,6 @@ type IserverServiceUseCase interface {
 	BroadcastMessage( []byte, *socketio.Server, socketio.Conn)
 	SendFriendChat( []byte, *socketio.Server, socketio.Conn)
 	BroadcastForum( []byte,  socketio.Server,  socketio.Conn)
+
+	SetDataInReddis() 
 }

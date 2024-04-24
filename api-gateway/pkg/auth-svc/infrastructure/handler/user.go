@@ -14,11 +14,15 @@ import (
 )
 
 type AuthHanlder struct {
-	clind pb.AuthServiceClient
+	clind      pb.AuthServiceClient
+	authCacing *helper_api_gateway.RedisCaching
 }
 
-func NewAuthHandler(clind pb.AuthServiceClient) *AuthHanlder {
-	return &AuthHanlder{clind: clind}
+func NewAuthHandler(clind pb.AuthServiceClient, authCacing *helper_api_gateway.RedisCaching) *AuthHanlder {
+	return &AuthHanlder{
+		clind:      clind,
+		authCacing: authCacing,
+	}
 }
 
 // @Summary User Signup
@@ -384,12 +388,14 @@ func (c *AuthHanlder) GetUserProfile(ctx echo.Context) error {
 		userID = ctx.Param("userID")
 	}
 
-	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	// context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
 
-	result, err := c.clind.UserProfile(context, &pb.UserProfileRequest{
-		UserID: userID,
-	})
+	// result, err := c.clind.UserProfile(context, &pb.UserProfileRequest{
+	// 	UserID: userID,
+	// })
+
+	result,err:=c.authCacing.GetUserProfile(userID)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
