@@ -218,6 +218,9 @@ func FetchUserIDFromToken(tokenString string, secretkey string) (string, error) 
 }
 
 func FetchUserIDFromTokenNoWorryOnExpire(tokenString string, secretkey string) (string, error) {
+	if tokenString==""{
+		return "", errors.New("attach token string with request")
+	}
 
 	secret := []byte(secretkey)
 

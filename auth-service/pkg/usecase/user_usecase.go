@@ -355,6 +355,12 @@ func (d *UserUseCase) DeletePhotoInProfile(userID, types string) error {
 	} else {
 		return responsemodel_auth_server.ErrDeletePhotoProfile
 	}
+
+	err := d.redisCache.UpdateUserProfile(userID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

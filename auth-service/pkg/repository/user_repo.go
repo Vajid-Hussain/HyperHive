@@ -275,7 +275,7 @@ func (d *UserRepository) UpdateOrCreateUserStatus(status requestmodel_auth_serve
 }
 
 func (d *UserRepository) DeletePendingUsers() {
-	query := "DELETE FROM users WHERE AGE(NOW() - created_at) > INTERVAL '1 days' AND status='pending'"
+	query := "DELETE FROM users WHERE NOW() - created_at > INTERVAL '1 days' AND status='pending'"
 	result := d.DB.Exec(query)
 	fmt.Println("errr", result.Error)
 }
@@ -308,6 +308,10 @@ func (d *UserRepository) GetUserProfile(userID string) (userProfile *responsemod
 
 	if result.RowsAffected == 0 {
 		return nil, responsemodel_auth_server.ErrUserBlockedOrNoUser
+	}
+
+	if userProfile.StatusExpireTime.Before(time.Now()) {
+		userProfile.Status = ""
 	}
 	return
 }

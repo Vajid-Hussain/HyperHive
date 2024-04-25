@@ -27,7 +27,7 @@ func NewAuthHandler(clind pb.AuthServiceClient, authCacing *helper_api_gateway.R
 
 // @Summary User Signup
 // @Description Create a new user account
-// @Tags User
+// @Tags Authentication
 // @Accept json
 // @Produce json
 // @Param user body requestmodel_auth_svc.UserSignup true "User details for signup"
@@ -71,10 +71,10 @@ func (c AuthHanlder) Signup(ctx echo.Context) error {
 
 // @Summary Resend verification email
 // @Description Resend verification email to the user
-// @Tags User
+// @Tags Authentication
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
+// @Security UserConfirmToken
 // @Param ConfirmToken header string true "Confirmation token"
 // @Success 201 {object} response_auth_svc.Response "Email send successful"
 // @Failure 400 {object} response_auth_svc.Response "Bad request"
@@ -92,6 +92,16 @@ func (c *AuthHanlder) ReSendVerificationEmail(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, response_auth_svc.EmailSendSuccessfully, token, nil))
 }
 
+// Handler function for /sendotp endpoint.
+// @Summary Send OTP
+// @Description Sends OTP to the user's email.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param body body requestmodel_auth_svc.EmailReq true "Request body"
+// @Success 201 {object} response_auth_svc.Response "Email send successful"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /sendotp [post]
 func (c *AuthHanlder) SendOtp(ctx echo.Context) error {
 	var req requestmodel_auth_svc.EmailReq
 
@@ -118,6 +128,17 @@ func (c *AuthHanlder) SendOtp(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, response_auth_svc.EmailSendSuccessfully, token, nil))
 }
 
+// Handler function for /forgotpassword endpoint.
+// @Summary Forgot Password
+// @Description Sends a password reset email to the user's email.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Security UserConfirmToken
+// @Param body body requestmodel_auth_svc.ForgotPassword true "Request body"
+// @Success 201 {object} response_auth_svc.Response "Password reset email sent successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /forgotpassword [post]
 func (c *AuthHanlder) ForgotPassword(ctx echo.Context) error {
 	var req requestmodel_auth_svc.ForgotPassword
 	err := ctx.Bind(&req)
@@ -168,6 +189,16 @@ func (c *AuthHanlder) MailVerificationCallback(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "You are verified, now you can confirm your signup", "", nil))
 }
 
+// Handler function for /confirm signup endpoint.
+// @Summary Confirm Signup
+// @Description Confirm user signup with the provided token.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Security UserConfirmToken
+// @Success 200 {object} response_auth_svc.Response "Signup confirmed successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /confirm [post]
 func (c *AuthHanlder) ConfirmSignup(ctx echo.Context) error {
 	token := ctx.Request().Header.Get("ConfirmToken")
 
@@ -184,17 +215,16 @@ func (c *AuthHanlder) ConfirmSignup(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusCreated, "", result, nil))
 }
 
+// Handler function for /login endpoint.
 // @Summary User Login
-// @Description Authenticate and log in a user
-// @Tags User
+// @Description Authenticate user and generate access token.
+// @Tags Authentication
 // @Accept json
 // @Produce json
-// @Param loginRequest body LoginRequest true "User login credentials"
-// @Success 200 {object} LoginResponse "Login successful"
-// @Failure 400 {object} ErrorResponse "Bad request"
-// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Param body body requestmodel_auth_svc.UserLogin true "User login details"
+// @Success 200 {object} response_auth_svc.Response "Login successful"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
 // @Router /login [post]
-
 func (c *AuthHanlder) UserLogin(ctx echo.Context) error {
 	var loginReq requestmodel_auth_svc.UserLogin
 
@@ -219,6 +249,17 @@ func (c *AuthHanlder) UserLogin(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for /profile/profilephoto endpoint.
+// @Summary Update Profile Photo
+// @Description Update user's profile photo.
+// @Tags Profile
+// @Accept multipart/form-data
+// @Produce json
+// @Security UserAuthorization
+// @Param ProfilePhoto formData file true "User's profile photo"
+// @Success 200 {object} response_auth_svc.Response "Profile photo updated successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /profile/profilephoto [post]
 func (c *AuthHanlder) UpdateProfilePhoto(ctx echo.Context) error {
 	var validImageExtention = map[string]struct{}{}
 
@@ -261,6 +302,17 @@ func (c *AuthHanlder) UpdateProfilePhoto(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for /profile/coverphoto endpoint.
+// @Summary Update Cover Photo
+// @Description Update user's cover photo.
+// @Tags Profile
+// @Accept multipart/form-data
+// @Produce json
+// @Security UserAuthorization
+// @Param CoverPhoto formData file true "User's cover photo"
+// @Success 200 {object} response_auth_svc.Response "Cover photo updated successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /profile/coverphoto [post]
 func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
 	var validImageExtention = map[string]struct{}{}
 
@@ -305,6 +357,17 @@ func (c *AuthHanlder) UpdateCoverPhoto(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for /profile/photoprofile endpoint.
+// @Summary Delete Photo from User Profile
+// @Description Delete a photo from the user's profile.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Param body body requestmodel_auth_svc.DeleteUserProfilePhotoType true "Request body for deleting user profile photo"
+// @Success 200 {object} response_auth_svc.Response "Photo deleted successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /profile/photoprofile [delete]
 func (c *AuthHanlder) DeletePhotFromUserProfile(ctx echo.Context) error {
 	var req requestmodel_auth_svc.DeleteUserProfilePhotoType
 
@@ -323,6 +386,17 @@ func (c *AuthHanlder) DeletePhotFromUserProfile(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", response_auth_svc.DeleteProfiesPhotos, nil))
 }
 
+// Handler function for /profile/status endpoint.
+// @Summary Update Profile Status
+// @Description Update user's profile status.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Param body body requestmodel_auth_svc.UserProfileStatus true "Request body for updating user profile status"
+// @Success 200 {object} response_auth_svc.Response "Profile status updated successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /profile/status [post]
 func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 	var statusReq requestmodel_auth_svc.UserProfileStatus
 	ctx.Bind(&statusReq)
@@ -349,6 +423,17 @@ func (c *AuthHanlder) UpdateProfileStatus(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", "status succesfully updated", nil))
 }
 
+// Handler function for /profile/description endpoint.
+// @Summary Update Profile Description
+// @Description Update user's profile description.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Param body body requestmodel_auth_svc.UserProfileDescription true "Request body for updating user profile description"
+// @Success 200 {object} response_auth_svc.Response "Profile description updated successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /profile/description [post]
 func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 	var descriptionReq requestmodel_auth_svc.UserProfileDescription
 	err := ctx.Bind(&descriptionReq)
@@ -380,6 +465,16 @@ func (c *AuthHanlder) UpdateProfileDescription(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", "description succesfully updated", nil))
 }
 
+// Handler function for /profile endpoint to get user profile.
+// @Summary Get User Profile
+// @Description Retrieve user's profile information.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Success 200 {object} response_auth_svc.UserProfile "User profile information"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /profile/ [get]
 func (c *AuthHanlder) GetUserProfile(ctx echo.Context) error {
 	var userID string
 	userID = ctx.Get("userID").(string)
@@ -395,7 +490,7 @@ func (c *AuthHanlder) GetUserProfile(ctx echo.Context) error {
 	// 	UserID: userID,
 	// })
 
-	result,err:=c.authCacing.GetUserProfile(userID)
+	result, err := c.authCacing.GetUserProfile(userID)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, response_auth_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
 	}
@@ -403,6 +498,16 @@ func (c *AuthHanlder) GetUserProfile(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for deleting a user account.
+// @Summary Delete User Account
+// @Description Delete user's account permanently.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Success 200 {object} response_auth_svc.Response "User account deleted successfully"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /account [delete]
 func (c *AuthHanlder) DeleteUserAcoount(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -417,6 +522,19 @@ func (c *AuthHanlder) DeleteUserAcoount(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "Succesfully Deleted", result, nil))
 }
 
+// Handler function for searching users.
+// @Summary Search Users
+// @Description Search users based on specified criteria.
+// @Tags Profile
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Param username query string false "Username for search"
+// @Param limit query string false "Limit number of results"
+// @Param page query string false "Offset for paginated results"
+// @Success 200 {object} response_auth_svc.Response "User search response"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /users [get]
 func (c *AuthHanlder) SerchUsers(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -434,6 +552,17 @@ func (c *AuthHanlder) SerchUsers(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for creating access token by validating refresh token.
+// @Summary Create Access Token by Validating Refresh Token
+// @Description Create access token by validating refresh token.
+// @Tags Token
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Param body body requestmodel_auth_svc.RefreshToken true "Request body for validating refresh token and creating access token"
+// @Success 200 {object} response_auth_svc.Response "Token response"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /token/accesstoken [post]
 func (c *AuthHanlder) CreateAcceesTokenByValidatingRefreshToken(ctx echo.Context) error {
 	var req requestmodel_auth_svc.RefreshToken
 	ctx.Bind(&req)
@@ -448,6 +577,16 @@ func (c *AuthHanlder) CreateAcceesTokenByValidatingRefreshToken(ctx echo.Context
 	return ctx.JSON(http.StatusOK, response_auth_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for separating user ID from access token.
+// @Summary Separate User ID from Access Token
+// @Description Separate user ID from access token.
+// @Tags Token
+// @Accept json
+// @Produce json
+// @Security UserAuthorization
+// @Success 200 {object} response_auth_svc.Response "Token separation response"
+// @Failure 400 {object} response_auth_svc.Response "Bad request"
+// @Router /token [get]
 func (c *AuthHanlder) SeperateUserIDFromAccessToken(ctx echo.Context) error {
 	// var req requestmodel_auth_svc.AccessToken
 	// ctx.Bind(&req)

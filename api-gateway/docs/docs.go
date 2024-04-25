@@ -17,11 +17,45 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/account": {
+            "delete": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Delete user's account permanently.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Delete User Account",
+                "responses": {
+                    "200": {
+                        "description": "User account deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/verifyemailresend": {
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "UserConfirmToken": []
                     }
                 ],
                 "description": "Resend verification email to the user",
@@ -32,7 +66,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Authentication"
                 ],
                 "summary": "Resend verification email",
                 "parameters": [
@@ -42,6 +76,420 @@ const docTemplate = `{
                         "name": "ConfirmToken",
                         "in": "header",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Email send successful",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/confirm": {
+            "post": {
+                "security": [
+                    {
+                        "UserConfirmToken": []
+                    }
+                ],
+                "description": "Confirm user signup with the provided token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Confirm Signup",
+                "responses": {
+                    "200": {
+                        "description": "Signup confirmed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/forgotpassword": {
+            "post": {
+                "security": [
+                    {
+                        "UserConfirmToken": []
+                    }
+                ],
+                "description": "Sends a password reset email to the user's email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Forgot Password",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.ForgotPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Password reset email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Authenticate user and generate access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.UserLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve user's profile information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get User Profile",
+                "responses": {
+                    "200": {
+                        "description": "User profile information",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.UserProfile"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/coverphoto": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update user's cover photo.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update Cover Photo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "User's cover photo",
+                        "name": "CoverPhoto",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cover photo updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/description": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update user's profile description.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update Profile Description",
+                "parameters": [
+                    {
+                        "description": "Request body for updating user profile description",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.UserProfileDescription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile description updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/photoprofile": {
+            "delete": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Delete a photo from the user's profile.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Delete Photo from User Profile",
+                "parameters": [
+                    {
+                        "description": "Request body for deleting user profile photo",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.DeleteUserProfilePhotoType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Photo deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/profilephoto": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update user's profile photo.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update Profile Photo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "User's profile photo",
+                        "name": "ProfilePhoto",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile photo updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/status": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update user's profile status.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update Profile Status",
+                "parameters": [
+                    {
+                        "description": "Request body for updating user profile status",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.UserProfileStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile status updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sendotp": {
+            "post": {
+                "description": "Sends OTP to the user's email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Send OTP",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.EmailReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -70,7 +518,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Authentication"
                 ],
                 "summary": "User Signup",
                 "parameters": [
@@ -99,9 +547,222 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/token": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Separate user ID from access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Token"
+                ],
+                "summary": "Separate User ID from Access Token",
+                "responses": {
+                    "200": {
+                        "description": "Token separation response",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/token/accesstoken": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Create access token by validating refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Token"
+                ],
+                "summary": "Create Access Token by Validating Refresh Token",
+                "parameters": [
+                    {
+                        "description": "Request body for validating refresh token and creating access token",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.RefreshToken"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token response",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Search users based on specified criteria.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Search Users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username for search",
+                        "name": "username",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit number of results",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset for paginated results",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User search response",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "requestmodel_auth_svc.DeleteUserProfilePhotoType": {
+            "type": "object",
+            "required": [
+                "Type"
+            ],
+            "properties": {
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_auth_svc.EmailReq": {
+            "type": "object",
+            "required": [
+                "Email"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_auth_svc.ForgotPassword": {
+            "type": "object",
+            "properties": {
+                "ConfirmPassword": {
+                    "type": "string"
+                },
+                "Otp": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string",
+                    "minLength": 5
+                }
+            }
+        },
+        "requestmodel_auth_svc.RefreshToken": {
+            "type": "object",
+            "properties": {
+                "RefreshToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_auth_svc.UserLogin": {
+            "type": "object",
+            "required": [
+                "Email",
+                "Password"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string",
+                    "minLength": 5
+                }
+            }
+        },
+        "requestmodel_auth_svc.UserProfileDescription": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_auth_svc.UserProfileStatus": {
+            "type": "object",
+            "properties": {
+                "Duration": {
+                    "type": "number"
+                },
+                "Status": {
+                    "type": "string"
+                }
+            }
+        },
         "requestmodel_auth_svc.UserSignup": {
             "type": "object",
             "required": [
@@ -140,6 +801,35 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        },
+        "response_auth_svc.UserProfile": {
+            "type": "object",
+            "properties": {
+                "CoverPhoto": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "ProfilePhoto": {
+                    "type": "string"
+                },
+                "Status": {
+                    "type": "string"
+                },
+                "UserID": {
+                    "type": "string"
+                },
+                "UserName": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -148,14 +838,14 @@ const docTemplate = `{
             "name": "AccessToken",
             "in": "header"
         },
-        "UserAuthentication": {
+        "UserAuthorization": {
             "type": "apiKey",
             "name": "AccessToken",
             "in": "header"
         },
-        "UserRefreshtoken": {
+        "UserConfirmToken": {
             "type": "apiKey",
-            "name": "Refreshtoken",
+            "name": "ConfirmToken",
             "in": "header"
         }
     }

@@ -22,12 +22,12 @@ import (
 // @host     hyperhive.vajid.tech
 // @BasePath /
 
-// @securityDefinitions.apikey UserAuthentication
+// @securityDefinitions.apikey UserAuthorization
 // @in                         header
 // @name                       AccessToken
-// @securityDefinitions.apikey UserRefreshtoken
+// @securityDefinitions.apikey UserConfirmToken
 // @in                         header
-// @name                       Refreshtoken
+// @name                       ConfirmToken
 // @securityDefinitions.apikey AdminAutherisation
 // @in                         header
 // @name                       AccessToken

@@ -1,5 +1,57 @@
 basePath: /
 definitions:
+  requestmodel_auth_svc.DeleteUserProfilePhotoType:
+    properties:
+      Type:
+        type: string
+    required:
+    - Type
+    type: object
+  requestmodel_auth_svc.EmailReq:
+    properties:
+      Email:
+        type: string
+    required:
+    - Email
+    type: object
+  requestmodel_auth_svc.ForgotPassword:
+    properties:
+      ConfirmPassword:
+        type: string
+      Otp:
+        type: string
+      Password:
+        minLength: 5
+        type: string
+    type: object
+  requestmodel_auth_svc.RefreshToken:
+    properties:
+      RefreshToken:
+        type: string
+    type: object
+  requestmodel_auth_svc.UserLogin:
+    properties:
+      Email:
+        type: string
+      Password:
+        minLength: 5
+        type: string
+    required:
+    - Email
+    - Password
+    type: object
+  requestmodel_auth_svc.UserProfileDescription:
+    properties:
+      Description:
+        type: string
+    type: object
+  requestmodel_auth_svc.UserProfileStatus:
+    properties:
+      Duration:
+        type: number
+      Status:
+        type: string
+    type: object
   requestmodel_auth_svc.UserSignup:
     properties:
       ConfirmPassword:
@@ -27,6 +79,25 @@ definitions:
       status_code:
         type: integer
     type: object
+  response_auth_svc.UserProfile:
+    properties:
+      CoverPhoto:
+        type: string
+      Description:
+        type: string
+      Email:
+        type: string
+      Name:
+        type: string
+      ProfilePhoto:
+        type: string
+      Status:
+        type: string
+      UserID:
+        type: string
+      UserName:
+        type: string
+    type: object
 host: hyperhive.vajid.tech
 info:
   contact: {}
@@ -35,6 +106,27 @@ info:
   title: HyperHive
   version: "1.0"
 paths:
+  /account:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user's account permanently.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User account deleted successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Delete User Account
+      tags:
+      - Profile
   /auth/verifyemailresend:
     post:
       consumes:
@@ -58,10 +150,270 @@ paths:
           schema:
             $ref: '#/definitions/response_auth_svc.Response'
       security:
-      - ApiKeyAuth: []
+      - UserConfirmToken: []
       summary: Resend verification email
       tags:
-      - User
+      - Authentication
+  /confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm user signup with the provided token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Signup confirmed successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserConfirmToken: []
+      summary: Confirm Signup
+      tags:
+      - Authentication
+  /forgotpassword:
+    post:
+      consumes:
+      - application/json
+      description: Sends a password reset email to the user's email.
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.ForgotPassword'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Password reset email sent successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserConfirmToken: []
+      summary: Forgot Password
+      tags:
+      - Authentication
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and generate access token.
+      parameters:
+      - description: User login details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      summary: User Login
+      tags:
+      - Authentication
+  /profile/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user's profile information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile information
+          schema:
+            $ref: '#/definitions/response_auth_svc.UserProfile'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get User Profile
+      tags:
+      - Profile
+  /profile/coverphoto:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Update user's cover photo.
+      parameters:
+      - description: User's cover photo
+        in: formData
+        name: CoverPhoto
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cover photo updated successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Cover Photo
+      tags:
+      - Profile
+  /profile/description:
+    post:
+      consumes:
+      - application/json
+      description: Update user's profile description.
+      parameters:
+      - description: Request body for updating user profile description
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.UserProfileDescription'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile description updated successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Profile Description
+      tags:
+      - Profile
+  /profile/photoprofile:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a photo from the user's profile.
+      parameters:
+      - description: Request body for deleting user profile photo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.DeleteUserProfilePhotoType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Photo deleted successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Delete Photo from User Profile
+      tags:
+      - Profile
+  /profile/profilephoto:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Update user's profile photo.
+      parameters:
+      - description: User's profile photo
+        in: formData
+        name: ProfilePhoto
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile photo updated successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Profile Photo
+      tags:
+      - Profile
+  /profile/status:
+    post:
+      consumes:
+      - application/json
+      description: Update user's profile status.
+      parameters:
+      - description: Request body for updating user profile status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.UserProfileStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile status updated successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Profile Status
+      tags:
+      - Profile
+  /sendotp:
+    post:
+      consumes:
+      - application/json
+      description: Sends OTP to the user's email.
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.EmailReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Email send successful
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      summary: Send OTP
+      tags:
+      - Authentication
   /signup:
     post:
       consumes:
@@ -87,18 +439,102 @@ paths:
             $ref: '#/definitions/response_auth_svc.Response'
       summary: User Signup
       tags:
-      - User
+      - Authentication
+  /token:
+    get:
+      consumes:
+      - application/json
+      description: Separate user ID from access token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token separation response
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Separate User ID from Access Token
+      tags:
+      - Token
+  /token/accesstoken:
+    post:
+      consumes:
+      - application/json
+      description: Create access token by validating refresh token.
+      parameters:
+      - description: Request body for validating refresh token and creating access
+          token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.RefreshToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token response
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Create Access Token by Validating Refresh Token
+      tags:
+      - Token
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Search users based on specified criteria.
+      parameters:
+      - description: Username for search
+        in: query
+        name: username
+        type: string
+      - description: Limit number of results
+        in: query
+        name: limit
+        type: string
+      - description: Offset for paginated results
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User search response
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Search Users
+      tags:
+      - Profile
 securityDefinitions:
   AdminAutherisation:
     in: header
     name: AccessToken
     type: apiKey
-  UserAuthentication:
+  UserAuthorization:
     in: header
     name: AccessToken
     type: apiKey
-  UserRefreshtoken:
+  UserConfirmToken:
     in: header
-    name: Refreshtoken
+    name: ConfirmToken
     type: apiKey
 swagger: "2.0"

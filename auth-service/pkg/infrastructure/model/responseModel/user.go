@@ -30,7 +30,7 @@ type UserProfile struct {
 	ProfilePhoto     string    `gorm:"column:profile_photo_url"`
 	CoverPhoto       string    `gorm:"column:cover_photo_url"`
 	Description      string    `gorm:"column:description"`
-	Status           string    `gorm:"column:status"`
+	Status           string    `gorm:"column:status" json:"omitempty"`
 	StatusExpireTime time.Time `gorm:"column:status_till"`
 	UserSince        time.Time `gorm:"column:created_at"`
 }
