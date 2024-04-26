@@ -20,7 +20,6 @@ func NewUserRepository(db *gorm.DB) interfacel_repo_auth_server.IUserRepository 
 
 func (d *UserRepository) Signup(userReq requestmodel_auth_server.UserSignup) (userRes *responsemodel_auth_server.UserSignup, err error) {
 	// atomic:=d.DB.Begin()
-	fmt.Println("==", userReq.CreatedAt)
 	query := "INSERT INTO users (name, user_name, email, password, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *"
 
 	result := d.DB.Raw(query, userReq.Name, userReq.UserName, userReq.Email, userReq.Password, userReq.CreatedAt).Scan(&userRes)
