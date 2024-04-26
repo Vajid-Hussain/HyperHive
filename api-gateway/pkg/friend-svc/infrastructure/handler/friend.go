@@ -33,6 +33,17 @@ func NewFriendSvc(clind pb.FriendServiceClient, helper *Helper) *FriendSvc {
 	}
 }
 
+// Handler function for sending a friend request.
+// @Summary Send Friend Request
+// @Description Send a friend request.
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param body body requestmodel_friend_svc.FriendRequest true "Request body for sending friend request"
+// @Success 201 {object} responsemodel_friend_svc.Response "Friend request sent successfully"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friend/request [post]
+// @Security UserAuthorization
 func (h *FriendSvc) FriendRequest(ctx echo.Context) error {
 	var req requestmodel_friend_svc.FriendRequest
 	ctx.Bind(&req)
@@ -55,6 +66,18 @@ func (h *FriendSvc) FriendRequest(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "Friend request send succesfully", result, nil))
 }
 
+// Handler function for getting user's friends.
+// @Summary Get Friends
+// @Description Retrieve user's friends.
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param page query string false "Offset for paginated results"
+// @Param limit query string false "Limit number of results"
+// @Success 200 {object} responsemodel_friend_svc.Response "List of user's friends"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friend/friends [get]
+// @Security UserAuthorization
 func (h *FriendSvc) GetFriends(ctx echo.Context) error {
 
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -71,6 +94,18 @@ func (h *FriendSvc) GetFriends(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for getting received friend requests.
+// @Summary Get Received Friend Requests
+// @Description Retrieve received friend requests.
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param page query string false "Offset for paginated results"
+// @Param limit query string false "Limit number of results"
+// @Success 200 {object} responsemodel_friend_svc.Response "List of received friend requests"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friend/received [get]
+// @Security UserAuthorization
 func (h *FriendSvc) GetReceivedFriendRequest(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -87,6 +122,18 @@ func (h *FriendSvc) GetReceivedFriendRequest(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for getting sent friend requests.
+// @Summary Get Sent Friend Requests
+// @Description Retrieve sent friend requests.
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param page query string false "Offset for paginated results"
+// @Param limit query string false "Limit number of results"
+// @Success 200 {object} responsemodel_friend_svc.Response "List of sent friend requests"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friend/send [get]
+// @Security UserAuthorization
 func (h *FriendSvc) GetSendFriendRequest(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -103,6 +150,18 @@ func (h *FriendSvc) GetSendFriendRequest(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for getting blocked friend requests.
+// @Summary Get Blocked Friend Requests
+// @Description Retrieve blocked friend requests.
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param page query string false "Offset for paginated results"
+// @Param limit query string false "Limit number of results"
+// @Success 200 {object} responsemodel_friend_svc.Response "List of blocked friend requests"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friend/block [get]
+// @Security UserAuthorization
 func (h *FriendSvc) GetBlockFriendRequest(ctx echo.Context) error {
 	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -119,6 +178,17 @@ func (h *FriendSvc) GetBlockFriendRequest(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+// Handler function for updating friendship status.
+// @Summary Update Friendship Status
+// @Description Update friendship status (e.g., restrict or unblock).
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param body body requestmodel_friend_svc.FrendShipStatusUpdate true "Request body for updating friendship status"
+// @Success 200 {object} responsemodel_friend_svc.Response "Friendship status updated successfully"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friend/restrict [patch]
+// @Security UserAuthorization
 func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 	var req requestmodel_friend_svc.FrendShipStatusUpdate
 	ctx.Bind(&req)
@@ -166,6 +236,17 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	}
 }
 
+// Handler function for getting chat messages.
+// @Summary Get Chat Messages
+// @Description Retrieve chat messages.
+// @Tags Friend
+// @Accept json
+// @Produce json
+// @Param body body requestmodel_friend_svc.ChatRequest true "Request body for getting chat messages"
+// @Success 200 {object} responsemodel_friend_svc.Response "List of chat messages"
+// @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
+// @Router /friendMessage/message [get]
+// @Security UserAuthorization
 func (h *FriendSvc) GetChat(ctx echo.Context) error {
 	var chatRequet requestmodel_friend_svc.ChatRequest
 	ctx.Bind(&chatRequet)

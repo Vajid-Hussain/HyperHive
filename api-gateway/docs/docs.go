@@ -51,6 +51,136 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/block": {
+            "patch": {
+                "security": [
+                    {
+                        "AdminAutherisation": []
+                    }
+                ],
+                "description": "Block a user's account.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Block User Account",
+                "parameters": [
+                    {
+                        "description": "Request body for blocking user account",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.UserIDReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User account blocked successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "description": "Authenticate admin and generate access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Admin Login",
+                "parameters": [
+                    {
+                        "description": "Request body for admin login",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.AdminLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token response",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/unblock": {
+            "patch": {
+                "security": [
+                    {
+                        "AdminAuthorization": []
+                    }
+                ],
+                "description": "Unblock a user's account.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Unblock User Account",
+                "parameters": [
+                    {
+                        "description": "Request body for unblocking user account",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_auth_svc.UserIDReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User account unblocked successfully",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/verifyemailresend": {
             "post": {
                 "security": [
@@ -168,6 +298,378 @@ const docTemplate = `{
                         "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/response_auth_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friend/block": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve blocked friend requests.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Get Blocked Friend Requests",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Offset for paginated results",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit number of results",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of blocked friend requests",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friend/friends": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve user's friends.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Get Friends",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Offset for paginated results",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit number of results",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of user's friends",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friend/received": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve received friend requests.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Get Received Friend Requests",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Offset for paginated results",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit number of results",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of received friend requests",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friend/request": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Send a friend request.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Send Friend Request",
+                "parameters": [
+                    {
+                        "description": "Request body for sending friend request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_friend_svc.FriendRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Friend request sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friend/restrict": {
+            "patch": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update friendship status (e.g., restrict or unblock).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Update Friendship Status",
+                "parameters": [
+                    {
+                        "description": "Request body for updating friendship status",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_friend_svc.FrendShipStatusUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Friendship status updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friend/send": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve sent friend requests.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Get Sent Friend Requests",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Offset for paginated results",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit number of results",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of sent friend requests",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/friendMessage/message": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve chat messages.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Get Chat Messages",
+                "parameters": [
+                    {
+                        "description": "Request body for getting chat messages",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_friend_svc.ChatRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of chat messages",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/join": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Join an existing server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Join Server",
+                "parameters": [
+                    {
+                        "description": "Request body for joining a server",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.JoinToServer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Joined server successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
                         }
                     }
                 }
@@ -508,6 +1010,846 @@ const docTemplate = `{
                 }
             }
         },
+        "/server": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Create a new server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Create Server",
+                "parameters": [
+                    {
+                        "description": "Request body for creating a server",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.Server"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Server created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/category": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve categories of a server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get Categories of Server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categories retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Create a new category.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Create Category",
+                "parameters": [
+                    {
+                        "description": "Request body for creating a category",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.CreateCategory"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Category created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/channel": {
+            "post": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Create a new channel.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Create Channel",
+                "parameters": [
+                    {
+                        "description": "Request body for creating a channel",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.CreateChannel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Channel created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/description": {
+            "patch": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update a server's description.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Update Server Description",
+                "parameters": [
+                    {
+                        "description": "Request body for updating server description",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.ServerDescription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server description updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/destroy": {
+            "delete": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Delete a server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Delete Server",
+                "parameters": [
+                    {
+                        "description": "Request body for deleting server",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.ServerReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/forum": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve forum posts.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Get Forum Posts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Channel ID",
+                        "name": "channelID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Forum posts retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/forum/command": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve forum commands.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Get Forum Commands",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "PostID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Forum commands retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/forum/{postid}": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve a single forum post.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Get Single Forum Post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "postid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single forum post retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/image": {
+            "patch": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update a server's photo.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Update Server Photo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Image file",
+                        "name": "Image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server photo updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/left": {
+            "delete": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Leave a server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Leave Server",
+                "parameters": [
+                    {
+                        "description": "Request body for leaving server",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.ServerReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Left from server successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/members": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve members of a server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Get Server Members",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "ServerID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset for pagination",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit for pagination",
+                        "name": "Limit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server members retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/message": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve messages of a channel.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "Get Channel Messages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Channel ID",
+                        "name": "ChannelID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset for pagination",
+                        "name": "Page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit for pagination",
+                        "name": "Limit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/remove": {
+            "delete": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Remove a user from a server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Remove User from Server",
+                "parameters": [
+                    {
+                        "description": "Request body for removing user from server",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.RemoveUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User removed from server successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/role": {
+            "patch": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Update a member's role in a server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Update Member Role",
+                "parameters": [
+                    {
+                        "description": "Request body for updating member role",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestmodel_server_svc.UpdateMemberRole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Member role updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/search": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Search servers based on query parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Search Servers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Limit for pagination",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Server name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Servers retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/userserver": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve a user's server information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Get User's Server",
+                "responses": {
+                    "200": {
+                        "description": "User's server information retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/server/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve a server by ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Get Server by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server information retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/resonsemodel_server_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/signup": {
             "post": {
                 "description": "Create a new user account",
@@ -683,6 +2025,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "requestmodel_auth_svc.AdminLogin": {
+            "type": "object",
+            "required": [
+                "Email",
+                "Password"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string",
+                    "minLength": 5
+                }
+            }
+        },
         "requestmodel_auth_svc.DeleteUserProfilePhotoType": {
             "type": "object",
             "required": [
@@ -724,6 +2082,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "RefreshToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_auth_svc.UserIDReq": {
+            "type": "object",
+            "properties": {
+                "UserID": {
                     "type": "string"
                 }
             }
@@ -789,6 +2155,177 @@ const docTemplate = `{
                 }
             }
         },
+        "requestmodel_friend_svc.ChatRequest": {
+            "type": "object",
+            "required": [
+                "friendID",
+                "limit",
+                "offset"
+            ],
+            "properties": {
+                "friendID": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "string"
+                },
+                "offset": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_friend_svc.FrendShipStatusUpdate": {
+            "type": "object",
+            "properties": {
+                "FrendShipID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_friend_svc.FriendRequest": {
+            "type": "object",
+            "required": [
+                "FriendID"
+            ],
+            "properties": {
+                "FriendID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.CreateCategory": {
+            "type": "object",
+            "required": [
+                "categoryName",
+                "serverID"
+            ],
+            "properties": {
+                "categoryName": {
+                    "type": "string"
+                },
+                "serverID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.CreateChannel": {
+            "type": "object",
+            "required": [
+                "categoryID",
+                "channelName",
+                "serverID",
+                "type"
+            ],
+            "properties": {
+                "categoryID": {
+                    "type": "string"
+                },
+                "channelName": {
+                    "type": "string"
+                },
+                "serverID": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.JoinToServer": {
+            "type": "object",
+            "required": [
+                "ServerID"
+            ],
+            "properties": {
+                "ServerID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.RemoveUser": {
+            "type": "object",
+            "required": [
+                "RemoveUserID",
+                "ServerID"
+            ],
+            "properties": {
+                "RemoveUserID": {
+                    "type": "string"
+                },
+                "ServerID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.Server": {
+            "type": "object",
+            "required": [
+                "Name"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.ServerDescription": {
+            "type": "object",
+            "required": [
+                "ServerID"
+            ],
+            "properties": {
+                "Description": {
+                    "type": "string",
+                    "maxLength": 20
+                },
+                "ServerID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.ServerReq": {
+            "type": "object",
+            "required": [
+                "ServerID"
+            ],
+            "properties": {
+                "ServerID": {
+                    "type": "string"
+                }
+            }
+        },
+        "requestmodel_server_svc.UpdateMemberRole": {
+            "type": "object",
+            "required": [
+                "ServerID",
+                "TargetRole",
+                "TargetUserID"
+            ],
+            "properties": {
+                "ServerID": {
+                    "type": "string"
+                },
+                "TargetRole": {
+                    "type": "string"
+                },
+                "TargetUserID": {
+                    "type": "string"
+                }
+            }
+        },
+        "resonsemodel_server_svc.Response": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "message": {
+                    "type": "string"
+                },
+                "result": {},
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
         "response_auth_svc.Response": {
             "type": "object",
             "properties": {
@@ -828,6 +2365,19 @@ const docTemplate = `{
                 },
                 "UserName": {
                     "type": "string"
+                }
+            }
+        },
+        "responsemodel_friend_svc.Response": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "message": {
+                    "type": "string"
+                },
+                "result": {},
+                "status_code": {
+                    "type": "integer"
                 }
             }
         }

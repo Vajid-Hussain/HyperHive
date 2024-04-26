@@ -2,6 +2,7 @@ package repository_auth_server
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"testing"
 	"time"
@@ -64,7 +65,7 @@ func TestSignup(t *testing.T) {
 			wantErr: errors.New("no row affected"),
 		},
 	}
-
+	fmt.Println("--/second" )
 	for _, test := range testData {
 		mockDB, mockSql, _ := sqlmock.New()
 		defer mockDB.Close()

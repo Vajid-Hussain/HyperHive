@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  requestmodel_auth_svc.AdminLogin:
+    properties:
+      Email:
+        type: string
+      Password:
+        minLength: 5
+        type: string
+    required:
+    - Email
+    - Password
+    type: object
   requestmodel_auth_svc.DeleteUserProfilePhotoType:
     properties:
       Type:
@@ -27,6 +38,11 @@ definitions:
   requestmodel_auth_svc.RefreshToken:
     properties:
       RefreshToken:
+        type: string
+    type: object
+  requestmodel_auth_svc.UserIDReq:
+    properties:
+      UserID:
         type: string
     type: object
   requestmodel_auth_svc.UserLogin:
@@ -70,6 +86,120 @@ definitions:
     - Email
     - UserName
     type: object
+  requestmodel_friend_svc.ChatRequest:
+    properties:
+      friendID:
+        type: string
+      limit:
+        type: string
+      offset:
+        type: string
+    required:
+    - friendID
+    - limit
+    - offset
+    type: object
+  requestmodel_friend_svc.FrendShipStatusUpdate:
+    properties:
+      FrendShipID:
+        type: string
+    type: object
+  requestmodel_friend_svc.FriendRequest:
+    properties:
+      FriendID:
+        type: string
+    required:
+    - FriendID
+    type: object
+  requestmodel_server_svc.CreateCategory:
+    properties:
+      categoryName:
+        type: string
+      serverID:
+        type: string
+    required:
+    - categoryName
+    - serverID
+    type: object
+  requestmodel_server_svc.CreateChannel:
+    properties:
+      categoryID:
+        type: string
+      channelName:
+        type: string
+      serverID:
+        type: string
+      type:
+        type: string
+    required:
+    - categoryID
+    - channelName
+    - serverID
+    - type
+    type: object
+  requestmodel_server_svc.JoinToServer:
+    properties:
+      ServerID:
+        type: string
+    required:
+    - ServerID
+    type: object
+  requestmodel_server_svc.RemoveUser:
+    properties:
+      RemoveUserID:
+        type: string
+      ServerID:
+        type: string
+    required:
+    - RemoveUserID
+    - ServerID
+    type: object
+  requestmodel_server_svc.Server:
+    properties:
+      Name:
+        type: string
+    required:
+    - Name
+    type: object
+  requestmodel_server_svc.ServerDescription:
+    properties:
+      Description:
+        maxLength: 20
+        type: string
+      ServerID:
+        type: string
+    required:
+    - ServerID
+    type: object
+  requestmodel_server_svc.ServerReq:
+    properties:
+      ServerID:
+        type: string
+    required:
+    - ServerID
+    type: object
+  requestmodel_server_svc.UpdateMemberRole:
+    properties:
+      ServerID:
+        type: string
+      TargetRole:
+        type: string
+      TargetUserID:
+        type: string
+    required:
+    - ServerID
+    - TargetRole
+    - TargetUserID
+    type: object
+  resonsemodel_server_svc.Response:
+    properties:
+      error: {}
+      message:
+        type: string
+      result: {}
+      status_code:
+        type: integer
+    type: object
   response_auth_svc.Response:
     properties:
       error: {}
@@ -97,6 +227,15 @@ definitions:
         type: string
       UserName:
         type: string
+    type: object
+  responsemodel_friend_svc.Response:
+    properties:
+      error: {}
+      message:
+        type: string
+      result: {}
+      status_code:
+        type: integer
     type: object
 host: hyperhive.vajid.tech
 info:
@@ -127,6 +266,88 @@ paths:
       summary: Delete User Account
       tags:
       - Profile
+  /admin/block:
+    patch:
+      consumes:
+      - application/json
+      description: Block a user's account.
+      parameters:
+      - description: Request body for blocking user account
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.UserIDReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User account blocked successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - AdminAutherisation: []
+      summary: Block User Account
+      tags:
+      - Admin
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate admin and generate access token.
+      parameters:
+      - description: Request body for admin login
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.AdminLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token response
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      summary: Admin Login
+      tags:
+      - Admin
+  /admin/unblock:
+    patch:
+      consumes:
+      - application/json
+      description: Unblock a user's account.
+      parameters:
+      - description: Request body for unblocking user account
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_auth_svc.UserIDReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User account unblocked successfully
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response_auth_svc.Response'
+      security:
+      - AdminAuthorization: []
+      summary: Unblock User Account
+      tags:
+      - Admin
   /auth/verifyemailresend:
     post:
       consumes:
@@ -203,6 +424,238 @@ paths:
       summary: Forgot Password
       tags:
       - Authentication
+  /friend/block:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve blocked friend requests.
+      parameters:
+      - description: Offset for paginated results
+        in: query
+        name: page
+        type: string
+      - description: Limit number of results
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of blocked friend requests
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Blocked Friend Requests
+      tags:
+      - Friend
+  /friend/friends:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user's friends.
+      parameters:
+      - description: Offset for paginated results
+        in: query
+        name: page
+        type: string
+      - description: Limit number of results
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of user's friends
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Friends
+      tags:
+      - Friend
+  /friend/received:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve received friend requests.
+      parameters:
+      - description: Offset for paginated results
+        in: query
+        name: page
+        type: string
+      - description: Limit number of results
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of received friend requests
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Received Friend Requests
+      tags:
+      - Friend
+  /friend/request:
+    post:
+      consumes:
+      - application/json
+      description: Send a friend request.
+      parameters:
+      - description: Request body for sending friend request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_friend_svc.FriendRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Friend request sent successfully
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Send Friend Request
+      tags:
+      - Friend
+  /friend/restrict:
+    patch:
+      consumes:
+      - application/json
+      description: Update friendship status (e.g., restrict or unblock).
+      parameters:
+      - description: Request body for updating friendship status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_friend_svc.FrendShipStatusUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Friendship status updated successfully
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Friendship Status
+      tags:
+      - Friend
+  /friend/send:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sent friend requests.
+      parameters:
+      - description: Offset for paginated results
+        in: query
+        name: page
+        type: string
+      - description: Limit number of results
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of sent friend requests
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Sent Friend Requests
+      tags:
+      - Friend
+  /friendMessage/message:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve chat messages.
+      parameters:
+      - description: Request body for getting chat messages
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_friend_svc.ChatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of chat messages
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Chat Messages
+      tags:
+      - Friend
+  /join:
+    post:
+      consumes:
+      - application/json
+      description: Join an existing server.
+      parameters:
+      - description: Request body for joining a server
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.JoinToServer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Joined server successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Join Server
+      tags:
+      - Server
   /login:
     post:
       consumes:
@@ -414,6 +867,534 @@ paths:
       summary: Send OTP
       tags:
       - Authentication
+  /server:
+    post:
+      consumes:
+      - application/json
+      description: Create a new server.
+      parameters:
+      - description: Request body for creating a server
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.Server'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Server created successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Create Server
+      tags:
+      - Server
+  /server/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a server by ID.
+      parameters:
+      - description: Server ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server information retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Server by ID
+      tags:
+      - Server
+  /server/category:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve categories of a server.
+      parameters:
+      - description: Server ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Categories retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Categories of Server
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Create a new category.
+      parameters:
+      - description: Request body for creating a category
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.CreateCategory'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Category created successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Create Category
+      tags:
+      - Category
+  /server/channel:
+    post:
+      consumes:
+      - application/json
+      description: Create a new channel.
+      parameters:
+      - description: Request body for creating a channel
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.CreateChannel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Channel created successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Create Channel
+      tags:
+      - Channel
+  /server/description:
+    patch:
+      consumes:
+      - application/json
+      description: Update a server's description.
+      parameters:
+      - description: Request body for updating server description
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.ServerDescription'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server description updated successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Server Description
+      tags:
+      - Server
+  /server/destroy:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a server.
+      parameters:
+      - description: Request body for deleting server
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.ServerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server deleted successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Delete Server
+      tags:
+      - Server
+  /server/forum:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve forum posts.
+      parameters:
+      - description: Limit for pagination
+        in: query
+        name: limit
+        type: string
+      - description: Offset for pagination
+        in: query
+        name: page
+        type: string
+      - description: Channel ID
+        in: query
+        name: channelID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Forum posts retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Forum Posts
+      tags:
+      - Forum
+  /server/forum/{postid}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a single forum post.
+      parameters:
+      - description: Post ID
+        in: path
+        name: postid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single forum post retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Single Forum Post
+      tags:
+      - Forum
+  /server/forum/command:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve forum commands.
+      parameters:
+      - description: Limit for pagination
+        in: query
+        name: limit
+        type: string
+      - description: Offset for pagination
+        in: query
+        name: page
+        type: string
+      - description: Post ID
+        in: query
+        name: PostID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Forum commands retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Forum Commands
+      tags:
+      - Forum
+  /server/image:
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Update a server's photo.
+      parameters:
+      - description: Image file
+        in: formData
+        name: Image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server photo updated successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Server Photo
+      tags:
+      - Server
+  /server/left:
+    delete:
+      consumes:
+      - application/json
+      description: Leave a server.
+      parameters:
+      - description: Request body for leaving server
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.ServerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Left from server successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Leave Server
+      tags:
+      - Server
+  /server/members:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve members of a server.
+      parameters:
+      - description: Server ID
+        in: query
+        name: ServerID
+        required: true
+        type: string
+      - description: Offset for pagination
+        in: query
+        name: Page
+        required: true
+        type: string
+      - description: Limit for pagination
+        in: query
+        name: Limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server members retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Server Members
+      tags:
+      - Server
+  /server/message:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve messages of a channel.
+      parameters:
+      - description: Channel ID
+        in: query
+        name: ChannelID
+        required: true
+        type: string
+      - description: Offset for pagination
+        in: query
+        name: Page
+        required: true
+        type: string
+      - description: Limit for pagination
+        in: query
+        name: Limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Messages retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Channel Messages
+      tags:
+      - Channel
+  /server/remove:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a user from a server.
+      parameters:
+      - description: Request body for removing user from server
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.RemoveUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User removed from server successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Remove User from Server
+      tags:
+      - Server
+  /server/role:
+    patch:
+      consumes:
+      - application/json
+      description: Update a member's role in a server.
+      parameters:
+      - description: Request body for updating member role
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requestmodel_server_svc.UpdateMemberRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Member role updated successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Update Member Role
+      tags:
+      - Server
+  /server/search:
+    get:
+      consumes:
+      - application/json
+      description: Search servers based on query parameters.
+      parameters:
+      - description: Limit for pagination
+        in: query
+        name: limit
+        type: string
+      - description: Offset for pagination
+        in: query
+        name: page
+        type: string
+      - description: Server name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Servers retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Search Servers
+      tags:
+      - Server
+  /server/userserver:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user's server information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User's server information retrieved successfully
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/resonsemodel_server_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get User's Server
+      tags:
+      - Server
   /signup:
     post:
       consumes:
