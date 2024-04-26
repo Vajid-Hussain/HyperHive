@@ -131,3 +131,9 @@ type ReqGetForumCommand struct {
 	Offset string `query:"page"`
 	PostID string `query:"PostID"`
 }
+
+type SearchServer struct {
+	Limit    string `query:"limit"`
+	Offset   string `query:"page"`
+	ServerID string `query:"name"`
+}

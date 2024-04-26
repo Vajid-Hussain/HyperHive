@@ -2,7 +2,6 @@ package server_server_service
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
@@ -110,7 +109,6 @@ func (u *ServerServer) GetUserServer(ctx context.Context, req *pb.GetUserServerR
 }
 
 func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) (*pb.GetServerResponse, error) {
-	fmt.Println("=====called ")
 	result, err := u.useCase.GetServer(req.ServerID)
 	if err != nil {
 		return nil, err
@@ -123,6 +121,25 @@ func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) 
 		Icon:        result.Icon,
 		CoverPhoto:  result.CoverPhoto,
 	}, nil
+}
+
+func (u *ServerServer) SearchServer(ctx context.Context, req *pb.SearchServerRequest) (*pb.SearchServerResponse, error) {
+	result, err := u.useCase.GetServers(req.ServerID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.Offset})
+	if err != nil {
+		return nil, err
+	}
+
+	var finalResult []*pb.GetServerResponse
+	for _, server := range result {
+		finalResult = append(finalResult, &pb.GetServerResponse{
+			ServerId:    req.ServerID,
+			Name:        server.Name,
+			Description: server.Description,
+			Icon:        server.Icon,
+			CoverPhoto:  server.CoverPhoto,
+		})
+	}
+	return &pb.SearchServerResponse{Servers: finalResult},nil
 }
 
 func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannelMessageRequest) (*pb.GetChannelMessageResponse, error) {

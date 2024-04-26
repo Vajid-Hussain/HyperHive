@@ -26,11 +26,10 @@ type WebSocketInfo struct {
 
 type ChatRequest struct {
 	FriendID string `query:"FriendID" validate:"required"`
-	Offset   string `query:"Offset" validate:"required"`
+	Offset   string `query:"page" validate:"required"`
 	Limit    string `query:"Limit" validate:"required"`
 }
 
 type Sample struct {
 	SenderID string `json:"SenderID" validate:"required"`
 }
-

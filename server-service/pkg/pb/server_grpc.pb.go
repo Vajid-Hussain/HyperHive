@@ -39,6 +39,7 @@ type ServerClient interface {
 	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	LeftFromServer(ctx context.Context, in *LeftFromServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteServer(ctx context.Context, in *DeleteServerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SearchServer(ctx context.Context, in *SearchServerRequest, opts ...grpc.CallOption) (*SearchServerResponse, error)
 	// forum
 	GetForumPost(ctx context.Context, in *GetForumPostRequest, opts ...grpc.CallOption) (*GetForumPostResponse, error)
 	GetSingleForumPost(ctx context.Context, in *GetSingleForumPostRequest, opts ...grpc.CallOption) (*GetSingleForumPostResponse, error)
@@ -197,6 +198,15 @@ func (c *serverClient) DeleteServer(ctx context.Context, in *DeleteServerRequest
 	return out, nil
 }
 
+func (c *serverClient) SearchServer(ctx context.Context, in *SearchServerRequest, opts ...grpc.CallOption) (*SearchServerResponse, error) {
+	out := new(SearchServerResponse)
+	err := c.cc.Invoke(ctx, "/Server/SearchServer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *serverClient) GetForumPost(ctx context.Context, in *GetForumPostRequest, opts ...grpc.CallOption) (*GetForumPostResponse, error) {
 	out := new(GetForumPostResponse)
 	err := c.cc.Invoke(ctx, "/Server/GetForumPost", in, out, opts...)
@@ -244,6 +254,7 @@ type ServerServer interface {
 	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*emptypb.Empty, error)
 	LeftFromServer(context.Context, *LeftFromServerRequest) (*emptypb.Empty, error)
 	DeleteServer(context.Context, *DeleteServerRequest) (*emptypb.Empty, error)
+	SearchServer(context.Context, *SearchServerRequest) (*SearchServerResponse, error)
 	// forum
 	GetForumPost(context.Context, *GetForumPostRequest) (*GetForumPostResponse, error)
 	GetSingleForumPost(context.Context, *GetSingleForumPostRequest) (*GetSingleForumPostResponse, error)
@@ -302,6 +313,9 @@ func (UnimplementedServerServer) LeftFromServer(context.Context, *LeftFromServer
 }
 func (UnimplementedServerServer) DeleteServer(context.Context, *DeleteServerRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteServer not implemented")
+}
+func (UnimplementedServerServer) SearchServer(context.Context, *SearchServerRequest) (*SearchServerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchServer not implemented")
 }
 func (UnimplementedServerServer) GetForumPost(context.Context, *GetForumPostRequest) (*GetForumPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetForumPost not implemented")
@@ -613,6 +627,24 @@ func _Server_DeleteServer_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Server_SearchServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServer).SearchServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Server/SearchServer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServer).SearchServer(ctx, req.(*SearchServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Server_GetForumPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetForumPostRequest)
 	if err := dec(in); err != nil {
@@ -737,6 +769,10 @@ var Server_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteServer",
 			Handler:    _Server_DeleteServer_Handler,
+		},
+		{
+			MethodName: "SearchServer",
+			Handler:    _Server_SearchServer_Handler,
 		},
 		{
 			MethodName: "GetForumPost",

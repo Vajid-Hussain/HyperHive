@@ -21,6 +21,8 @@ service Server {
     rpc UpdateMemberRole (UpdateMemberRoleRequest) returns (google.protobuf.Empty);
     rpc LeftFromServer (LeftFromServerRequest) returns (google.protobuf.Empty);
     rpc DeleteServer (DeleteServerRequest) returns (google.protobuf.Empty);
+    rpc SearchServer (SearchServerRequest) returns (SearchServerResponse);
+
 
     //forum
     rpc GetForumPost (GetForumPostRequest) returns (GetForumPostResponse);
@@ -237,4 +239,14 @@ message GetPostCommandRequest {
 
 message GetPostCommandResponse {
     repeated ForumCommandModel command=1; 
+}
+
+message SearchServerRequest {
+    string serverID =1;
+    string limit=2;
+    string offset =3;
+}
+
+message SearchServerResponse {
+    repeated GetServerResponse servers=1;
 }

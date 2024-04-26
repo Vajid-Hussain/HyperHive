@@ -23,6 +23,7 @@ type IServerUseCase interface {
 	RemoveUserFromServer(*requestmodel_server_service.RemoveUser) error
 	LeftFromServer(string, string) error
 	DeleteServer(string, string) error
+	GetServers( string, requestmodel_server_service.Pagination) ( []*responsemodel_server_service.Server,  error)
 
 	//forum
 	GetForumPost(string, requestmodel_server_service.Pagination) ([]*responsemodel_server_service.ForumPost, error)

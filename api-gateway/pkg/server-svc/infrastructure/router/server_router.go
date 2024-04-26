@@ -24,6 +24,8 @@ func ServerRouter(engin *echo.Group, handler *handler_server_svc.ServerService, 
 		engin.DELETE("/left", handler.LeftFromServer)
 		engin.DELETE("/destroy", handler.DeleteServer)
 
+		engin.GET("/search", handler.SearchServer)
+
 		engin.GET("/", func(ctx echo.Context) error {
 			handler.InitSoketio(ctx)
 			return echo.WrapHandler(soketioServer)(ctx)

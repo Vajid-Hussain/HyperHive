@@ -196,6 +196,27 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
+func (c *ServerService) SearchServer(ctx echo.Context)error{
+	var req requestmodel_server_svc.SearchServer
+	ctx.Bind(&req)
+	validateError := helper_api_gateway.Validator(req)
+	if len(validateError) > 0 {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", validateError))
+	}
+
+	context, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := c.Clind.SearchServer(context, &pb.SearchServerRequest{
+		ServerID: req.ServerID,
+		Limit:  req.Limit,
+		Offset: req.Offset,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
+	}
+	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
+}
+
 func (c *ServerService) InitSoketio(ctx echo.Context) {
 
 	c.SoketioServer.OnConnect("/", func(conn socketio.Conn) error {

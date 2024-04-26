@@ -117,6 +117,7 @@ func (s *serverServiceUseCase) BroadcastMessage(msg []byte, socker *socketio.Ser
 }
 
 func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Server, conn socketio.Conn) {
+	fmt.Println("===",msg)
 	message, err := s.jsonUnmarshelFriendlyMessage(msg)
 	if err != nil {
 		conn.Emit("error", err.Error())

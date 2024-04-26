@@ -269,6 +269,19 @@ func (d *ServerRepository) DeleteServer(userID, ServerID string) error {
 	return nil
 }
 
+func (d *ServerRepository) GetServers(serverID string, pagination requestmodel_server_service.Pagination) (res []*responsemodel_server_service.Server, err error) {
+	query := "SELECT * FROM servers WHERE name ILIKE '%' || $1 || '%' AND status = 'active' ORDER BY name LIMIT $2 OFFSET $3"
+	result := d.DB.Raw(query, serverID, pagination.Limit, pagination.OffSet).Scan(&res)
+	if result.Error != nil {
+		return nil, responsemodel_server_service.ErrInternalServer
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, responsemodel_server_service.ErrEmptyResponse
+	}
+	return res, nil
+}
+
 // Mongodb Queries
 
 func (d *ServerRepository) KeepMessageInDB(message requestmodel_server_service.ServerMessage) error {
