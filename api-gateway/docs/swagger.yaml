@@ -86,19 +86,6 @@ definitions:
     - Email
     - UserName
     type: object
-  requestmodel_friend_svc.ChatRequest:
-    properties:
-      friendID:
-        type: string
-      limit:
-        type: string
-      offset:
-        type: string
-    required:
-    - friendID
-    - limit
-    - offset
-    type: object
   requestmodel_friend_svc.FrendShipStatusUpdate:
     properties:
       FrendShipID:
@@ -454,6 +441,40 @@ paths:
       summary: Get Blocked Friend Requests
       tags:
       - Friend
+  /friend/chat/message:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve chat messages.
+      parameters:
+      - description: Offset for paginated results
+        in: query
+        name: page
+        type: string
+      - description: Limit number of results
+        in: query
+        name: limit
+        type: string
+      - description: required friend id
+        in: query
+        name: FriendID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of chat messages
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/responsemodel_friend_svc.Response'
+      security:
+      - UserAuthorization: []
+      summary: Get Chat Messages
+      tags:
+      - Friend
   /friend/friends:
     get:
       consumes:
@@ -598,34 +619,6 @@ paths:
       security:
       - UserAuthorization: []
       summary: Get Sent Friend Requests
-      tags:
-      - Friend
-  /friendMessage/message:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve chat messages.
-      parameters:
-      - description: Request body for getting chat messages
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/requestmodel_friend_svc.ChatRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of chat messages
-          schema:
-            $ref: '#/definitions/responsemodel_friend_svc.Response'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/responsemodel_friend_svc.Response'
-      security:
-      - UserAuthorization: []
-      summary: Get Chat Messages
       tags:
       - Friend
   /join:

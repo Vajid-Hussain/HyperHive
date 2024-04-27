@@ -14,14 +14,23 @@ type GetFriendRequest struct {
 	OffSet string
 }
 
+//	type Message struct {
+//		SenderID    string    `json:"SenderID"`
+//		RecipientID string    `json:"RecipientID"`
+//		Content     string    `json:"Content"`
+//		Timestamp   time.Time `json:"TimeStamp"`
+//		Type        string    `json:"Type"`
+//		Tag         string    `json:"Tag"`
+//		Status      string    `json:"Status" default:"send"`
+//	}
 type Message struct {
-	SenderID    string    `json:"SenderID"`
-	RecipientID string    `json:"RecipientID"`
-	Content     string    `json:"Content"`
-	Timestamp   time.Time `json:"TimeStamp"`
-	Type        string    `json:"Type"`
+	SenderID    string    `json:"sender_id" validate:"required"`
+	RecipientID string    `json:"recipient_id" validate:"required"`
+	Content     string    `json:"content" validate:"required"`
+	Timestamp   time.Time `json:"timestamp"`
+	Type        string    `json:"type" validate:"required"`
 	Tag         string    `json:"Tag"`
-	Status      string    `json:"Status" default:"send"`
+	Status      string    `json:"status"`
 }
 
 type Pagination struct {
@@ -29,8 +38,8 @@ type Pagination struct {
 	OffSet string
 }
 
-type FriendShipStatus struct{
-	UserId string
+type FriendShipStatus struct {
+	UserId       string
 	FriendShipID string
-	Status string
+	Status       string
 }

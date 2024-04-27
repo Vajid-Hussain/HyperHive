@@ -113,7 +113,7 @@ func (d *FriendRepository) FriendShipStatusUpdate(req requestmodel_friend_server
 }
 
 func (d *FriendRepository) DeleteFriendShipOfStatusRejectRevoke() error {
-	query := "DELETE FROM friends WHERE AGE( NOW() , update_at) > INTERVAL '24 hours' AND status IN ('revoke' , 'reject')" 
+	query := "DELETE FROM friends WHERE AGE(NOW(), update_at) > INTERVAL '24 hours' AND status IN ('revoke' , 'reject')" 
 	result:= d.DB.Exec(query)
 	if result.Error != nil {
 		return responsemodel_friend_server.ErrInternalServer

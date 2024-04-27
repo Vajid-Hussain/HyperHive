@@ -204,7 +204,7 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 
 		FriendShipID: req.FrendShipID,
 		Status:       ctx.QueryParam("action"),
-		UserID: ctx.Get("userID").(string),
+		UserID:       ctx.Get("userID").(string),
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, responsemodel_friend_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
@@ -212,6 +212,7 @@ func (h *FriendSvc) UpdateFriendshipStatus(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, responsemodel_friend_svc.Responses(http.StatusOK, "succesfully updated as "+ctx.QueryParam("action"), "", nil))
 }
 
+// websocket
 func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 	fmt.Println("message called")
 
@@ -242,10 +243,12 @@ func (h *FriendSvc) FriendMessage(ctx echo.Context) error {
 // @Tags Friend
 // @Accept json
 // @Produce json
-// @Param body body requestmodel_friend_svc.ChatRequest true "Request body for getting chat messages"
+// @Param page query string false "Offset for paginated results"
+// @Param limit query string false "Limit number of results"
+// @Param FriendID query string false "required friend id"
 // @Success 200 {object} responsemodel_friend_svc.Response "List of chat messages"
 // @Failure 400 {object} responsemodel_friend_svc.Response "Bad request"
-// @Router /friendMessage/message [get]
+// @Router /friend/chat/message [get]
 // @Security UserAuthorization
 func (h *FriendSvc) GetChat(ctx echo.Context) error {
 	var chatRequet requestmodel_friend_svc.ChatRequest

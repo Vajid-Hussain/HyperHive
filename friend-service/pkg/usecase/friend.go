@@ -258,6 +258,7 @@ func (u *FriendUseCase) MessageConsumer() {
 		message := <-consumerPartishion.Messages()
 		// fmt.Println("--message: ", string(message.Value))
 		msg, _ := u.UnmarshelChatMessage(message.Value)
+		fmt.Println("===", msg)
 		u.friendRepo.StoreFriendsChat(*msg)
 	}
 }

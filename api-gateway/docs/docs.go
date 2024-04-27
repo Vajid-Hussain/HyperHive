@@ -351,6 +351,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/friend/chat/message": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuthorization": []
+                    }
+                ],
+                "description": "Retrieve chat messages.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Friend"
+                ],
+                "summary": "Get Chat Messages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Offset for paginated results",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit number of results",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "required friend id",
+                        "name": "FriendID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of chat messages",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/friend/friends": {
             "get": {
                 "security": [
@@ -572,51 +626,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "List of sent friend requests",
-                        "schema": {
-                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/responsemodel_friend_svc.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/friendMessage/message": {
-            "get": {
-                "security": [
-                    {
-                        "UserAuthorization": []
-                    }
-                ],
-                "description": "Retrieve chat messages.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Friend"
-                ],
-                "summary": "Get Chat Messages",
-                "parameters": [
-                    {
-                        "description": "Request body for getting chat messages",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/requestmodel_friend_svc.ChatRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of chat messages",
                         "schema": {
                             "$ref": "#/definitions/responsemodel_friend_svc.Response"
                         }
@@ -2151,25 +2160,6 @@ const docTemplate = `{
                     "minLength": 5
                 },
                 "UserName": {
-                    "type": "string"
-                }
-            }
-        },
-        "requestmodel_friend_svc.ChatRequest": {
-            "type": "object",
-            "required": [
-                "friendID",
-                "limit",
-                "offset"
-            ],
-            "properties": {
-                "friendID": {
-                    "type": "string"
-                },
-                "limit": {
-                    "type": "string"
-                },
-                "offset": {
                     "type": "string"
                 }
             }

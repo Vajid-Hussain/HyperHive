@@ -82,13 +82,13 @@ type MessageType struct {
 }
 
 type FriendlyMessage struct {
-	SenderID    string `json:"SenderID" validate:"required"`
-	RecipientID string `json:"RecipientID" validate:"required"`
-	Content     string `json:"Content" validate:"required"`
-	Timestamp   time.Time
-	Type        string `json:"Type" validate:"required"`
+	SenderID    string `json:"sender_id" validate:"required"`
+	RecipientID string `json:"recipient_id" validate:"required"`
+	Content     string `json:"content" validate:"required"`
+	Timestamp   time.Time	`json:"timestamp"`
+	Type        string `json:"type" validate:"required"`
 	Tag         string `json:"Tag"`
-	Status      string `json:"Status"`
+	Status      string `json:"status"`
 }
 
 type ForumPost struct {
