@@ -59,7 +59,7 @@ func (r *RedisCaching) SetUserProfile(userID string) (*response_auth_svc.UserPro
 
 	result := r.redis.Set(context.Background(), "user-"+userID, profileByte, time.Hour)
 	if result.Err() != nil {
-		return nil, err
+		return nil, result.Err()
 	}
 
 	return &response_auth_svc.UserProfile{

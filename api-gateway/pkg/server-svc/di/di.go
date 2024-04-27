@@ -41,8 +41,11 @@ func CreateSoketIOserver(redisDB config.Redis) *socketio.Server {
 		Port:     redisDB.RedisPort,
 		Password: redisDB.RedisPassword,
 		Host:     redisDB.RedisURL,
+		// DB: 0,
+		Addr: redisDB.RedisURL,
 	}
 	server := socketio.NewServer(nil)
+
 	ok, err := server.Adapter(&rediAdapter)
 	if err != nil {
 		fmt.Println("redis adapter connection err ", err)
@@ -57,6 +60,7 @@ func InitRedisDB(config *config.Redis) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.RedisURL,
 		Password: config.RedisPassword,
+		DB: 0,
 	})
 	return client
 }

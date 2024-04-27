@@ -18,7 +18,7 @@ var envConfig *config.Config
 
 func InitAuthClind(engin *echo.Echo, config *config.Config) (*middlewire_auth_svc.Middlewire, error) {
 	var err error
-	envConfig=config
+	envConfig = config
 	clind, err = clind_auth_svc.InitClind(config.Auth_service_port)
 	if err != nil {
 		return nil, err
@@ -47,6 +47,8 @@ func InitRedisDB(config *config.Redis) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.RedisURL,
 		Password: config.RedisPassword,
+		// DB:       0,
+		// Username: "default",
 	})
 	return client
 }

@@ -26,7 +26,7 @@ type S3Bucket struct {
 type Redis struct {
 	RedisPort     string `mapstructure:"REDIS_PORT"`
 	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisURL      string `mapstructure:"REDIS_URL"`
+	RedisURL      string `mapstructure:"REDIS_HOST"`
 }
 
 func InitConfig() (c *Config, err error) {
@@ -41,5 +41,7 @@ func InitConfig() (c *Config, err error) {
 
 	viper.Unmarshal(&c)
 	viper.Unmarshal(&c.S3)
+	viper.Unmarshal(&c.RedisDB)
+
 	return
 }
