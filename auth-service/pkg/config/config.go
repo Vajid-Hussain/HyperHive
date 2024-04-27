@@ -35,7 +35,7 @@ type Mail struct {
 type Redis struct {
 	RedisPort     string `mapstructure:"REDIS_PORT"`
 	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisURL      string `mapstructure:"REDIS_URL"`
+	RedisURL      string `mapstructure:"REDIS_HOST"`
 }
 
 type Config struct {

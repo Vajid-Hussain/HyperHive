@@ -34,7 +34,7 @@ func (c *authCache) UpdateUserProfile(userID string) error {
 
 	result := c.redisDb.Set(context.Background(), "user-"+userID, byteProfile, time.Hour)
 	if result.Err() != nil {
-		return err
+		return result.Err()
 	}
 	return nil
 }
