@@ -36,6 +36,7 @@ func (c *authCache) UpdateUserProfile(userID string) error {
 	if result.Err() != nil {
 		return result.Err()
 	}
+	fmt.Println("000", result.Err(), result.String())
 	return nil
 }
 
