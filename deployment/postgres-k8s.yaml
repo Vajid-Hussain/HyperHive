@@ -17,7 +17,7 @@ spec:
         database: postgres
     spec:
       containers:
-        - name: database
+        - name: hyperhive-postgres-container
           image: postgres
           ports:
             - containerPort: 5432
@@ -27,7 +27,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: secretcollection
-                  key: dbpassword  
+                  key: postgresPassword  
           volumeMounts:
           - name: storagespace
             mountPath: /var/lib/postgresql/data
