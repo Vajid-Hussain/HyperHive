@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-deployment
+  NameSpace: hyperhive
   labels:
     db: postgres
 spec:
@@ -45,6 +46,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  NameSpace: hyperhive
 spec:
   type: ClusterIP
   selector:
