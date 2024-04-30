@@ -21,3 +21,11 @@ dockerall:
 	docker compose build
 	docker compose up
 	
+uploadImgfriend:
+	docker tag vajidhussain/hyperhive_friend_service:latest hyperhive_friend_service
+	docker push vajidhussain/hyperhive_friend_service
+
+uploadImgserver:
+	docker tag vajidhussain/hyperhive_friend_service:latest hyperhive_friend_service
+	docker push vajidhussain/hyperhive_friend_service
+	

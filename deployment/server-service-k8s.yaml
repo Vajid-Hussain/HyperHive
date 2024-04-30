@@ -31,7 +31,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: server-services
+  name: server-service
   namespace: hyperhive
 spec: 
   type: ClusterIP

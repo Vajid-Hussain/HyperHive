@@ -3,9 +3,12 @@ COPY ./ /server_service
 WORKDIR /server_service
 RUN go mod download
 RUN go build -o cmd/build cmd/main.go
+RUN apk --no-cache add ca-certificates
+
 
 FROM scratch
 COPY --from=FirstBuild /server_service/cmd/build /
 COPY --from=FirstBuild /server_service/dev.env /
+COPY --from=FirstBuild /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 EXPOSE 8003
 CMD ["/build"]

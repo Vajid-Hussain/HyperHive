@@ -146,19 +146,23 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 	message.Timestamp = time.Now().In(s.Location)
 	message.Status = "send"
 
-	if socket.RoomLen("/", friendChatNameSpace+message.RecipientID) == 0 {
-		message.Status = "pending"
-	} else {
-		socket.BroadcastToRoom("/", friendChatNameSpace+message.RecipientID, "receive friendly chat", message)
-	}
+	// if socket.RoomLen("/", friendChatNameSpace+message.RecipientID) == 0 {
+	// 	message.Status = "pending"
+	// } else {
+	// 	socket.BroadcastToRoom("/", friendChatNameSpace+message.RecipientID, "receive friendly chat", message)
+	// }
 
-	fmt.Println("----------user count in room", socket.RoomLen("/", friendChatNameSpace+message.RecipientID))
+	socket.BroadcastToRoom("/", friendChatNameSpace+message.RecipientID, "receive friendly chat", message)
+
+	
+	// fmt.Println("----------user count in room", socket.RoomLen("/", friendChatNameSpace+message.RecipientID))
 	message.Timestamp = message.Timestamp.UTC()
 
 	err = s.addFriendMessageIntoKafka(message)
 	if err != nil {
 		conn.Emit("error", err.Error())
 	}
+	fmt.Println("finish message send succesfully ",err)
 }
 
 func (s *serverServiceUseCase) BroadcastForum(msg []byte, soket socketio.Server, conn socketio.Conn) {
