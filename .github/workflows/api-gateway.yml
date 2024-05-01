@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: List Files
-      run: ${ls}
+      run: 
+        pwd
+        ls
+        cd api-gateway/
     - name: pwd
       run: pwd
     # - name: cd
@@ -29,6 +32,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: /api-gateway/dockerfile
+        file: api-gateway/dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/hyperhive_api_gateway:latest
