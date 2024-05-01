@@ -4,10 +4,16 @@ metadata:
   name: hyperhive-ingres
   namespace: hyperhive
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
+  tls:
+    - hosts:
+      - k8s.hyperhive.vajid.tech
+      secretName: hyperhive-new-tls 
   rules:
-  - host: www.k8s.hyperhive.vajid.tech
+  - host: k8s.hyperhive.vajid.tech
     http:
       paths:
       - pathType: Prefix

@@ -169,7 +169,7 @@ func (r *FriendUseCase) CreateBlockFriendRespose(friendList []*responsemodel_fri
 
 	return friendList
 }
-
+	
 func (r *FriendUseCase) ReceivedFriendRequestResponse(friendList []*responsemodel_friend_server.FriendList) []*responsemodel_friend_server.FriendList {
 	var ch = make(chan *responsemodel_friend_server.AbstractUserProfile)
 	var mp = make(map[string]*responsemodel_friend_server.AbstractUserProfile)
