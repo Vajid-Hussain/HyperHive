@@ -15,9 +15,10 @@ type FriendList struct {
 	UserID              string `gorm:"column:users"`
 	FriendID            string `gorm:"column:friend"`
 	UpdateAt            time.Time
-	LastMessage         string              `gorm:"-"`
-	LastMessageSenderID string              `gorm:"-"`
-	UnreadMessage       int                 `gorm:"-"`
+	LastMessage         string `gorm:"-"`
+	LastMessageSenderID string `gorm:"-"`
+	UnreadMessage       int    `gorm:"-"`
+	ActionBy            string
 	UserProfile         AbstractUserProfile `gorm:"-"`
 }
 
@@ -38,4 +39,3 @@ type Message struct {
 	Tag         string    `bson:"tag"`
 	Status      string    `bson:"status"`
 }
-

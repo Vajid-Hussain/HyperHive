@@ -106,7 +106,7 @@ func (r *FriendUseCase) GetBlockFriendRequest(req *requestmodel_friend_server.Ge
 		return nil, err
 	}
 
-	return r.CreateFriendListResponse(sendRequest), nil
+	return r.CreateBlockFriendRespose(sendRequest), nil
 }
 
 //-------------- Fetch Friend details from Auth server
@@ -116,6 +116,37 @@ func (r *FriendUseCase) CreateFriendListResponse(friendList []*responsemodel_fri
 	var mp = make(map[string]*responsemodel_friend_server.AbstractUserProfile)
 
 	for _, val := range friendList {
+		go r.UserProfile(val.FriendID, ch)
+	}
+
+	for i := 1; i <= len(friendList); i++ {
+		userProfile := <-ch
+		if userProfile != nil {
+			mp[userProfile.UserID] = userProfile
+		}
+	}
+
+	for i, val := range friendList {
+		profile := mp[val.FriendID]
+		if profile == nil {
+			friendList[i] = nil
+		} else {
+			friendList[i].UserProfile = *profile
+			friendList[i].UpdateAt = friendList[i].UpdateAt.In(r.Location)
+		}
+	}
+
+	return friendList
+}
+
+func (r *FriendUseCase) CreateBlockFriendRespose(friendList []*responsemodel_friend_server.FriendList) []*responsemodel_friend_server.FriendList {
+	var ch = make(chan *responsemodel_friend_server.AbstractUserProfile)
+	var mp = make(map[string]*responsemodel_friend_server.AbstractUserProfile)
+
+	for i, val := range friendList {
+		if val.FriendID == val.ActionBy {
+			friendList[i].UserID, friendList[i].FriendID = friendList[i].FriendID, friendList[i].UserID
+		}
 		go r.UserProfile(val.FriendID, ch)
 	}
 

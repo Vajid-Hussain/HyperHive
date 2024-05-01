@@ -28,4 +28,7 @@ uploadImgfriend:
 uploadImgserver:
 	docker tag vajidhussain/hyperhive_friend_service:latest hyperhive_friend_service
 	docker push vajidhussain/hyperhive_friend_service
-	
+
+
+#cerr manager
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
