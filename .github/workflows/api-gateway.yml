@@ -8,16 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: print secret
+      run: echo "done ${{secrets.DOCKER_USERNAME}}" 
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: List Files
       run: cd api-gateway/
     - name: pwd
       run: pwd
     - name: cd
       run: ls 
-    - name: print secret
-      run: echo "done ${{secrets.DOCKER_USERNAME}}" 
-    - name: Checkout
-      uses: actions/checkout@v4
     - name: Login to docker hub
       uses: docker/login-action@v3
       with:
