@@ -22,7 +22,7 @@ jobs:
     - name: build and push
       uses: docker/build-push-action@v5
       with:
-        context: ./api-gateway/
-        file: dockerfile
+        context: .
+        file: /api-gateway/dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/hyperhive_api_gateway:latest
