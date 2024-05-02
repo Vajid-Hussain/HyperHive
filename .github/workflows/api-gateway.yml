@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: List Files
-      run: ls
+      run: ${ls}
     - name: pwd
       run: pwd
     # - name: cd
     #   run: cd 
     - name: print secret
-      run: echo "done ${{ secrets.DOCKER_USERNAME }}" 
+      run: echo "done ${{secrets.DOCKER_USERNAME}}" 
     - name: Checkout
       uses: actions/checkout@v4
     - name: Login to docker hub
