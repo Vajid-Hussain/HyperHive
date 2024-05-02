@@ -2,8 +2,8 @@ name: api-gateway
 run-name: ${{ gtihub.actor }} is deploying api-gateway
 on: 
   push:
-    paths:
-    - 'api-gateway/'
+    # paths:
+    # - '/api-gateway/'
 jobs: 
   build:
     runs-on: ubuntu-latest
