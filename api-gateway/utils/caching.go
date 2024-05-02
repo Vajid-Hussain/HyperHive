@@ -20,6 +20,7 @@ func NewRedisCaching(redis *redis.Client, authClind pb.AuthServiceClient) *Redis
 		redis:     redis,
 		authClind: authClind,
 	}
+	
 }
 
 func (r *RedisCaching) GetUserProfile(userID string) (*response_auth_svc.UserProfile, error) {
