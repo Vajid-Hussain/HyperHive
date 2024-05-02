@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: print secret
-      uses: echo "done ${{ secrets.DOCKER_USERNAME }}" 
+      run: echo "done ${{ secrets.DOCKER_USERNAME }}" 
     - name: Checkout
       uses: actions/checkout@v4
     - name: Login to docker hub
