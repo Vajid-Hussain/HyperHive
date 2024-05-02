@@ -101,11 +101,14 @@ func (u *ServerServer) GetUserServer(ctx context.Context, req *pb.GetUserServerR
 		return nil, err
 	}
 
-	var finalResult []string
+	var finalResult []*pb.UserServerList
 	for _, val := range result {
-		finalResult = append(finalResult, val.ServerID)
+		finalResult = append(finalResult, &pb.UserServerList{
+			ServerId: val.ServerID,
+			Icon: val.Icon,
+		})
 	}
-	return &pb.GetUserServerResponse{ServerId: finalResult}, nil
+	return &pb.GetUserServerResponse{UserServerList: finalResult}, nil
 }
 
 func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) (*pb.GetServerResponse, error) {
@@ -132,14 +135,14 @@ func (u *ServerServer) SearchServer(ctx context.Context, req *pb.SearchServerReq
 	var finalResult []*pb.GetServerResponse
 	for _, server := range result {
 		finalResult = append(finalResult, &pb.GetServerResponse{
-			ServerId:    req.ServerID,
+			ServerId:    server.ServerID,
 			Name:        server.Name,
 			Description: server.Description,
 			Icon:        server.Icon,
 			CoverPhoto:  server.CoverPhoto,
 		})
 	}
-	return &pb.SearchServerResponse{Servers: finalResult},nil
+	return &pb.SearchServerResponse{Servers: finalResult}, nil
 }
 
 func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannelMessageRequest) (*pb.GetChannelMessageResponse, error) {

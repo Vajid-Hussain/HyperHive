@@ -55,9 +55,9 @@ func (s *serverServiceUseCase) JoinToServerRoom(userID string, socket *socketio.
 		return err
 	}
 
-	for _, serverID := range userServerList.ServerId {
-		ok := socket.JoinRoom("/", serverID, conn)
-		fmt.Println("join room ", ok, serverID)
+	for _, data := range userServerList.UserServerList {
+		ok := socket.JoinRoom("/", data.ServerId, conn)
+		fmt.Println("join room ", ok, data.ServerId)
 	}
 
 	ok := socket.JoinRoom("/", friendChatNameSpace+userID, conn)
