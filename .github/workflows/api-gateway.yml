@@ -1,5 +1,5 @@
 name: api-gateway
-run-name: ${{ gtihub.actor }} is deploying api-gateway
+run-name: ${{ github.actor }} is deploying api-gateway
 on: 
   push:
     # paths:
