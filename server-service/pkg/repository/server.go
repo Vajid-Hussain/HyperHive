@@ -146,9 +146,9 @@ func (d *ServerRepository) GetServer(serverID string) (*responsemodel_server_ser
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
 
-	// if result.RowsAffected == 0 {
-	// 	return nil, responsemodel_server_service.ErrEmptyResponse
-	// }
+	if result.RowsAffected == 0 {
+		return nil, responsemodel_server_service.ErrEmptyResponse
+	}
 	return res, nil
 }
 

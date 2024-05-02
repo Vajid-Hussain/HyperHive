@@ -126,10 +126,10 @@ func (d *ServerUsecase) UpdateServerDiscription(req *requestmodel_server_service
 	return nil
 }
 
-func (d *ServerUsecase) GetServers(serverID string, pagination requestmodel_server_service.Pagination) ( []*responsemodel_server_service.Server,  error){
+func (d *ServerUsecase) GetServers(serverID string, pagination requestmodel_server_service.Pagination) ([]*responsemodel_server_service.Server, error) {
 	var err error
-	pagination.OffSet,err= utils_server_service.Pagination(pagination.Limit, pagination.OffSet)
-	if err!=nil{
+	pagination.OffSet, err = utils_server_service.Pagination(pagination.Limit, pagination.OffSet)
+	if err != nil {
 		return nil, err
 	}
 	return d.repository.GetServers(serverID, pagination)

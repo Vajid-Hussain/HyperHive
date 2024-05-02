@@ -26,4 +26,5 @@ var (
 	ErrServerPhotoTypeNotMatch = errors.New("photo type is not matching")
 	ErrServerDescriptionLength = errors.New("description under under 20 letters")
 	ErrNotExpectedRole         = errors.New("undefine role, confirm role")
+	ErrServerNotExist= errors.New("server not exist")
 )
