@@ -168,7 +168,7 @@ func (d *ServerRepository) GetUserServers(userID string) ([]*responsemodel_serve
 }
 
 func (d *ServerRepository) UpdateServerCoverPhoto(req *requestmodel_server_service.ServerImages) error {
-	query := "UPDATE servers SET cover_photo= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id =$2 AND role='SuperAdmin' AND server_id =$3)"
+	query := "UPDATE servers SET cover_photo= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id =$2 AND role='SuperAdmin' AND server_id =$3)  AND id=$3"
 	result := d.DB.Exec(query, req.Url, req.UserID, req.ServerID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
@@ -181,7 +181,7 @@ func (d *ServerRepository) UpdateServerCoverPhoto(req *requestmodel_server_servi
 }
 
 func (d *ServerRepository) UpdateServerIcon(req *requestmodel_server_service.ServerImages) error {
-	query := "UPDATE servers SET icon= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND role= 'SuperAdmin' AND server_id =$3)"
+	query := "UPDATE servers SET icon= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND role= 'SuperAdmin' AND server_id =$3) AND id=$3"
 	result := d.DB.Exec(query, req.Url, req.UserID, req.ServerID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
@@ -194,7 +194,7 @@ func (d *ServerRepository) UpdateServerIcon(req *requestmodel_server_service.Ser
 }
 
 func (d *ServerRepository) UpdateServerDiscription(req *requestmodel_server_service.Description) error {
-	query := "UPDATE servers SET description= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND (role= 'SuperAdmin' OR role='Admin') AND server_id =$3)"
+	query := "UPDATE servers SET description= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id= $2 AND (role= 'SuperAdmin' OR role='Admin') AND server_id =$3) AND id=$3"
 	result := d.DB.Exec(query, req.Description, req.UserID, req.ServerID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
