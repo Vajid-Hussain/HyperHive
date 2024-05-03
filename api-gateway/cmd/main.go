@@ -10,8 +10,8 @@ import (
 	di_server_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/server-svc/di"
 	di_websocket_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/webSocket/di"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	
 )
 
 // @title          HyperHive
@@ -42,6 +42,14 @@ func main() {
 	}
 
 	engin := echo.New()
+
+	// engin.Use(middleware.CORS())
+
+	engin.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	engin.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	middlewire, err := di_auth_svc.InitAuthClind(engin, config)
