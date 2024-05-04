@@ -168,7 +168,7 @@ func (d *ServerRepository) GetUserServers(userID string) ([]*responsemodel_serve
 }
 
 func (d *ServerRepository) UpdateServerCoverPhoto(req *requestmodel_server_service.ServerImages) error {
-	query := "UPDATE servers SET cover_photo= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id =$2 AND role='SuperAdmin' AND server_id =$3)  AND id=$3"
+	query := "UPDATE servers SET cover_photo= $1 WHERE EXISTS (SELECT 1 FROM server_members WHERE user_id =$2 AND role='SuperAdmin' AND server_id =$3) AND id=$3"
 	result := d.DB.Exec(query, req.Url, req.UserID, req.ServerID)
 	if result.Error != nil {
 		return responsemodel_server_service.ErrInternalServer
