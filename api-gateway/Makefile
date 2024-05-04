@@ -21,3 +21,4 @@ swago:
 
 swagofmt:
 	swag fmt -g cmd/main.go 
+	

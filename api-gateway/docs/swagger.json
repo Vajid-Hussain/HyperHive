@@ -7,7 +7,6 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "hyperhive.vajid.tech",
     "basePath": "/",
     "paths": {
         "/account": {
@@ -2347,6 +2346,9 @@
                     "type": "string"
                 },
                 "UserName": {
+                    "type": "string"
+                },
+                "UserSince": {
                     "type": "string"
                 }
             }

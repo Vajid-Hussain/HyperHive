@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/Vajid-Hussain/HiperHive/api-gateway/docs"
+	_ "github.com/Vajid-Hussain/HiperHive/api-gateway/docs"
 	di_auth_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/auth-svc/di"
 	"github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/config"
 	di_friend_svc "github.com/Vajid-Hussain/HiperHive/api-gateway/pkg/friend-svc/di"
@@ -19,7 +19,7 @@ import (
 // @description    This is a sample server Petstore server.
 // @termsOfService http://swagger.io/terms/
 
-// @host     hyperhive.vajid.tech
+// // @host     hyperhive.vajid.tech
 // @BasePath /
 
 // @securityDefinitions.apikey UserAuthorization
@@ -33,7 +33,7 @@ import (
 // @name                       AccessToken
 
 func main() {
-	docs.SwaggerInfo.Host = "dev.hyperhive.vajid.tech"
+	// docs.SwaggerInfo.Host = "dev.hyperhive.vajid.tech"
 	serverError := "error at initial setup "
 
 	config, err := config.InitConfig()

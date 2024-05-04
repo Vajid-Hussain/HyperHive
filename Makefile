@@ -11,10 +11,8 @@ deploydown:
 dockerPostgres:
 	docker exec -it hyperhive_postgres bash -c 'psql -U postgres'
 
-
 swaggo:
-	swag init -g ./api-gateway/cmd/main.go
-
+	swag init --parseDependency --parseInternal --parseDepth 5  -g ./api-gateway/cmd/main.go -o api-gateway/
 
 dockerall:
 	docker compose down

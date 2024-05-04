@@ -214,6 +214,8 @@ definitions:
         type: string
       UserName:
         type: string
+      UserSince:
+        type: string
     type: object
   responsemodel_friend_svc.Response:
     properties:
@@ -224,7 +226,6 @@ definitions:
       status_code:
         type: integer
     type: object
-host: hyperhive.vajid.tech
 info:
   contact: {}
   description: This is a sample server Petstore server.
