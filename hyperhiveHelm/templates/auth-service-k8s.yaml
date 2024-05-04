@@ -1,0 +1,45 @@
+{{- range .Values.service }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .labels }}
+  template:
+    metadata:
+      labels:
+        app: {{ .labels }}
+    spec:
+      containers:
+        - image: {{ .image }}
+          name: {{ .podname }}
+          ports:
+            - containerPort: {{ .containerport }}
+          resources:
+            limits:
+              memory: {{ .resources.limits.memory }}
+              cpu: {{ .resources.limits.cpu }}
+            requests:
+              memory: {{ .resources.requests.memory}}
+              cpu: {{ .resources.requests.cpu}}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .servicename }}
+  namespace: {{ .namespace }}
+spec: 
+  type: ClusterIP
+  ports:
+    - port: {{ .serviceport }}
+      targetPort: {{ .servicetargetport }}
+  selector:
+    app: {{ .labels }}
+    
+{{- end }} 
+---

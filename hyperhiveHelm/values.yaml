@@ -1,0 +1,61 @@
+apigateway:
+  image: vajidhussain/hyperhive_api_gateway
+  tag: :latest 
+  
+resources:
+  limits: 
+    memory: "200Mi"
+    cpu: "0.2"
+  requests:
+    memory: 150Mi
+    cpu: "0.1"
+
+service:
+  - name: hyperhive-auth-svc
+    namespace: hyperhive
+    labels: auth_service
+    image: vajidhussain/hyperhive_auth_service
+    podname: auth-svc-container
+    containerport: 8001
+    servicename: auth-services
+    serviceport: 8001
+    servicetargetport: 8001
+    resources:
+      limits: 
+        memory: "200Mi"
+        cpu: "0.2"
+      requests:
+        memory: 150Mi
+        cpu: "0.1"
+  - name: hyperhive-friend-svc
+    namespace: hyperhive
+    labels: friend_service
+    image: vajidhussain/hyperhive_friend_service
+    podname: friend-svc-container
+    containerport: 8002
+    servicename: friend-service
+    serviceport: 8002
+    servicetargetport: 8002
+    resources:
+      limits: 
+        memory: "200Mi"
+        cpu: "0.2"
+      requests:
+        memory: 150Mi
+        cpu: "0.1"
+  - name: hyperhive-server-svc
+    namespace: hyperhive
+    labels: server_service
+    image: vajidhussain/hyperhive_server_service
+    podname: server-svc-container
+    containerport: 8003
+    servicename: server-service
+    serviceport: 8003
+    servicetargetport: 8003
+    resources:
+      limits: 
+        memory: "200Mi"
+        cpu: "0.2"
+      requests:
+        memory: 150Mi
+        cpu: "0.1"
