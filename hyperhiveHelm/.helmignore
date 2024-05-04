@@ -21,4 +21,4 @@
 .idea/
 *.tmproj
 .vscode/
-hyperhive-k8s-secret.yaml
+# hyperhive-k8s-secret.yaml
