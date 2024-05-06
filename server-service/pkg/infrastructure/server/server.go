@@ -105,7 +105,8 @@ func (u *ServerServer) GetUserServer(ctx context.Context, req *pb.GetUserServerR
 	for _, val := range result {
 		finalResult = append(finalResult, &pb.UserServerList{
 			ServerId: val.ServerID,
-			Icon: val.Icon,
+			Icon:     val.Icon,
+			Name:     val.Name,
 		})
 	}
 	return &pb.GetUserServerResponse{UserServerList: finalResult}, nil
@@ -242,7 +243,7 @@ func (u *ServerServer) GetForumPost(ctx context.Context, req *pb.GetForumPostReq
 	var post []*pb.GetForumPostModel
 	for _, value := range result {
 		post = append(post, &pb.GetForumPostModel{
-			PostID:          value.ID,
+			PostId:          value.ID,
 			UserProfile:     value.UserProfile,
 			UserName:        value.UserName,
 			UserId:          int32(value.UserID),
@@ -266,7 +267,7 @@ func (u *ServerServer) GetSingleForumPost(ctx context.Context, req *pb.GetSingle
 	}
 	return &pb.GetSingleForumPostResponse{
 		Post: &pb.GetForumPostModel{
-			PostID:          value.ID,
+			PostId:          value.ID,
 			UserProfile:     value.UserProfile,
 			UserName:        value.UserName,
 			UserId:          int32(value.UserID),

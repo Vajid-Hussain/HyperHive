@@ -40,7 +40,8 @@ type FullServerChannel struct {
 
 type UserServerList struct {
 	ServerID string
-	Icon        string	
+	Icon     string
+	Name     string
 }
 
 type ServerMessage struct {
