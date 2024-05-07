@@ -284,4 +284,4 @@ message SearchServerRequest {
 
 message SearchServerResponse {
     repeated GetServerResponse servers=1;
-}
+}  
