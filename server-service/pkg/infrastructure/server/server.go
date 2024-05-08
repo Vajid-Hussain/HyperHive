@@ -128,7 +128,7 @@ func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) 
 }
 
 func (u *ServerServer) SearchServer(ctx context.Context, req *pb.SearchServerRequest) (*pb.SearchServerResponse, error) {
-	result, err := u.useCase.GetServers(req.ServerID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.Offset})
+	result, err := u.useCase.GetServers(req.ServerID,req.UserID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.Offset})
 	if err != nil {
 		return nil, err
 	}

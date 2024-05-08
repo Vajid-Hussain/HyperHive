@@ -279,6 +279,7 @@ message SearchServerRequest {
     string serverID =1;
     string limit=2;
     string offset =3;
+    string userID =4;
 }
 
 message SearchServerResponse {

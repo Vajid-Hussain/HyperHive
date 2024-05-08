@@ -269,9 +269,9 @@ func (d *ServerRepository) DeleteServer(userID, ServerID string) error {
 	return nil
 }
 
-func (d *ServerRepository) GetServers(serverID string, pagination requestmodel_server_service.Pagination) (res []*responsemodel_server_service.Server, err error) {
-	query := "SELECT * FROM servers WHERE name ILIKE '%' || $1 || '%' AND status = 'active' ORDER BY name LIMIT $2 OFFSET $3"
-	result := d.DB.Raw(query, serverID, pagination.Limit, pagination.OffSet).Scan(&res)
+func (d *ServerRepository) GetServers(serverID, userID string, pagination requestmodel_server_service.Pagination) (res []*responsemodel_server_service.Server, err error) {
+	query := "SELECT * FROM servers left join server_members on servers.id = server_id AND server_members.user_id= $4  WHERE server_id IS NULL AND name ILIKE '%' || $1 || '%' AND servers.status = 'active' ORDER BY name LIMIT $2 OFFSET $3"
+	result := d.DB.Raw(query, serverID, pagination.Limit, pagination.OffSet,userID).Scan(&res)
 	if result.Error != nil {
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
@@ -281,6 +281,10 @@ func (d *ServerRepository) GetServers(serverID string, pagination requestmodel_s
 	}
 	return res, nil
 }
+
+// func (d *ServerRepository) GetAllServerExeptUserGoined(userID string, pagination requestmodel_server_service.Pagination) (res []*responsemodel_server_service.Server, err error) {
+// 	query:= "SELECT * FROM servers INNER JOIN server_members ON servers.id = server_members.id "
+// }
 
 // Mongodb Queries
 

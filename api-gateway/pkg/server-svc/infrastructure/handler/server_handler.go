@@ -261,7 +261,6 @@ func (c *ServerService) GetUserServer(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
-
 // Handler function for getting a server by ID.
 // @Summary Get Server by ID
 // @Description Retrieve a server by ID.
@@ -298,7 +297,7 @@ func (c *ServerService) GetServer(ctx echo.Context) error {
 // @Failure 400 {object} resonsemodel_server_svc.Response "Bad request"
 // @Router /server/search [get]
 // @Security UserAuthorization
-func (c *ServerService) SearchServer(ctx echo.Context)error{
+func (c *ServerService) SearchServer(ctx echo.Context) error {
 	var req requestmodel_server_svc.SearchServer
 	ctx.Bind(&req)
 	validateError := helper_api_gateway.Validator(req)
@@ -310,8 +309,9 @@ func (c *ServerService) SearchServer(ctx echo.Context)error{
 	defer cancel()
 	result, err := c.Clind.SearchServer(context, &pb.SearchServerRequest{
 		ServerID: req.ServerID,
-		Limit:  req.Limit,
-		Offset: req.Offset,
+		Limit:    req.Limit,
+		Offset:   req.Offset,
+		UserID:   ctx.Get("userID").(string),
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, resonsemodel_server_svc.Responses(http.StatusBadRequest, "", "", err.Error()))
@@ -728,7 +728,7 @@ func (c *ServerService) GetPostCommand(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, resonsemodel_server_svc.Responses(http.StatusOK, "", result, nil))
 }
 
-func (c *ServerService) CheckReddis(ctx echo.Context) error{
+func (c *ServerService) CheckReddis(ctx echo.Context) error {
 	c.serverUseCase.SetDataInReddis()
 	return ctx.String(200, "all perfect")
 }
