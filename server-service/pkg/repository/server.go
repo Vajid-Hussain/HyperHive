@@ -276,9 +276,9 @@ func (d *ServerRepository) GetServers(serverID, userID string, pagination reques
 		return nil, responsemodel_server_service.ErrInternalServer
 	}
 
-	if result.RowsAffected == 0 {
-		return nil, responsemodel_server_service.ErrEmptyResponse
-	}
+	// if result.RowsAffected == 0 {
+	// 	return nil, responsemodel_server_service.ErrEmptyResponse
+	// }
 	return res, nil
 }
 
