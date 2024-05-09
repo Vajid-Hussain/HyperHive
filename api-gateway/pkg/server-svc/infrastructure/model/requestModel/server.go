@@ -26,8 +26,12 @@ type JoinToServer struct {
 }
 
 type ServerReq struct {
-	ServerID string `json:"ServerID" param:"id" validate:"required"`
+	ServerID string `json:"ServerID" param:"id" validate:"required" query:"ServerID"`
 }
+
+// type ServerID struct {
+// 	ServerID string `json:"ServerID"  validate:"required"`
+// }
 
 type ServerMessage struct {
 	UserProfilePhoto string `json:"UserProfilePhoto,omitempty"`
