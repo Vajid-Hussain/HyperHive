@@ -2,7 +2,6 @@ package server_server_service
 
 import (
 	"context"
-	"strconv"
 
 	requestmodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/requestModel"
 	responsemodel_server_service "github.com/Vajid-Hussain/HyperHive/server-service/pkg/infrastructure/model/responseModel"
@@ -128,7 +127,7 @@ func (u *ServerServer) GetServer(ctx context.Context, req *pb.GetServerRequest) 
 }
 
 func (u *ServerServer) SearchServer(ctx context.Context, req *pb.SearchServerRequest) (*pb.SearchServerResponse, error) {
-	result, err := u.useCase.GetServers(req.ServerID,req.UserID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.Offset})
+	result, err := u.useCase.GetServers(req.ServerID, req.UserID, requestmodel_server_service.Pagination{Limit: req.Limit, OffSet: req.Offset})
 	if err != nil {
 		return nil, err
 	}
@@ -157,13 +156,13 @@ func (u *ServerServer) GetChannelMessage(ctx context.Context, req *pb.GetChannel
 		var msg pb.ChannelMessage
 		msg.UserProfile = val.UserProfile
 		msg.UserName = val.UserName
-		msg.ChannelID = strconv.Itoa(val.ChannelID)
+		msg.ChannelID = int32(val.ServerID)
 		msg.Content = val.Content
 		msg.ID = val.ID
-		msg.ServerID = strconv.Itoa(val.ServerID)
+		msg.ServerID = int32(val.ServerID)
 		msg.TimeStamp = val.TimeStamp.String()
 		msg.Type = val.Type
-		msg.UserID = strconv.Itoa(val.UserID)
+		msg.UserID = int32(val.UserID)
 		finalResult = append(finalResult, &msg)
 	}
 

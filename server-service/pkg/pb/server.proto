@@ -122,9 +122,9 @@ message GetChannelMessageRequest {
 
 message ChannelMessage {
     string ID = 1;
-    string UserID = 2;
-    string ChannelID = 3;
-    string ServerID = 4;
+    int32 UserID = 2;
+    int32 ChannelID = 3;
+    int32 ServerID = 4;
     string Content = 5;
     string TimeStamp = 6;
     string Type = 7;
