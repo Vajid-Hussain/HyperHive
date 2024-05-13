@@ -30,7 +30,8 @@ func NewFriendUseCase(repo interface_repository_friend_server.IFriendRepository,
 	if err != nil {
 		fmt.Println("error at exct place", err)
 	}
-	return &FriendUseCase{friendRepo: repo,
+	return &FriendUseCase{
+		friendRepo: repo,
 		authClind: authClind,
 		Location:  locationInd,
 		Kafka:     Kafka}
