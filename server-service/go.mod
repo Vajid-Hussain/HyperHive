@@ -1,6 +1,6 @@
 module github.com/Vajid-Hussain/HyperHive/server-service
 
-go 1.22.1
+go 1.22.0
 
 require (
 	github.com/IBM/sarama v1.43.1

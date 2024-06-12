@@ -40,8 +40,6 @@ func (d *FriendRepository) CreateFriend(FriendReq *requestmodel_friend_server.Fr
 	return &friendRequest, nil
 }
 
-// singnal0
-
 func (d *FriendRepository) GetFriends(req *requestmodel_friend_server.GetFriendRequest) (friends []*responsemodel_friend_server.FriendList, err error) {
 	query := "SELECT friend, update_at, friend_ship_id FROM friends WHERE users= $1 AND status = 'active' UNION SELECT users, update_at,friend_ship_id FROM friends WHERE friend = $1 AND status= 'active' "
 	result := d.DB.Raw(query, req.UserID).Scan(&friends)
