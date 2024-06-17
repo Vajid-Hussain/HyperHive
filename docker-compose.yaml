@@ -65,7 +65,7 @@ services:
     networks:
       - hyperhive_network
     ports:
-      - 9000:8000
+      - 8000:8000
     
   auth-services:
     image: vajidhussain/hyperhive_auth_service
