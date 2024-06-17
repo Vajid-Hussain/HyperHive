@@ -117,7 +117,7 @@ func (s *serverServiceUseCase) BroadcastMessage(msg []byte, socker *socketio.Ser
 }
 
 func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Server, conn socketio.Conn) {
-	fmt.Println("===",msg)
+	fmt.Println("===", msg)
 	message, err := s.jsonUnmarshelFriendlyMessage(msg)
 	if err != nil {
 		conn.Emit("error", err.Error())
@@ -154,7 +154,6 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 
 	socket.BroadcastToRoom("/", friendChatNameSpace+message.RecipientID, "receive friendly chat", message)
 
-	
 	// fmt.Println("----------user count in room", socket.RoomLen("/", friendChatNameSpace+message.RecipientID))
 	message.Timestamp = message.Timestamp.UTC()
 
@@ -162,7 +161,7 @@ func (s *serverServiceUseCase) SendFriendChat(msg []byte, socket *socketio.Serve
 	if err != nil {
 		conn.Emit("error", err.Error())
 	}
-	fmt.Println("finish message send succesfully ",err)
+	fmt.Println("finish message send succesfully ", err)
 }
 
 func (s *serverServiceUseCase) BroadcastForum(msg []byte, soket socketio.Server, conn socketio.Conn) {

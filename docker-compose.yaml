@@ -56,7 +56,7 @@ services:
     - zookeeper
       
   api-gateway:
-    image: hyperhive_api_gateway
+    image: vajidhussain/hyperhive_api_gateway
     build: ./api-gateway/
     restart: always
     depends_on:
@@ -68,7 +68,7 @@ services:
       - 9000:8000
     
   auth-services:
-    image: hyperhive_auth_service
+    image: vajidhussain/hyperhive_auth_service
     build: ./auth-service/
     restart: always
     depends_on:
@@ -78,7 +78,7 @@ services:
       - hyperhive_network
 
   friend-service:
-    image: hyperhive_friend_service
+    image: vajidhussain/hyperhive_friend_service
     build: ./friend-service
     depends_on:
       - postgres
@@ -91,7 +91,7 @@ services:
       - hyperhive_network
 
   server-service:
-    image: hyperhive_server_service
+    image: vajidhussain/hyperhive_server_service
     build: ./server-service
     restart:
       always
