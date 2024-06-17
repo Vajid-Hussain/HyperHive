@@ -2,7 +2,7 @@ package requestmodel_auth_svc
 
 type UserSignup struct {
 	UserName        string `json:"UserName"  validate:"required"`
-	Name            string `json:"Name" validate:"min=1"`
+	Name            string `json:"Name" validate:"min=1,alphanum"`
 	Email           string `json:"Email" validate:"required,email"`
 	Password        string `json:"Password" validate:"min=5"`
 	ConfirmPassword string `json:"ConfirmPassword"`

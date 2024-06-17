@@ -95,6 +95,7 @@ message GetUserServerRequest {
 message UserServerList {
     string server_id =1;
     string Icon =2;
+    string name =3;
 }
 
 message GetUserServerResponse {
@@ -122,9 +123,9 @@ message GetChannelMessageRequest {
 
 message ChannelMessage {
     string ID = 1;
-    string UserID = 2;
-    string ChannelID = 3;
-    string ServerID = 4;
+    int32 UserID = 2;
+    int32 ChannelID = 3;
+    int32 ServerID = 4;
     string Content = 5;
     string TimeStamp = 6;
     string Type = 7;
@@ -195,33 +196,62 @@ message GetForumPostRequest {
     string offset =3;
 }
 
+// message GetForumPostModel {
+//     string user_profile = 1;
+//     string user_name = 2;
+//     int32 user_id = 3;
+//     int32 channel_id = 4;
+//     int32 server_id = 5;
+//     string content = 6;
+//     string main_content_type = 7;
+//     string sub_content = 8;
+//     string time_stamp = 9;
+//     string type = 10;
+//     string command_content = 11;
+//     string PostID =12;
+// }
+
+// message ForumCommandModel {
+//     string ID = 1;
+//     string user_profile = 2;
+//     string user_name = 3;
+//     int32 user_id = 4;
+//     int32 channel_id = 5;
+//     int32 server_id = 6;
+//     string parent_id = 7;
+//     string content = 8;
+//     string time_stamp = 9;
+//     string type = 10;
+//     repeated ForumCommandModel thread = 11;
+// }
+
 message GetForumPostModel {
-    string user_profile = 1;
-    string user_name = 2;
-    int32 user_id = 3;
-    int32 channel_id = 4;
-    int32 server_id = 5;
+    string userProfile = 1;
+    string userName = 2;
+    int32 userId = 3;
+    int32 channelId = 4;
+    int32 serverId = 5;
     string content = 6;
-    string main_content_type = 7;
-    string sub_content = 8;
-    string time_stamp = 9;
+    string mainContentType = 7;
+    string subContent = 8;
+    string timeStamp = 9;
     string type = 10;
-    string command_content = 11;
-    string PostID =12;
+    string commandContent = 11;
+    string postId = 12;
 }
 
 message ForumCommandModel {
     string ID = 1;
-    string user_profile = 2;
-    string user_name = 3;
-    int32 user_id = 4;
-    int32 channel_id = 5;
-    int32 server_id = 6;
-    string parent_id = 7;
-    string content = 8;
-    string time_stamp = 9;
-    string type = 10;
-    repeated ForumCommandModel thread = 11;
+    string UserProfile = 2;
+    string UserName = 3;
+    int32 UserId = 4;
+    int32 ChannelId = 5;
+    int32 ServerId = 6;
+    string ParentId = 7;
+    string Content = 8;
+    string TimeStamp = 9;
+    string Type = 10;
+    repeated ForumCommandModel Thread = 11;
 }
 
 message GetForumPostResponse {
@@ -250,8 +280,9 @@ message SearchServerRequest {
     string serverID =1;
     string limit=2;
     string offset =3;
+    string userID =4;
 }
 
 message SearchServerResponse {
     repeated GetServerResponse servers=1;
-}
+}  
