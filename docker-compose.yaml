@@ -49,7 +49,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
     networks:
       - hyperhive_network
-    container_name: kafka
+    container_name: kafka_hyperhive
     hostname:
       kafkaBroker
     depends_on:

@@ -286,8 +286,11 @@ func (h *FriendSvc) GetChat(ctx echo.Context) error {
 
 // 	location / {
 // 			proxy_pass http://localhost:9000;
-// 	proxy_set_header Upgrade $http_upgrade;
-// 	proxy_set_header Connection $connection_upgrade;
+// 			proxy_set_header Upgrade $http_upgrade;
+// 			proxy_set_header Connection $connection_upgrade;
+// 			proxy_connect_timeout 7d;
+// 			proxy_send_timeout 7d;
+// 			proxy_read_timeout 7d;
 // 			#try_files $uri $uri/ =404;
 // 	}
 // }
